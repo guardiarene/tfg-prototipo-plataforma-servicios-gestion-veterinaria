@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Registrar Veterinario y Clínica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+<div th:replace="~{usuarios/barra_navegacion :: barra_navegacion}"></div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white py-3">
+                    <h3 class="mb-0"><i class="bi bi-building me-2"></i>Registro de Clínica y Veterinario</h3>
+                </div>
+
+                <div class="card-body p-4">
+                    <form action="/clinicas_veterinarias/registrarse" method="POST">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="border p-3 rounded bg-white">
+                                    <h5 class="mb-3 border-bottom pb-2"><i class="bi bi-person-badge me-2"></i>Datos
+                                        del Veterinario</h5>
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Nombre</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-person"></i></span>
+                                                <input class="form-control form-control-lg" id="nombre" name="nombre"
+                                                       placeholder="Ej. Juan" required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Apellido</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-person"></i></span>
+                                                <input class="form-control form-control-lg" id="apellido"
+                                                       name="apellido" placeholder="Ej. Pérez" required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Teléfono</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-telephone"></i></span>
+                                                <input class="form-control form-control-lg" id="telefono"
+                                                       name="telefono" placeholder="Ej. 123-456-789" required
+                                                       type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Email</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-envelope"></i></span>
+                                                <input class="form-control form-control-lg" id="email" name="email"
+                                                       placeholder="Ej. juan.perez@mail.com" required type="email">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Contraseña</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-lock"></i></span>
+                                                <input class="form-control form-control-lg" id="contrasena"
+                                                       name="contrasena" placeholder="Contraseña segura" required
+                                                       type="password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <div class="border p-3 rounded bg-white">
+                                    <h5 class="mb-3 border-bottom pb-2"><i class="bi bi-hospital me-2"></i>Datos de
+                                        la Clínica</h5>
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Nombre</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-building"></i></span>
+                                                <input class="form-control form-control-lg" id="clinicaNombre"
+                                                       name="clinicaNombre" placeholder="Ej. Clínica Veterinaria San Juan"
+                                                       required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Teléfono</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-telephone"></i></span>
+                                                <input class="form-control form-control-lg" id="clinicaTelefono"
+                                                       name="clinicaTelefono" placeholder="Ej. 987-654-321"
+                                                       required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Dirección</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-geo-alt"></i></span>
+                                                <input class="form-control form-control-lg" id="clinicaDireccion"
+                                                       name="clinicaDireccion" placeholder="Ej. Calle Ficticia 123"
+                                                       required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Email</label>
+                                            <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-envelope"></i></span>
+                                                <input class="form-control form-control-lg" id="clinicaEmail"
+                                                       name="clinicaEmail" placeholder="Ej. info@clinica.com"
+                                                       required type="email">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="d-flex justify-content-end gap-3 mt-5">
+                                    <a class="btn btn-secondary px-4" th:href="@{/}">
+                                        <i class="bi bi-arrow-left-circle me-2"></i> Volver
+                                    </a>
+                                    <button class="btn btn-primary px-4" type="submit">
+                                        <i class="bi bi-save me-2"></i> Registrar Clínica
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
