@@ -1,7 +1,7 @@
 # Prototipo de Plataforma de Servicios y Gestión de Clínicas Veterinarias
 
 Este proyecto forma parte del Trabajo de Fin de Grado titulado *Plataforma de Servicios y Gestión de Clínicas
-Veterinarias*.  
+Veterinarias*.
 
 El objetivo del mismo consistió en permitir la creación, mantenimiento y acceso compartido a historias clínicas
 unificadas entre diferentes clínicas veterinarias.

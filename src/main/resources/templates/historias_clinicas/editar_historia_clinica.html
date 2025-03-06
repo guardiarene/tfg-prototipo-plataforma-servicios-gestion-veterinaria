@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Historia Clínica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+<div th:replace="~{veterinario/barra_navegacion :: barra_navegacion}"></div>
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Editar Historia Clínica</h3>
+        </div>
+
+        <form class="card-body" method="POST" th:action="@{/historia_clinica/editar/{id}(id=${historia.id})}"
+              th:object="${historia}">
+            <div class="mb-4">
+                <h4 class="mb-3 border-bottom pb-2">Datos Básicos</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Mascota:</label>
+                        <input th:field="*{paciente.id}" type="hidden"/>
+                        <div class="form-control bg-light">
+                                <span
+                                        th:text="${historia.paciente.nombre} + ' (' + ${historia.paciente.propietario.nombre} + ' ' + ${historia.paciente.propietario.apellido} + ')'"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Motivo de Consulta</label>
+                        <textarea class="form-control" placeholder="Ingrese el motivo de la consulta..." required
+                                  rows="3" th:field="*{motivoConsulta}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4 border p-3 rounded">
+                <h4 class="mb-3 border-bottom pb-2">Examen Clínico</h4>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Temperatura (°C)</label>
+                        <input class="form-control" placeholder="Ej: 38.5" step="0.1"
+                               th:field="*{examenClinico.temperatura}"
+                               type="number">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Frec. Cardíaca (lpm)</label>
+                        <input class="form-control" placeholder="Ej: 90" th:field="*{examenClinico.frecuenciaCardiaca}"
+                               type="number">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Frec. Respiratoria (rpm)</label>
+                        <input class="form-control" placeholder="Ej: 25"
+                               th:field="*{examenClinico.frecuenciaRespiratoria}"
+                               type="number">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Pulso (lpm)</label>
+                        <input class="form-control" placeholder="Ej: 100" th:field="*{examenClinico.pulso}"
+                               type="number">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Mucosas</label>
+                        <input class="form-control" placeholder="Ej: Irritadas, húmedas"
+                               th:field="*{examenClinico.mucosas}"
+                               type="text">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Temperamento</label>
+                        <select class="form-select" th:field="*{examenClinico.temperamento}">
+                            <option disabled hidden selected value="">Seleccionar temperamento...</option>
+                            <option th:each="temp : ${T(tfg.prototipo.modelo.Temperamento).values()}"
+                                    th:text="${temp.name()}" th:value="${temp}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" placeholder="Detalles del examen realizado" rows="2"
+                                  th:field="*{examenClinico.descripcion}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="mb-3 border-bottom pb-2">Anamnesis</h4>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Última Desparasitación</label>
+                        <input class="form-control" name="anamnesis.ultimaDesparasitacion"
+                               th:value="${historia.anamnesis?.ultimaDesparasitacion != null} ? ${#temporals.format(historia.anamnesis.ultimaDesparasitacion, 'yyyy-MM-dd')} : ''"
+                               type="date"><small class="text-muted">Si no recuerda la fecha
+                        exacta, aproximar</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Estado Reproductivo</label>
+                        <select class="form-select" th:field="*{anamnesis.estadoReproductivo}">
+                            <option disabled hidden selected value="">Seleccionar estado...</option>
+                            <option th:each="estado : ${T(tfg.prototipo.modelo.EstadoReproductivo).values()}"
+                                    th:text="${estado.name()}" th:value="${estado}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Alimentación</label>
+                        <input class="form-control" placeholder="Ej: Alimento balanceado X, 2 veces al día"
+                               th:field="*{anamnesis.alimentacion}"
+                               type="text">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Último Celo</label>
+                        <input class="form-control" name="anamnesis.ultimoCelo"
+                               th:value="${historia.anamnesis?.ultimoCelo != null} ? ${#temporals.format(historia.anamnesis.ultimoCelo, 'yyyy-MM-dd')} : ''"
+                               type="date">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Último Parto</label>
+                        <input class="form-control" name="anamnesis.ultimoParto"
+                               th:value="${historia.anamnesis?.ultimoParto != null} ? ${#temporals.format(historia.anamnesis.ultimoParto, 'yyyy-MM-dd')} : ''"
+                               type="date">
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Vacunas</h5>
+                                <button class="btn btn-sm btn-success" onclick="addVacuna()" type="button">
+                                    <i class="bi bi-plus"></i> Agregar Vacuna
+                                </button>
+                            </div>
+
+                            <div class="card-body" id="vacunas-container">
+                                <div class="vacuna-template row g-3 mb-3"
+                                     th:each="vacuna, vacStat : ${historia.anamnesis.vacunas}">
+                                    <input th:name="|anamnesis.vacunas[${vacStat.index}].version|"
+                                           th:value="${vacuna.version}"
+                                           type="hidden"/>
+                                    <input th:name="|anamnesis.vacunas[${vacStat.index}].id|" th:value="${vacuna.id}"
+                                           type="hidden"/>
+                                    <div class="col-md-3">
+                                        <input class="form-control"
+                                               th:name="|anamnesis.vacunas[${vacStat.index}].fechaAplicacion|"
+                                               th:value="${#temporals.format(vacuna.fechaAplicacion, 'yyyy-MM-dd')}"
+                                               type="date">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" placeholder="Marca"
+                                               required
+                                               th:name="|anamnesis.vacunas[${vacStat.index}].marca|"
+                                               th:value="${vacuna.marca}" type="text">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" placeholder="Número de lote"
+                                               required
+                                               th:name="|anamnesis.vacunas[${vacStat.index}].lote|"
+                                               th:value="${vacuna.lote}" type="text">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="form-control" placeholder="Dosis"
+                                               required
+                                               th:name="|anamnesis.vacunas[${vacStat.index}].dosis|"
+                                               th:value="${vacuna.dosis}" type="text">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-danger w-100" onclick="removeVacuna(this)"
+                                                type="button">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="mb-3 border-bottom pb-2">Diagnósticos</h4>
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Listado de diagnósticos</h5>
+                        <button class="btn btn-sm btn-success" onclick="addDiagnostico()" type="button">
+                            <i class="bi bi-plus"></i> Agregar Diagnóstico
+                        </button>
+                    </div>
+                    <div class="card-body" id="diagnosticos-container">
+                        <div class="diagnostico-template card mb-3 shadow-sm"
+                             th:each="diag, diagStat : ${historia.diagnosticos}">
+                            <input th:name="|diagnosticos[${diagStat.index}].version|" th:value="${diag.version}"
+                                   type="hidden"/>
+                            <input th:name="|diagnosticos[${diagStat.index}].id|" th:value="${diag.id}"
+                                   type="hidden"/>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-11">
+                                        <input class="form-control" placeholder="Descripción del problema"
+                                               required
+                                               th:name="|diagnosticos[${diagStat.index}].problemas|"
+                                               th:value="${#strings.listJoin(diag.problemas, ', ')}"
+                                               type="text">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-danger w-100" onclick="removeDiagnostico(this)"
+                                                type="button">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="mb-3 border-bottom pb-2">Tratamientos</h4>
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Registro de tratamientos</h5>
+                        <button class="btn btn-sm btn-success" onclick="addTratamiento()" type="button">
+                            <i class="bi bi-plus"></i> Agregar Tratamiento
+                        </button>
+                    </div>
+                    <div class="card-body" id="tratamientos-container">
+                        <div class="tratamiento-template card mb-3 shadow-sm"
+                             th:each="trat, tratStat : ${historia.tratamientos}">
+                            <input th:name="|tratamientos[${tratStat.index}].version|" th:value="${trat.version}"
+                                   type="hidden"/>
+                            <input th:name="|tratamientos[${tratStat.index}].id|" th:value="${trat.id}"
+                                   type="hidden"/>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-3">
+                                        <input class="form-control" placeholder="Producto"
+                                               required
+                                               th:name="|tratamientos[${tratStat.index}].producto|"
+                                               th:value="${trat.producto}" type="text">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="form-control" placeholder="Vía"
+                                               required th:name="|tratamientos[${tratStat.index}].via|"
+                                               th:value="${trat.via}" type="text">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="form-control" placeholder="Frecuencia"
+                                               required
+                                               th:name="|tratamientos[${tratStat.index}].frecuencia|"
+                                               th:value="${trat.frecuencia}" type="text">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="form-control"
+                                               th:name="|tratamientos[${tratStat.index}].fechaInicio|"
+                                               th:value="${#temporals.format(trat.fechaInicio, 'yyyy-MM-dd')}"
+                                               type="date">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="form-control" th:name="|tratamientos[${tratStat.index}].fechaFin|"
+                                               th:value="${#temporals.format(trat.fechaFin, 'yyyy-MM-dd')}"
+                                               type="date">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-danger w-100" onclick="removeTratamiento(this)"
+                                                type="button">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6 mb-2 mb-md-0">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="bi bi-save me-2"></i>Actualizar Historia Clínica
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-secondary w-100" th:href="@{/veterinario/interfaz_veterinario}">
+                            <i class="bi bi-x-circle me-2"></i> Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function addVacuna() {
+        const container = document.getElementById('vacunas-container');
+        const index = container.children.length;
+        const template = `
+<div class="vacuna-template row g-3 mb-3">
+<input type="hidden" name="anamnesis.vacunas[${index}].version" value="0">
+<div class="col-md-3">
+    <input type="date" class="form-control"
+           name="anamnesis.vacunas[${index}].fechaAplicacion" required>
+</div>
+<div class="col-md-3">
+    <input type="text" class="form-control"
+           name="anamnesis.vacunas[${index}].marca"
+           placeholder="Marca" required>
+</div>
+<div class="col-md-3">
+    <input type="text" class="form-control"
+           name="anamnesis.vacunas[${index}].lote"
+           placeholder="Número de lote" required>
+</div>
+<div class="col-md-2">
+    <input type="text" class="form-control"
+           name="anamnesis.vacunas[${index}].dosis"
+           placeholder="Dosis" required>
+</div>
+<div class="col-md-1">
+    <button type="button" class="btn btn-danger w-100" onclick="removeVacuna(this)">
+        <i class="bi bi-trash"></i>
+    </button>
+</div>
+</div>`;
+        container.insertAdjacentHTML('beforeend', template);
+    }
+
+    function removeVacuna(button) {
+        button.closest('.vacuna-template').remove();
+    }
+
+    function addDiagnostico() {
+        const container = document.getElementById('diagnosticos-container');
+        const index = container.children.length;
+        const template = `
+<div class="diagnostico-template card mb-3 shadow-sm">
+<input type="hidden" name="diagnosticos[${index}].version" value="0">
+<div class="card-body">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-11">
+            <input type="text" class="form-control"
+                   name="diagnosticos[${index}].problemas"
+                   placeholder="Descripción del problema" required>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger w-100" onclick="removeDiagnostico(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+</div>`;
+        container.insertAdjacentHTML('beforeend', template);
+    }
+
+    function removeDiagnostico(button) {
+        button.closest('.diagnostico-template').remove();
+    }
+
+    function addTratamiento() {
+        const container = document.getElementById('tratamientos-container');
+        const index = container.children.length;
+        const template = `
+<div class="tratamiento-template card mb-3 shadow-sm">
+<div class="card-body">
+<input type="hidden" name="tratamientos[${index}].version" value="0">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-3">
+            <input type="text" class="form-control"
+                   name="tratamientos[${index}].producto"
+                   placeholder="Producto" required>
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control"
+                   name="tratamientos[${index}].via"
+                   placeholder="Vía" required>
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control"
+                   name="tratamientos[${index}].frecuencia"
+                   placeholder="Frecuencia" required>
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control"
+                   name="tratamientos[${index}].fechaInicio" required>
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control"
+                   name="tratamientos[${index}].fechaFin" required>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger w-100" onclick="removeTratamiento(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+</div>`;
+        container.insertAdjacentHTML('beforeend', template);
+    }
+
+    function removeTratamiento(button) {
+        button.closest('.tratamiento-template').remove();
+    }
+</script>
+
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>
