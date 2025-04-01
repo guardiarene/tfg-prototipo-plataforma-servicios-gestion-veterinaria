@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import tfg.prototipo.modelo.*;
 import tfg.prototipo.servicio.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class TurnoController {
     @GetMapping("/solicitar_turno/{id}")
     public String mostrarFormularioTurno(@PathVariable Long id, Model model, Authentication authentication) {
         Usuario cliente = (Usuario) authentication.getPrincipal();
-        ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerPorId(id).orElseThrow();
+        ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerPorId(id);
         List<ServicioMedico> servicios = servicioMedicoService.obtenerPorClinica(id);
         List<Mascota> mascotas = mascotaService.obtenerMascotasPorCliente(cliente.getId());
 
@@ -48,43 +45,23 @@ public class TurnoController {
                                  @RequestParam("id") Long idClinica,
                                  Authentication authentication) {
         Usuario cliente = (Usuario) authentication.getPrincipal();
-        Mascota mascota = mascotaService.obtenerMascota(idMascota);
-        ServicioMedico servicio = servicioMedicoService.obtenerPorId(idServicioMedico);
-        ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerPorId(idClinica).orElseThrow();
-
-        Turno turno = new Turno();
-        turno.setFecha(LocalDate.parse(fecha));
-        turno.setHora(LocalTime.of(0, 0));
-        turno.setClinica(clinica);
-        turno.setServicioMedico(servicio);
-        turno.setCliente(cliente);
-        turno.setEstado(EstadoTurno.PENDIENTE);
-        turno.setMascota(mascota);
-
-        turnoService.crearTurno(turno);
+        turnoService.crearTurnoCliente(fecha, idMascota, idServicioMedico, idClinica, cliente);
         return "redirect:/turnos/mis_turnos";
     }
 
     @GetMapping("/mis_turnos")
     public String mostrarMisTurnos(Model model, Authentication authentication) {
         Usuario cliente = (Usuario) authentication.getPrincipal();
-        List<Turno> turnos = turnoService.obtenerPorCliente(cliente.getId());
-
-        model.addAttribute("turnos", turnos);
+        model.addAttribute("turnos", turnoService.obtenerTurnosPorCliente(cliente.getId()));
         return "turnos/mis_turnos";
     }
 
     @GetMapping("/detalle_turno/{id}")
     public String mostrarDetalleTurno(@PathVariable Long id, Model model, Authentication authentication) {
         Usuario usuario = (Usuario) authentication.getPrincipal();
-        Turno turno = turnoService.obtenerPorId(id).orElseThrow();
-        String nombreVeterinario = "Veterinario no asignado";
+        Turno turno = turnoService.obtenerTurnoConDetalles(id);
 
-        if (turno.getServicioMedico() != null && turno.getServicioMedico().getClinica().getVeterinario().getNombre() != null) {
-            nombreVeterinario = turno.getServicioMedico().getClinica().getVeterinario().getNombre();
-        }
-
-        model.addAttribute("nombreVeterinario", nombreVeterinario);
+        model.addAttribute("nombreVeterinario", turnoService.obtenerNombreVeterinario(turno));
         model.addAttribute("turno", turno);
 
         return usuario.getTipoRol() == Rol.RECEPCIONISTA
@@ -94,13 +71,13 @@ public class TurnoController {
 
     @PostMapping("/actualizar_estado/{id}")
     public String actualizarEstadoTurno(@PathVariable Long id, @RequestParam("estado") EstadoTurno estado) {
-        turnoService.actualizarEstado(id, estado);
+        turnoService.actualizarEstadoTurno(id, estado);
         return "redirect:/recepcionista/interfaz_recepcionista";
     }
 
     @PostMapping("/cancelar_turno/{id}")
     public String cancelarTurno(@PathVariable Long id) {
-        turnoService.actualizarEstado(id, EstadoTurno.CANCELADO);
+        turnoService.cancelarTurno(id);
         return "redirect:/recepcionista/interfaz_recepcionista";
     }
 
@@ -109,10 +86,9 @@ public class TurnoController {
                                                   Model model,
                                                   Authentication authentication) {
         Usuario recepcionista = (Usuario) authentication.getPrincipal();
-        Turno turno = turnoService.obtenerPorId(id).orElseThrow();
         ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerClinicaPorRecepcionista(recepcionista.getId());
 
-        model.addAttribute("turno", turno);
+        model.addAttribute("turno", turnoService.obtenerTurnoPorId(id));
         model.addAttribute("servicios", servicioMedicoService.obtenerPorClinica(clinica.getId()));
         model.addAttribute("veterinarios", clinica.getVeterinario());
 
@@ -122,12 +98,7 @@ public class TurnoController {
     @PostMapping("/reprogramar_turno/{id}")
     public String procesarReprogramacion(@PathVariable Long id,
                                          @ModelAttribute("turno") Turno turnoActualizado) {
-        Turno turno = turnoService.obtenerPorId(id).orElseThrow();
-        turno.setFecha(turnoActualizado.getFecha());
-        turno.setHora(turnoActualizado.getHora());
-        turno.setServicioMedico(turnoActualizado.getServicioMedico());
-
-        turnoService.actualizarTurno(turno);
+        turnoService.reprogramarTurno(id, turnoActualizado);
         return "redirect:/recepcionista/interfaz_recepcionista";
     }
 
@@ -135,25 +106,15 @@ public class TurnoController {
     public String mostrarFormularioNuevoTurno(@RequestParam(required = false) Long clienteId,
                                               Model model,
                                               Authentication authentication) {
-
         Usuario recepcionista = (Usuario) authentication.getPrincipal();
         ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerClinicaPorRecepcionista(recepcionista.getId());
 
-        Turno turno = new Turno();
-        List<Mascota> mascotas = new ArrayList<>();
-
-        if (clienteId != null) {
-            Usuario cliente = usuarioService.obtenerPorId(clienteId);
-            turno.setCliente(cliente);
-            mascotas = mascotaService.obtenerMascotasPorCliente(clienteId);
-        }
-
         model.addAttribute("clienteId", clienteId);
         model.addAttribute("clientes", usuarioService.obtenerClientesActivos());
-        model.addAttribute("mascotas", mascotas);
+        model.addAttribute("mascotas", clienteId != null ? mascotaService.obtenerMascotasPorCliente(clienteId) : List.of());
         model.addAttribute("servicios", servicioMedicoService.obtenerPorClinica(clinica.getId()));
         model.addAttribute("veterinarios", clinica.getVeterinario());
-        model.addAttribute("turno", turno);
+        model.addAttribute("turno", new Turno());
 
         return "recepcionista/agendar_turno";
     }
@@ -162,17 +123,8 @@ public class TurnoController {
     public String procesarNuevoTurno(@ModelAttribute("turno") Turno turno,
                                      @RequestParam("servicioId") Long servicioId,
                                      Authentication authentication) {
-
         Usuario recepcionista = (Usuario) authentication.getPrincipal();
-        ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerClinicaPorRecepcionista(recepcionista.getId());
-
-        ServicioMedico servicio = servicioMedicoService.obtenerPorId(servicioId);
-
-        turno.setServicioMedico(servicio);
-        turno.setClinica(clinica);
-        turno.setEstado(EstadoTurno.CONFIRMADO);
-
-        turnoService.crearTurno(turno);
+        turnoService.crearTurnoRecepcionista(turno, servicioId, recepcionista.getId());
         return "redirect:/recepcionista/interfaz_recepcionista";
     }
 

@@ -7,7 +7,7 @@ import tfg.prototipo.modelo.ClinicaVeterinaria;
 import tfg.prototipo.repositorio.ClinicaVeterinariaRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Service
@@ -23,8 +23,8 @@ public class ClinicaVeterinariaService {
         return clinicaVeterinariaRepository.findByNombreContainingIgnoreCase(query);
     }
 
-    public Optional<ClinicaVeterinaria> obtenerPorId(Long idClinica) {
-        return clinicaVeterinariaRepository.obtenerPorId(idClinica);
+    public ClinicaVeterinaria obtenerPorId(Long idClinica) {
+        return clinicaVeterinariaRepository.obtenerPorId(idClinica).orElseThrow(() -> new NoSuchElementException("Clínica no encontrada con ID: " + idClinica));
     }
 
     public void registrar(ClinicaVeterinaria clinicaVeterinaria) {
