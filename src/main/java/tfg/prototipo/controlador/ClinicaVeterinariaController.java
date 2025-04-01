@@ -1,11 +1,9 @@
 package tfg.prototipo.controlador;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import tfg.prototipo.modelo.ClinicaVeterinaria;
 import tfg.prototipo.modelo.Rol;
 import tfg.prototipo.modelo.Usuario;
@@ -13,7 +11,6 @@ import tfg.prototipo.servicio.ClinicaVeterinariaService;
 import tfg.prototipo.servicio.UsuarioService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
@@ -64,13 +61,8 @@ public class ClinicaVeterinariaController {
 
     @GetMapping("/{id}")
     public String mostrarDetalleClinica(@PathVariable Long id, Model model) {
-        Optional<ClinicaVeterinaria> clinicaOptional = clinicaVeterinariaService.obtenerPorId(id);
+        ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerPorId(id);
 
-        if (clinicaOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Clínica no encontrada");
-        }
-
-        ClinicaVeterinaria clinica = clinicaOptional.get();
         model.addAttribute("clinicaVeterinaria", clinica);
         return "clinicas_veterinarias/detalle_clinica";
     }

@@ -45,8 +45,7 @@ public class ServicioMedicoService {
     }
 
     public void crearServicio(ServicioMedico servicio, Long idClinica) {
-        ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerPorId(idClinica)
-                .orElseThrow(() -> new IllegalArgumentException("Clínica no válida"));
+        ClinicaVeterinaria clinica = clinicaVeterinariaService.obtenerPorId(idClinica);
         servicio.setClinica(clinica);
 
         servicioMedicoRepository.save(servicio);
