@@ -1,7 +1,9 @@
 package tfg.psygcv.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,22 +54,9 @@ public class ClinicalExam {
     @OneToOne(mappedBy = "clinicalExam", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private MedicalRecord medicalRecord;
 
-    public void updateFrom(ClinicalExam source) {
-        if (source == null) {
-            return;
-        }
-        this.respiratoryRate = source.getRespiratoryRate();
-        this.heartRate = source.getHeartRate();
-        this.temperature = source.getTemperature();
-        this.pulse = source.getPulse();
-        this.mucosalMembranes = source.getMucosalMembranes();
-        this.temperament = source.getTemperament();
-        this.description = source.getDescription();
-    }
-
     public void setMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecord = medicalRecord;
-        if ((medicalRecord != null) && (medicalRecord.getClinicalExam() != this)) {
+        if (medicalRecord != null && medicalRecord.getClinicalExam() != this) {
             medicalRecord.setClinicalExam(this);
         }
     }

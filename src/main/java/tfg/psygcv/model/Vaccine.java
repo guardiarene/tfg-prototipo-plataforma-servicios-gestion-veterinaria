@@ -48,27 +48,9 @@ public class Vaccine {
     @JoinColumn(name = "ANAMNESIS_ID", nullable = false)
     private Anamnesis anamnesis;
 
-    public void updateFrom(Vaccine source) {
-        if (source == null) {
-            return;
-        }
-        this.applicationDate = source.getApplicationDate();
-        this.brand = source.getBrand();
-        this.dose = source.getDose();
-        this.batch = source.getBatch();
-    }
-
-    public Vaccine(LocalDate applicationDate, String brand, String dose, String batch, Anamnesis anamnesis) {
-        this.applicationDate = applicationDate;
-        this.brand = brand;
-        this.dose = dose;
-        this.batch = batch;
-        setAnamnesis(anamnesis);
-    }
-
     public void setAnamnesis(Anamnesis anamnesis) {
         this.anamnesis = anamnesis;
-        if ((anamnesis != null) && (!anamnesis.getVaccines().contains(this))) {
+        if (anamnesis != null && !anamnesis.getVaccines().contains(this)) {
             anamnesis.getVaccines().add(this);
         }
     }

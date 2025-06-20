@@ -32,7 +32,7 @@ public class Appointment {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "VETERINARY_CLINIC_ID", nullable = false)
-    private VeterinaryClinic veterinaryClinic;
+    private VeterinaryClinic clinic;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,16 +57,5 @@ public class Appointment {
     @NotNull
     @Column(name = "ACTIVE", nullable = false)
     private Boolean active = true;
-
-    public Appointment(LocalDate date, LocalTime time, VeterinaryClinic veterinaryClinic, MedicalService medicalService, User customer, AppointmentStatus appointmentStatus, Pet pet) {
-        this.date = date;
-        this.time = time;
-        this.veterinaryClinic = veterinaryClinic;
-        this.medicalService = medicalService;
-        this.customer = customer;
-        this.appointmentStatus = appointmentStatus;
-        this.pet = pet;
-        this.active = true;
-    }
 
 }
