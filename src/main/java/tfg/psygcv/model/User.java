@@ -73,42 +73,6 @@ public class User implements UserDetails {
     @Column(name = "ACTIVE", nullable = false)
     private Boolean active = true;
 
-    public User(String firstName, String lastName, String phone, String email, String password, Role role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.active = true;
-    }
-
-    public void addPet(Pet pet) {
-        if (pet != null) {
-            pets.add(pet);
-            pet.setOwner(this);
-        }
-    }
-
-    public void removePet(Pet pet) {
-        if ((pet != null) && (pets.remove(pet))) {
-            pet.setOwner(null);
-        }
-    }
-
-    public void addAppointmentAsClient(Appointment appointment) {
-        if (appointment != null) {
-            appointmentsAsCustomer.add(appointment);
-            appointment.setCustomer(this);
-        }
-    }
-
-    public void removeAppointmentAsClient(Appointment appointment) {
-        if ((appointment != null) && (appointmentsAsCustomer.remove(appointment))) {
-            appointment.setCustomer(null);
-        }
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String roleName = "ROLE_" + this.role.name();

@@ -52,39 +52,11 @@ public class Treatment {
     @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false)
     private MedicalRecord medicalRecord;
 
-    public Treatment(String product, String route, String frequency, LocalDate startDate, LocalDate endDate, MedicalRecord medicalRecord) {
-        this.product = product;
-        this.route = route;
-        this.frequency = frequency;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        setMedicalRecord(medicalRecord);
-    }
-
     public void setMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecord = medicalRecord;
-        if ((medicalRecord != null) && (!medicalRecord.getTreatments().contains(this))) {
+        if (medicalRecord != null && !medicalRecord.getTreatments().contains(this)) {
             medicalRecord.getTreatments().add(this);
         }
-    }
-
-    public void updateFrom(Treatment source) {
-        if (source == null) {
-            return;
-        }
-        this.product = source.getProduct();
-        this.route = source.getRoute();
-        this.frequency = source.getFrequency();
-        this.startDate = source.getStartDate();
-        this.endDate = source.getEndDate();
-    }
-
-    @Transient
-    public boolean isDateRangeValid() {
-        if ((startDate == null) || (endDate == null)) {
-            return true;
-        }
-        return !endDate.isBefore(startDate);
     }
 
 }

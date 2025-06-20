@@ -53,42 +53,9 @@ public class Anamnesis {
     @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false, unique = true)
     private MedicalRecord medicalRecord;
 
-    public Anamnesis(LocalDate lastDewormingDate, String diet, ReproductiveStatus reproductiveStatus, LocalDate lastHeatDate, LocalDate lastBirthDate, MedicalRecord medicalRecord) {
-        this.lastDewormingDate = lastDewormingDate;
-        this.diet = diet;
-        this.reproductiveStatus = reproductiveStatus;
-        this.lastHeatDate = lastHeatDate;
-        this.lastBirthDate = lastBirthDate;
-        this.setMedicalRecord(medicalRecord);
-    }
-
-    public void updateFrom(Anamnesis source) {
-        if (source == null) {
-            return;
-        }
-        this.lastDewormingDate = source.getLastDewormingDate();
-        this.diet = source.getDiet();
-        this.reproductiveStatus = source.getReproductiveStatus();
-        this.lastHeatDate = source.getLastHeatDate();
-        this.lastBirthDate = source.getLastBirthDate();
-    }
-
-    public void addVaccine(Vaccine vaccine) {
-        if (vaccine != null) {
-            vaccines.add(vaccine);
-            vaccine.setAnamnesis(this);
-        }
-    }
-
-    public void removeVaccine(Vaccine vaccine) {
-        if ((vaccine != null) && (vaccines.remove(vaccine))) {
-            vaccine.setAnamnesis(null);
-        }
-    }
-
     public void setMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecord = medicalRecord;
-        if ((medicalRecord != null) && (medicalRecord.getAnamnesis() != this)) {
+        if (medicalRecord != null && medicalRecord.getAnamnesis() != this) {
             medicalRecord.setAnamnesis(this);
         }
     }

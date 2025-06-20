@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,35 +67,9 @@ public class Pet {
     @Column(name = "ACTIVE", nullable = false)
     private Boolean active = true;
 
-    public Pet(String name, Sex sex, String breed, String species, LocalDate birthDate, Float weight, User owner) {
-        this.name = name;
-        this.sex = sex;
-        this.breed = breed;
-        this.species = species;
-        this.birthDate = birthDate;
-        this.weight = weight;
-        this.owner = owner;
-        this.active = true;
-    }
-
-    @Transient
-    public Integer getAge() {
-        return Period.between(this.birthDate, LocalDate.now()).getYears();
-    }
-
-    public void addAppointment(Appointment appointment) {
-        appointments.add(appointment);
-        appointment.setPet(this);
-    }
-
-    public void removeAppointment(Appointment appointment) {
-        appointments.remove(appointment);
-        appointment.setPet(null);
-    }
-
     public void setMedicalRecord(MedicalRecord record) {
         this.medicalRecord = record;
-        if ((record != null) && (record.getPet() != this)) {
+        if (record != null && record.getPet() != this) {
             record.setPet(this);
         }
     }

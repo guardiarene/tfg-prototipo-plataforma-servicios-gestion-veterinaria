@@ -41,30 +41,10 @@ public class MedicalService {
     @Column(name = "ACTIVE", nullable = false)
     private Boolean active = true;
 
-    public MedicalService(String name, String description, VeterinaryClinic clinic) {
-        this.name = name;
-        this.description = description;
-        this.clinic = clinic;
-        this.active = true;
-    }
-
     public void setClinic(VeterinaryClinic veterinaryClinic) {
         this.clinic = veterinaryClinic;
-        if ((veterinaryClinic != null) && (!veterinaryClinic.getServices().contains(this))) {
+        if (veterinaryClinic != null && !veterinaryClinic.getServices().contains(this)) {
             veterinaryClinic.getServices().add(this);
-        }
-    }
-
-    public void addAppointment(Appointment appointment) {
-        if (appointment != null) {
-            appointments.add(appointment);
-            appointment.setMedicalService(this);
-        }
-    }
-
-    public void removeAppointment(Appointment appointment) {
-        if ((appointment != null) && (appointments.remove(appointment))) {
-            appointment.setMedicalService(null);
         }
     }
 

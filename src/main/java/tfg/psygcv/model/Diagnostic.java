@@ -36,19 +36,9 @@ public class Diagnostic {
     @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false)
     private MedicalRecord medicalRecord;
 
-    public void addProblem(String problem) {
-        if ((problem != null) && (!problem.isBlank())) {
-            problems.add(problem);
-        }
-    }
-
-    public void removeProblem(String problem) {
-        problems.removeIf(p -> p.equals(problem));
-    }
-
     public void setMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecord = medicalRecord;
-        if ((medicalRecord != null) && (!medicalRecord.getDiagnostics().contains(this))) {
+        if (medicalRecord != null && !medicalRecord.getDiagnostics().contains(this)) {
             medicalRecord.getDiagnostics().add(this);
         }
     }
