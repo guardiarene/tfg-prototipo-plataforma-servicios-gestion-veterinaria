@@ -1,4 +1,4 @@
-package tfg.psygcv.model;
+package tfg.psygcv.model.clinic;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tfg.psygcv.model.appointment.Appointment;
+import tfg.psygcv.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package tfg.psygcv.model;
+package tfg.psygcv.model.user;
 
 import lombok.Getter;
 

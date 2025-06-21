@@ -1,4 +1,4 @@
-package tfg.psygcv.model;
+package tfg.psygcv.model.medical;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
