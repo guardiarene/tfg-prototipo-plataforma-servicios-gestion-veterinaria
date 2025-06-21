@@ -1,4 +1,4 @@
-package tfg.prototipo.controlador;
+package tfg.psygcv.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -8,45 +8,45 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import tfg.prototipo.modelo.Rol;
-import tfg.prototipo.modelo.Usuario;
-import tfg.prototipo.servicio.UsuarioService;
+import tfg.psygcv.model.user.Role;
+import tfg.psygcv.model.user.User;
+import tfg.psygcv.service.impl.UserServiceImpl;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/perfil")
 public class PerfilController {
 
-    private final UsuarioService usuarioService;
+    private final UserServiceImpl userServiceImpl;
 
     @GetMapping("/mi_perfil")
     public String mostrarPerfil(Model model, Authentication authentication) {
-        Usuario cliente = (Usuario) authentication.getPrincipal();
-        model.addAttribute("usuario", usuarioService.obtenerPorId(cliente.getId()));
+        User cliente = (User) authentication.getPrincipal();
+        model.addAttribute("usuario", userServiceImpl.findById(cliente.getId()));
         return "perfil/mi_perfil";
     }
 
-    @GetMapping("/mi_perfil/actualizar")
+    @GetMapping("/mi_perfil/update")
     public String mostrarFormularioActualizar(Model model, Authentication authentication) {
-        Usuario cliente = (Usuario) authentication.getPrincipal();
-        model.addAttribute("usuario", usuarioService.obtenerPorId(cliente.getId()));
+        User cliente = (User) authentication.getPrincipal();
+        model.addAttribute("usuario", userServiceImpl.findById(cliente.getId()));
         return "perfil/actualizar_mi_perfil";
     }
 
-    @PostMapping("/mi_perfil/actualizar")
-    public String actualizarPerfil(@ModelAttribute("usuario") Usuario usuario, Authentication authentication) {
-        Usuario cliente = (Usuario) authentication.getPrincipal();
-        usuario.setId(cliente.getId());
-        usuario.setTipoRol(Rol.CLIENTE);
+    @PostMapping("/mi_perfil/update")
+    public String actualizarPerfil(@ModelAttribute("user") User user, Authentication authentication) {
+        User cliente = (User) authentication.getPrincipal();
+        user.setId(cliente.getId());
+        user.setRole(Role.CUSTOMER);
 
-        usuarioService.actualizar(usuario);
+        userServiceImpl.update(user);
         return "redirect:/perfil/mi_perfil";
     }
 
     @PostMapping("/mi_perfil/darse_de_baja")
     public String darseDeBaja(Authentication authentication) {
-        Usuario cliente = (Usuario) authentication.getPrincipal();
-        usuarioService.darseDeBaja(cliente.getId());
+        User cliente = (User) authentication.getPrincipal();
+        userServiceImpl.deactivate(cliente.getId());
         return "redirect:/usuarios/login?logout";
     }
 

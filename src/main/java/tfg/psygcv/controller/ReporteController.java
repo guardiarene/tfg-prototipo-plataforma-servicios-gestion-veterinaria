@@ -1,4 +1,4 @@
-package tfg.prototipo.controlador;
+package tfg.psygcv.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import tfg.prototipo.configuracion.util.JsonUtil;
-import tfg.prototipo.modelo.Usuario;
-import tfg.prototipo.servicio.EstadisticaService;
+import tfg.psygcv.config.util.JsonUtil;
+import tfg.psygcv.model.user.User;
+import tfg.psygcv.service.impl.StatisticsServiceImpl;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/reportes")
 public class ReporteController {
 
-    private final EstadisticaService estadisticaService;
+    private final StatisticsServiceImpl statisticsServiceImpl;
 
     private final JsonUtil jsonUtil;
 
@@ -42,10 +42,10 @@ public class ReporteController {
                                  @RequestParam LocalDate fechaFin,
                                  Authentication authentication,
                                  Model model) {
-        Usuario veterinario = (Usuario) authentication.getPrincipal();
+        User veterinario = (User) authentication.getPrincipal();
 
-        Map<String, Long> enfermedades = estadisticaService.obtenerEnfermedadesComunes(veterinario, fechaInicio, fechaFin);
-        Map<String, Long> tratamientos = estadisticaService.obtenerTratamientosFrecuentes(veterinario, fechaInicio, fechaFin);
+        Map<String, Long> enfermedades = statisticsServiceImpl.getCommonDiseases(veterinario, fechaInicio, fechaFin);
+        Map<String, Long> tratamientos = statisticsServiceImpl.getFrequentTreatments(veterinario, fechaInicio, fechaFin);
 
         model.addAttribute("enfermedades", enfermedades);
         model.addAttribute("tratamientos", tratamientos);
@@ -69,10 +69,10 @@ public class ReporteController {
                                             @RequestParam LocalDate fechaFin,
                                             Authentication authentication,
                                             Model model) {
-        Usuario veterinario = (Usuario) authentication.getPrincipal();
+        User veterinario = (User) authentication.getPrincipal();
 
-        Map<LocalDate, Long> solicitudes = estadisticaService.obtenerSolicitudesPorFecha(veterinario, fechaInicio, fechaFin);
-        Map<String, Long> servicios = estadisticaService.obtenerServiciosSolicitados(veterinario, fechaInicio, fechaFin);
+        Map<LocalDate, Long> solicitudes = statisticsServiceImpl.getAppointmentsByDate(veterinario, fechaInicio, fechaFin);
+        Map<String, Long> servicios = statisticsServiceImpl.getRequestedServices(veterinario, fechaInicio, fechaFin);
 
         model.addAttribute("solicitudes", solicitudes);
         model.addAttribute("servicios", servicios);
