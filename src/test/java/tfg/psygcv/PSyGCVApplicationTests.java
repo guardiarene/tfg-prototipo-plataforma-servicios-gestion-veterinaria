@@ -1,10 +1,10 @@
-package tfg.prototipo;
+package tfg.psygcv;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PrototipoApplicationTests {
+class PSyGCVApplicationTests {
 
     @Test
     void contextLoads() {
