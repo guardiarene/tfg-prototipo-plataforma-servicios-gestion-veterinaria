@@ -1,13 +1,13 @@
-package tfg.prototipo;
+package tfg.psygcv;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PrototipoApplication {
+public class PSyGCVApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PrototipoApplication.class, args);
+        SpringApplication.run(PSyGCVApplication.class, args);
     }
 
 }
