@@ -1,4 +1,4 @@
-package tfg.psygcv.model;
+package tfg.psygcv.model.user;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -12,6 +12,9 @@ import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import tfg.psygcv.model.appointment.Appointment;
+import tfg.psygcv.model.pet.Pet;
+import tfg.psygcv.model.clinic.VeterinaryClinic;
 
 import java.util.ArrayList;
 import java.util.Collection;

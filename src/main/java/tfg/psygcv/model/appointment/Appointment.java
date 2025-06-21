@@ -1,10 +1,14 @@
-package tfg.psygcv.model;
+package tfg.psygcv.model.appointment;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tfg.psygcv.model.clinic.MedicalService;
+import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.model.pet.Pet;
+import tfg.psygcv.model.user.User;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
