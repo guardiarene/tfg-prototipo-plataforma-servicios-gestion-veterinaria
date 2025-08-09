@@ -18,7 +18,7 @@ public interface VeterinaryClinicServiceInterface {
 
     VeterinaryClinic save(VeterinaryClinic veterinaryClinic);
 
-    VeterinaryClinic update(VeterinaryClinic veterinaryClinic);
+    VeterinaryClinic update(Long clinicId, VeterinaryClinic veterinaryClinic);
 
     void deactivate(Long clinicId);
 

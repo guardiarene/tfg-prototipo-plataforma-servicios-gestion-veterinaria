@@ -39,8 +39,8 @@ Antes de instalar y ejecutar el proyecto, es necesario tener instaladas las sigu
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone https://github.com/tu-usuario/tfg-prototipo-plataforma-servicios-gestion-vet.git
-   cd tfg-prototipo-plataforma-servicios-gestion-vet
+   git clone https://github.com/tu-user/tfg-prototipo-plataforma-servicios-gestion-vet.git
+   cd tfg-psygcv-plataforma-servicios-gestion-vet
    ```
 
 2. **Configurar la base de datos:**

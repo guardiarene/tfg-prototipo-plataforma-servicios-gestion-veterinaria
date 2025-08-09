@@ -62,7 +62,7 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
 
     @Override
     @Transactional
-    public VeterinaryClinic update(VeterinaryClinic veterinaryClinic) {
+    public VeterinaryClinic update(Long clinicId, VeterinaryClinic veterinaryClinic) {
         veterinaryClinicValidator.validateForUpdate(veterinaryClinic);
         VeterinaryClinic existingClinic = findById(veterinaryClinic.getId());
         updateClinicFields(existingClinic, veterinaryClinic);
