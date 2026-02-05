@@ -79,7 +79,8 @@ public class VeterinarianController extends BaseController {
         }
         User veterinarian = getCurrentUser(authentication);
         VeterinaryClinic currentClinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
-        veterinaryClinicService.update(currentClinic.getId(), updatedClinic);
+        updatedClinic.setId(currentClinic.getId());
+        veterinaryClinicService.update(updatedClinic);
         return REDIRECT_MY_CLINIC;
     }
 
