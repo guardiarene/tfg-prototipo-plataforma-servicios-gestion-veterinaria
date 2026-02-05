@@ -1,4 +1,4 @@
-package tfg.prototipo.configuracion.util;
+package tfg.psygcv.config.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ public class JsonUtil {
         try {
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error serializando objeto a JSON", e);
+            throw new RuntimeException("Error serializing object to JSON", e);
         }
     }
 

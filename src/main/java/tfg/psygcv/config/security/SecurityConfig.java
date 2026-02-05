@@ -1,4 +1,4 @@
-package tfg.prototipo.configuracion.spring.security;
+package tfg.psygcv.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,18 +23,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/usuarios/login", "/logout").permitAll()
+                        .requestMatchers("/users/login", "/logout").permitAll()
                         .anyRequest().permitAll())
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedPage("/access_denied"))
                 .formLogin(form -> form
-                        .loginPage("/usuarios/login")
+                        .loginPage("/users/login")
                         .successHandler(customAuthenticationSuccessHandler)
-                        .failureUrl("/usuarios/login?error=true")
+                        .failureUrl("/users/login?error=true")
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/usuarios/login?logout")
+                        .logoutSuccessUrl("/users/login?logout")
                         .permitAll());
         return httpSecurity.build();
     }
