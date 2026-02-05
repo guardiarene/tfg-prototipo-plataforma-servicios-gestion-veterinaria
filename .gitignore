@@ -1,6 +1,26 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,linux,macos,eclipse,netbeans,intellij,java,maven,gradle
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,linux,macos,eclipse,netbeans,intellij,java,maven,gradle
 
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.ipr
+*.iws
+
+### Environment files ###
+.env
+.env.*
+application-local.yaml
+application-local.yml
+application-*.yaml
+!application.yaml
+application-*.yml
+!application.yml
+
+### Logs ###
+logs/
+*.log
+
 ### Eclipse ###
 .metadata
 bin/
@@ -228,7 +248,8 @@ replay_pid*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
