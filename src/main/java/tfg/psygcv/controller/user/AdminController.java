@@ -11,7 +11,7 @@ import tfg.psygcv.service.interfaces.UserServiceInterface;
 import static tfg.psygcv.config.constant.RouteConstant.VIEW_ADMIN_DASHBOARD;
 
 @RequiredArgsConstructor
-@RequestMapping("/administrador")
+@RequestMapping("/admin")
 @Controller
 public class AdminController extends BaseController {
 
