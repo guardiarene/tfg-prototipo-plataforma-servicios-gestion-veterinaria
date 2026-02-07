@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.medical.Anamnesis;
 import tfg.psygcv.model.medical.MedicalRecord;
-import tfg.psygcv.model.user.Role;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
@@ -36,9 +35,7 @@ public class MedicalRecordController extends BaseController {
                                            Authentication authentication) {
         User user = getCurrentUser(authentication);
         model.addAttribute("medicalRecord", medicalRecordService.findCompleteForEditing(id));
-        return user.getRole() == Role.VETERINARIAN
-                ? "medical_records/details"
-                : "pets/medical_record";
+        return "medical_records/details";
     }
 
     @GetMapping("/new")

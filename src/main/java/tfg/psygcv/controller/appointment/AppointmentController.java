@@ -11,7 +11,6 @@ import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.appointment.AppointmentStatus;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.user.Role;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.*;
 
@@ -74,9 +73,7 @@ public class AppointmentController extends BaseController {
         Appointment appointment = appointmentService.findWithDetails(id);
         model.addAttribute("appointment", appointment);
         model.addAttribute("veterinarianName", appointmentService.findVeterinarianName(appointment));
-        return user.getRole() == Role.RECEPTIONIST
-                ? "receptionist/appointment_details"
-                : "appointments/details";
+        return "appointments/details";
     }
 
     @PostMapping("/{id}/cancel")
