@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="section(icon, title)">
+    <div class="col-12">
+        <div class="border p-3 rounded bg-white">
+            <h5 class="mb-3 border-bottom pb-2">
+                <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+                <span th:text="${title}"></span>
+            </h5>
+            <div class="row g-4">
+                <div th:insert="~{content}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:fragment="subsection(icon, title)">
+    <div>
+        <h5 class="mb-3 border-bottom pb-2">
+            <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+            <span th:text="${title}"></span>
+        </h5>
+        <div class="row g-3">
+            <div th:insert="~{content}"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

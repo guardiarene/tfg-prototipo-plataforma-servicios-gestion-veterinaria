@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="formButtons(backUrl, backText, submitText, showSubmit)">
+    <div class="d-flex justify-content-end gap-3 mt-5">
+        <a class="btn btn-secondary px-4" th:href="@{${backUrl}}">
+            <i class="bi bi-arrow-left-circle me-2"></i>
+            <span th:text="${backText} ?: 'Volver'"></span>
+        </a>
+        <button th:if="${showSubmit}" class="btn btn-primary px-4" type="submit">
+            <i class="bi bi-save2 me-2"></i>
+            <span th:text="${submitText} ?: 'Guardar'"></span>
+        </button>
+    </div>
+</div>
+<div th:fragment="backButton(backUrl, backText)">
+    <div class="d-flex justify-content-start mt-5">
+        <a class="btn btn-secondary" th:href="@{${backUrl}}">
+            <i class="bi bi-arrow-left-circle me-2"></i>
+            <span th:text="${backText} ?: 'Volver'"></span>
+        </a>
+    </div>
+</div>
+<div th:fragment="submitButton(submitText, submitClass)">
+    <button type="submit" th:class="'btn px-4 ' + (${submitClass} ?: 'btn-primary')">
+        <i class="bi bi-save2 me-2"></i>
+        <span th:text="${submitText} ?: 'Guardar'"></span>
+    </button>
+</div>
+<div th:fragment="actionButtons(editUrl, deleteUrl, editText, deleteText, showEdit, showDelete)">
+    <div class="d-flex gap-2 align-items-center">
+        <a th:if="${showEdit}" class="btn btn-warning btn-sm" th:href="@{${editUrl}}">
+            <i class="bi bi-pencil me-2"></i>
+            <span th:text="${editText} ?: 'Editar'"></span>
+        </a>
+        <form th:if="${showDelete}" class="d-inline" method="POST" th:action="@{${deleteUrl}}">
+            <button class="btn btn-danger btn-sm" type="submit">
+                <i class="bi bi-trash me-2"></i>
+                <span th:text="${deleteText} ?: 'Eliminar'"></span>
+            </button>
+        </form>
+    </div>
+</div>
+<div th:fragment="buttonContainer(justify, gap)">
+    <div th:class="'d-flex ' + (${justify} ?: 'justify-content-end') + ' gap-' + (${gap} ?: '3')">
+        <div th:insert="~{content}"></div>
+    </div>
+</div>
+</body>
+</html>

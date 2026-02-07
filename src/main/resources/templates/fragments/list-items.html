@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="listContainer(items, emptyMessage, content)">
+    <div class="row g-4">
+        <div class="col-12" th:each="item : ${items}">
+            <div th:replace="${content}"></div>
+        </div>
+        <div class="col-12" th:if="${#lists.isEmpty(items)}">
+            <div th:replace="~{fragments/alert :: emptyState(${emptyMessage})}"></div>
+        </div>
+    </div>
+</div>
+<div th:fragment="itemCard(title, subtitle, description, icon, borderColor)">
+    <div th:class="'card shadow-sm' + (${borderColor} ? ' border-' + ${borderColor} : ' border-primary')">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">
+                        <i th:if="${icon}" th:class="'bi ' + ${icon} + ' me-2 text-primary'"></i>
+                        <span th:text="${title}"></span>
+                    </h5>
+                    <small th:if="${subtitle}" class="text-muted" th:text="${subtitle}"></small>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="mb-0 text-muted" th:text="${description}"></p>
+        </div>
+    </div>
+</div>
+<div th:fragment="listWithActions(items, emptyMessage, showActions, editUrl, deleteUrl)">
+    <div class="row g-4">
+        <div class="col-12" th:each="item : ${items}">
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0" th:text="${item.name}"></h5>
+                        <div th:if="${showActions}" class="d-flex gap-2">
+                            <a class="btn btn-warning btn-sm" th:href="@{${editUrl}(id=${item.id})}">
+                                <i class="bi bi-pencil me-2"></i>Editar
+                            </a>
+                            <form class="d-inline" method="POST" th:action="@{${deleteUrl}(id=${item.id})}">
+                                <button class="btn btn-danger btn-sm" type="submit">
+                                    <i class="bi bi-trash me-2"></i>Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0 text-muted" th:text="${item.description}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" th:if="${#lists.isEmpty(items)}">
+            <div th:replace="~{fragments/alert :: emptyState(${emptyMessage})}"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

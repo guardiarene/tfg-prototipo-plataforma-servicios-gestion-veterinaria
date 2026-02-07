@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="alert(type, icon, message, dismissible)">
+    <div th:class="'alert alert-' + ${type} + (${dismissible} ? ' alert-dismissible fade show' : '')" role="alert">
+        <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+        <span th:text="${message}"></span>
+        <button th:if="${dismissible}" type="button" class="btn-close" data-bs-dismiss="alert"
+                aria-label="Close"></button>
+    </div>
+</div>
+<div th:fragment="errorAlert(message)">
+    <div class="alert alert-danger mt-4 mb-0">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${message}"></span>
+    </div>
+</div>
+<div th:fragment="successAlert(message)">
+    <div class="alert alert-success">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${message}"></span>
+    </div>
+</div>
+<div th:fragment="infoAlert(message)">
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        <span th:text="${message}"></span>
+    </div>
+</div>
+<div th:fragment="emptyState(message)">
+    <div class="alert alert-info mb-0">
+        <i class="bi bi-info-circle me-2"></i>
+        <span th:text="${message}"></span>
+    </div>
+</div>
+</body>
+</html>

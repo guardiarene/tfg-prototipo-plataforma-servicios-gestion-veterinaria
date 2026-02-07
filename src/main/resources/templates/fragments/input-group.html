@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="inputGroup(label, fieldName, icon, type, placeholder, required)">
+    <label class="form-label fw-bold" th:text="${label}"></label>
+    <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+            <i th:class="'bi ' + ${icon}"></i>
+        </span>
+        <input class="form-control form-control-lg border-start-0"
+               th:field="*{__${fieldName}__}"
+               th:type="${type}"
+               th:placeholder="${placeholder}"
+               th:required="${required}">
+    </div>
+</div>
+<div th:fragment="inputGroupBasic(label, id, icon, type, placeholder, value, required)">
+    <label class="form-label fw-bold" th:text="${label}"></label>
+    <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+            <i th:class="'bi ' + ${icon}"></i>
+        </span>
+        <input class="form-control form-control-lg border-start-0"
+               th:id="${id}"
+               th:name="${id}"
+               th:type="${type}"
+               th:placeholder="${placeholder}"
+               th:value="${value}"
+               th:required="${required}">
+    </div>
+</div>
+<div th:fragment="selectGroup(label, fieldName, icon, options, required)">
+    <label class="form-label fw-bold" th:text="${label}"></label>
+    <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+            <i th:class="'bi ' + ${icon}"></i>
+        </span>
+        <select class="form-select form-select-lg" th:field="*{__${fieldName}__}" th:required="${required}">
+            <option value="">Seleccionar opción...</option>
+            <option th:each="option : ${options}" th:value="${option}" th:text="${option}"></option>
+        </select>
+    </div>
+</div>
+<div th:fragment="textareaGroup(fieldName, placeholder, rows, required)">
+    <textarea class="form-control form-control-lg"
+              th:field="*{__${fieldName}__}"
+              th:placeholder="${placeholder}"
+              th:rows="${rows}"
+              th:required="${required}"></textarea>
+</div>
+</body>
+</html>
