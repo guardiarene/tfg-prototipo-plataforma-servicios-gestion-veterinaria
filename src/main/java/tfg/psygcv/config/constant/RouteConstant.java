@@ -8,7 +8,7 @@ public final class RouteConstant {
 
     public static final String REDIRECT_ADMIN_DASHBOARD = "redirect:/admin/dashboard";
 
-    public static final String REDIRECT_CLIENT_DASHBOARD = "redirect:/client/dashboard";
+    public static final String REDIRECT_CLIENT_DASHBOARD = "redirect:/customer/dashboard";
 
     public static final String REDIRECT_VETERINARIAN_DASHBOARD = "redirect:/veterinarian/dashboard";
 
