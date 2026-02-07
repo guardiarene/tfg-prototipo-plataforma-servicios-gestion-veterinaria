@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Editar Mascota</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layouts/navbar :: navbar('CLIENT')}"></div>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow">
+                <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Editar Mascota')}"></div>
+                <div class="card-body p-4">
+                    <form method="post" th:action="@{/pets/{id}/edit(id=${pet.id})}" th:object="${pet}">
+                        <input th:field="*{id}" type="hidden">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nombre</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                    <input class="form-control form-control-lg" required th:field="*{name}" type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Especie</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-tropical-storm"></i></span>
+                                    <input class="form-control form-control-lg" required th:field="*{species}"
+                                           type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Sexo</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i
+                                            class="bi bi-gender-ambiguous"></i></span>
+                                    <select class="form-select form-select-lg" required th:field="*{sex}">
+                                        <option th:selected="${pet.sex.name() == 'MALE'}" value="MALE">Macho</option>
+                                        <option th:selected="${pet.sex.name() == 'FEMALE'}" value="FEMALE">Hembra
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Fecha Nacimiento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-calendar"></i></span>
+                                    <input class="form-control form-control-lg" required th:field="*{birthDate}"
+                                           type="date">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Peso (kg)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-speedometer2"></i></span>
+                                    <input class="form-control form-control-lg" required step="0.1" th:field="*{weight}"
+                                           type="number">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Raza</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
+                                    <input class="form-control form-control-lg" required th:field="*{breed}"
+                                           type="text">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex justify-content-end gap-3 mt-5">
+                                    <a class="btn btn-secondary px-4" th:href="@{/pets}">
+                                        <i class="bi bi-arrow-left-circle me-2"></i> Volver
+                                    </a>
+                                    <button class="btn btn-primary px-4" type="submit">
+                                        <i class="bi bi-check-circle me-2"></i> Actualizar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
