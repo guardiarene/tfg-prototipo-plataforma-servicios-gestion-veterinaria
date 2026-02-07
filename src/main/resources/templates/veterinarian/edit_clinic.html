@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar Clínica Veterinaria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layouts/navbar :: navbar('VETERINARIAN')}"></div>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Actualizar Datos de la Clínica')}"></div>
+        <div class="card-body">
+            <form method="POST" th:action="@{/veterinarian/profile/update}" th:object="${veterinarian}">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Datos del Veterinario</h5>
+                    </div>
+                    <div class="card-body">
+                        <input th:field="*{id}" type="hidden"/>
+                        <div class="mb-3">
+                            <label class="form-label" for="firstName"><strong>Nombre</strong></label>
+                            <input class="form-control" id="firstName" th:field="*{firstName}" type="text"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="lastName"><strong>Apellido</strong></label>
+                            <input class="form-control" id="lastName" th:field="*{lastName}" type="text"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="phone"><strong>Teléfono</strong></label>
+                            <input class="form-control" id="phone" th:field="*{phone}" type="text"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="email"><strong>Email</strong></label>
+                            <input class="form-control" id="email" th:field="*{email}" type="email"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <button class="btn btn-success w-100" type="submit">
+                            <i class="bi bi-save"></i> Guardar Veterinario
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <form method="POST" th:action="@{/veterinarian/clinic/update}" th:object="${clinic}">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-building"></i> Datos de la Clínica</h5>
+                    </div>
+                    <div class="card-body">
+                        <input th:field="*{id}" type="hidden"/>
+                        <div class="mb-3">
+                            <label class="form-label" for="clinicName"><strong>Nombre</strong></label>
+                            <input class="form-control" id="clinicName" th:field="*{name}" type="text"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="address"><strong>Dirección</strong></label>
+                            <input class="form-control" id="address" th:field="*{address}" type="text"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="clinicPhone"><strong>Teléfono</strong></label>
+                            <input class="form-control" id="clinicPhone" th:field="*{phone}" type="text"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="clinicEmail"><strong>Email</strong></label>
+                            <input class="form-control" id="clinicEmail" th:field="*{email}" type="text"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <button class="btn btn-success w-100" type="submit">
+                            <i class="bi bi-save"></i> Guardar Clínica
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-md-12">
+                    <a class="btn btn-secondary w-100" th:href="@{/veterinarian/clinic}">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
