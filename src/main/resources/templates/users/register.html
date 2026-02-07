@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Registro de Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layouts/navbar :: navbar()}"></div>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow">
+                <div th:replace="~{fragments/card-header :: cardHeader('bi-person-plus', 'Registro de Usuario')}"></div>
+                <div class="card-body p-4">
+                    <form method="POST" th:action="@{/users/register}" th:object="${user}">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="firstName">Nombre</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-person"></i>
+                                        </span>
+                                    <input class="form-control form-control-lg border-start-0" id="firstName"
+                                           placeholder="Juan" required th:field="*{firstName}" type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="lastName">Apellido</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-person"></i>
+                                        </span>
+                                    <input class="form-control form-control-lg border-start-0" id="lastName"
+                                           placeholder="Pérez" required th:field="*{lastName}" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="phone">Teléfono</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-telephone"></i>
+                                        </span>
+                                    <input class="form-control form-control-lg border-start-0" id="phone"
+                                           placeholder="+54 9 11 2345-6789" required th:field="*{phone}" type="tel">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="email">Email</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-envelope"></i>
+                                        </span>
+                                    <input class="form-control form-control-lg border-start-0" id="email"
+                                           placeholder="juan@ejemplo.com" required th:field="*{email}" type="email">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="password">Contraseña</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-key"></i>
+                                        </span>
+                                    <input class="form-control form-control-lg border-start-0" id="password"
+                                           placeholder="Mínimo 8 caracteres" required th:field="*{password}"
+                                           type="password">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="confirmPassword">Confirmar Contraseña</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-key-fill"></i>
+                                        </span>
+                                    <input class="form-control form-control-lg border-start-0"
+                                           id="confirmPassword" name="confirmPassword" placeholder="Repita su contraseña" required
+                                           type="password">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-primary py-3" type="submit">
+                                <i class="bi bi-person-check me-2"></i>Registrar Cuenta
+                            </button>
+                            <a class="btn btn-link text-center mt-3" th:href="@{/users/login}">
+                                ¿Ya tienes cuenta? <u>Inicia Sesión</u>
+                            </a>
+                        </div>
+                        <div th:if="${error}">
+                            <div th:replace="~{fragments/alert :: errorAlert(${error})}"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
