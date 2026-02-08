@@ -13,8 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.pet.Pet;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.model.pet.Pet;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "USER", uniqueConstraints = {@UniqueConstraint(columnNames = "EMAIL")})
+@Table(name = "USERS", uniqueConstraints = {@UniqueConstraint(columnNames = "EMAIL")})
 public class User implements UserDetails {
 
     @Id
