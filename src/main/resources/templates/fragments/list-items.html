@@ -17,10 +17,10 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="mb-0">
-                        <i th:if="${icon}" th:class="'bi ' + ${icon} + ' me-2 text-primary'"></i>
+                        <i th:class="'bi ' + ${icon} + ' me-2 text-primary'" th:if="${icon}"></i>
                         <span th:text="${title}"></span>
                     </h5>
-                    <small th:if="${subtitle}" class="text-muted" th:text="${subtitle}"></small>
+                    <small class="text-muted" th:if="${subtitle}" th:text="${subtitle}"></small>
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
                 <div class="card-header bg-light">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0" th:text="${item.name}"></h5>
-                        <div th:if="${showActions}" class="d-flex gap-2">
+                        <div class="d-flex gap-2" th:if="${showActions}">
                             <a class="btn btn-warning btn-sm" th:href="@{${editUrl}(id=${item.id})}">
                                 <i class="bi bi-pencil me-2"></i>Editar
                             </a>

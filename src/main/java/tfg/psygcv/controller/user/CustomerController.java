@@ -13,12 +13,11 @@ import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 @Controller
 public class CustomerController extends BaseController {
 
-    private final VeterinaryClinicServiceInterface veterinaryClinicService;
+  private final VeterinaryClinicServiceInterface veterinaryClinicService;
 
-    @GetMapping("/dashboard")
-    public String showClientDashboard(Model model) {
-        model.addAttribute("veterinaryClinics", veterinaryClinicService.findAll());
-        return "client/dashboard";
-    }
-
+  @GetMapping("/dashboard")
+  public String showClientDashboard(Model model) {
+    model.addAttribute("veterinaryClinics", veterinaryClinicService.findAll());
+    return "client/dashboard";
+  }
 }

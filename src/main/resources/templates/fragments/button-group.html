@@ -7,7 +7,7 @@
             <i class="bi bi-arrow-left-circle me-2"></i>
             <span th:text="${backText} ?: 'Volver'"></span>
         </a>
-        <button th:if="${showSubmit}" class="btn btn-primary px-4" type="submit">
+        <button class="btn btn-primary px-4" th:if="${showSubmit}" type="submit">
             <i class="bi bi-save2 me-2"></i>
             <span th:text="${submitText} ?: 'Guardar'"></span>
         </button>
@@ -22,18 +22,18 @@
     </div>
 </div>
 <div th:fragment="submitButton(submitText, submitClass)">
-    <button type="submit" th:class="'btn px-4 ' + (${submitClass} ?: 'btn-primary')">
+    <button th:class="'btn px-4 ' + (${submitClass} ?: 'btn-primary')" type="submit">
         <i class="bi bi-save2 me-2"></i>
         <span th:text="${submitText} ?: 'Guardar'"></span>
     </button>
 </div>
 <div th:fragment="actionButtons(editUrl, deleteUrl, editText, deleteText, showEdit, showDelete)">
     <div class="d-flex gap-2 align-items-center">
-        <a th:if="${showEdit}" class="btn btn-warning btn-sm" th:href="@{${editUrl}}">
+        <a class="btn btn-warning btn-sm" th:href="@{${editUrl}}" th:if="${showEdit}">
             <i class="bi bi-pencil me-2"></i>
             <span th:text="${editText} ?: 'Editar'"></span>
         </a>
-        <form th:if="${showDelete}" class="d-inline" method="POST" th:action="@{${deleteUrl}}">
+        <form class="d-inline" method="POST" th:action="@{${deleteUrl}}" th:if="${showDelete}">
             <button class="btn btn-danger btn-sm" type="submit">
                 <i class="bi bi-trash me-2"></i>
                 <span th:text="${deleteText} ?: 'Eliminar'"></span>

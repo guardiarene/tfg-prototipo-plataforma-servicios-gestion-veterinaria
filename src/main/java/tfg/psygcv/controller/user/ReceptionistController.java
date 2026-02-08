@@ -18,17 +18,16 @@ import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 @Controller
 public class ReceptionistController extends BaseController {
 
-    private final AppointmentServiceInterface appointmentService;
+  private final AppointmentServiceInterface appointmentService;
 
-    private final VeterinaryClinicServiceInterface veterinaryClinicService;
+  private final VeterinaryClinicServiceInterface veterinaryClinicService;
 
-    @GetMapping("/dashboard")
-    public String showReceptionistDashboard(Model model, Authentication authentication) {
-        User receptionist = getCurrentUser(authentication);
-        VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
-        model.addAttribute("appointmentStatuses", AppointmentStatus.values());
-        model.addAttribute("appointments", appointmentService.findByClinicId(clinic.getId()));
-        return "receptionist/dashboard";
-    }
-
+  @GetMapping("/dashboard")
+  public String showReceptionistDashboard(Model model, Authentication authentication) {
+    User receptionist = getCurrentUser(authentication);
+    VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
+    model.addAttribute("appointmentStatuses", AppointmentStatus.values());
+    model.addAttribute("appointments", appointmentService.findByClinicId(clinic.getId()));
+    return "receptionist/dashboard";
+  }
 }

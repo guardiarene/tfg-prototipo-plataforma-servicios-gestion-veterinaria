@@ -5,6 +5,4 @@ import org.springframework.stereotype.Repository;
 import tfg.psygcv.model.medical.Treatment;
 
 @Repository
-public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
-
-}
+public interface TreatmentRepository extends JpaRepository<Treatment, Long> {}

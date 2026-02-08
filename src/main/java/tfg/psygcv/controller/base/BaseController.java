@@ -5,8 +5,7 @@ import tfg.psygcv.model.user.User;
 
 public abstract class BaseController {
 
-    protected User getCurrentUser(Authentication authentication) {
-        return (User) authentication.getPrincipal();
-    }
-
+  protected User getCurrentUser(Authentication authentication) {
+    return (User) authentication.getPrincipal();
+  }
 }

@@ -17,31 +17,33 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+  private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/login", "/logout").permitAll()
-                        .anyRequest().permitAll())
-                .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedPage("/access_denied"))
-                .formLogin(form -> form
-                        .loginPage("/users/login")
-                        .successHandler(customAuthenticationSuccessHandler)
-                        .failureUrl("/users/login?error=true")
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/users/login?logout")
-                        .permitAll());
-        return httpSecurity.build();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/users/login", "/logout")
+                    .permitAll()
+                    .anyRequest()
+                    .permitAll())
+        .exceptionHandling(exceptions -> exceptions.accessDeniedPage("/access_denied"))
+        .formLogin(
+            form ->
+                form.loginPage("/users/login")
+                    .successHandler(customAuthenticationSuccessHandler)
+                    .failureUrl("/users/login?error=true")
+                    .permitAll())
+        .logout(
+            logout ->
+                logout.logoutUrl("/logout").logoutSuccessUrl("/users/login?logout").permitAll());
+    return httpSecurity.build();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

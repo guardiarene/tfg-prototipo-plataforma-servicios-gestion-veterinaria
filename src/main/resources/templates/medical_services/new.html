@@ -26,7 +26,7 @@
                                            placeholder="Ej: Cirugía de esterilización" required th:field="*{name}"
                                            type="text">
                                 </div>
-                                <div th:if="${#fields.hasErrors('name')}" class="text-danger mt-2">
+                                <div class="text-danger mt-2" th:if="${#fields.hasErrors('name')}">
                                     <i class="bi bi-exclamation-circle me-2"></i>El nombre es obligatorio
                                 </div>
                             </div>
@@ -39,7 +39,7 @@
                                               placeholder="Descripción detallada del servicio" required rows="3"
                                               th:field="*{description}"></textarea>
                                 </div>
-                                <div th:if="${#fields.hasErrors('description')}" class="text-danger mt-2">
+                                <div class="text-danger mt-2" th:if="${#fields.hasErrors('description')}">
                                     <i class="bi bi-exclamation-circle me-2"></i>La descripción es obligatoria
                                 </div>
                             </div>

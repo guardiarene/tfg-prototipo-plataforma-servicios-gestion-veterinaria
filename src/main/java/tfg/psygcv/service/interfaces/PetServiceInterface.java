@@ -1,22 +1,20 @@
 package tfg.psygcv.service.interfaces;
 
+import java.util.List;
 import tfg.psygcv.model.pet.Pet;
 import tfg.psygcv.model.user.User;
 
-import java.util.List;
-
 public interface PetServiceInterface {
 
-    Pet findById(Long petId);
+  Pet findById(Long petId);
 
-    List<Pet> findByOwnerId(Long ownerId);
+  List<Pet> findByOwnerId(Long ownerId);
 
-    List<Pet> findPetsWithAppointmentsInClinics(User veterinarian);
+  List<Pet> findPetsWithAppointmentsInClinics(User veterinarian);
 
-    Pet save(Pet pet, Long ownerId);
+  Pet save(Pet pet, Long ownerId);
 
-    Pet update(Long petId, Pet pet);
+  Pet update(Long petId, Pet pet);
 
-    void deactivate(Long petId);
-
+  void deactivate(Long petId);
 }

@@ -9,9 +9,9 @@
         </span>
         <input class="form-control form-control-lg border-start-0"
                th:field="*{__${fieldName}__}"
-               th:type="${type}"
                th:placeholder="${placeholder}"
-               th:required="${required}">
+               th:required="${required}"
+               th:type="${type}">
     </div>
 </div>
 <div th:fragment="inputGroupBasic(label, id, icon, type, placeholder, value, required)">
@@ -23,10 +23,10 @@
         <input class="form-control form-control-lg border-start-0"
                th:id="${id}"
                th:name="${id}"
-               th:type="${type}"
                th:placeholder="${placeholder}"
-               th:value="${value}"
-               th:required="${required}">
+               th:required="${required}"
+               th:type="${type}"
+               th:value="${value}">
     </div>
 </div>
 <div th:fragment="selectGroup(label, fieldName, icon, options, required)">
@@ -37,7 +37,7 @@
         </span>
         <select class="form-select form-select-lg" th:field="*{__${fieldName}__}" th:required="${required}">
             <option value="">Seleccionar opción...</option>
-            <option th:each="option : ${options}" th:value="${option}" th:text="${option}"></option>
+            <option th:each="option : ${options}" th:text="${option}" th:value="${option}"></option>
         </select>
     </div>
 </div>
@@ -45,8 +45,8 @@
     <textarea class="form-control form-control-lg"
               th:field="*{__${fieldName}__}"
               th:placeholder="${placeholder}"
-              th:rows="${rows}"
-              th:required="${required}"></textarea>
+              th:required="${required}"
+              th:rows="${rows}"></textarea>
 </div>
 </body>
 </html>

@@ -7,10 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/navbar :: navbar('VETERINARIAN')}"
-     th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}"></div>
-<div th:replace="~{layouts/navbar :: navbar('CLIENT')}"
-     th:if="${#authentication.principal.role.toString() == 'CUSTOMER'}"></div>
+<div th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}"
+     th:replace="~{layouts/navbar :: navbar('VETERINARIAN')}"></div>
+<div th:if="${#authentication.principal.role.toString() == 'CUSTOMER'}"
+     th:replace="~{layouts/navbar :: navbar('CLIENT')}"></div>
 <div class="container mt-4">
     <div class="card shadow">
         <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica')}"></div>

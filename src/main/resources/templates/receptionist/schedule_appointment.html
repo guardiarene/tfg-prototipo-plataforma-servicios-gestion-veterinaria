@@ -20,9 +20,9 @@
                         <select class="form-select" id="clientId" name="clientId" required th:field="*{customer.id}">
                             <option disabled value="">Seleccione un cliente</option>
                             <option th:each="client : ${clients}"
-                                    th:value="${client.id}"
+                                    th:selected="${client.id == appointment.customer?.id}"
                                     th:text="${client.firstName + ' ' + client.lastName}"
-                                    th:selected="${client.id == appointment.customer?.id}"></option>
+                                    th:value="${client.id}"></option>
                         </select>
                     </div>
                     <div class="col-md-6">

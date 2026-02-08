@@ -31,13 +31,15 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Nueva Fecha</label>
-                        <input class="form-control" id="date" name="date" required type="date"
-                               th:value="${appointment.date != null} ? ${#temporals.format(appointment.date, 'yyyy-MM-dd')} : ''">
+                        <input class="form-control" id="date" name="date" required
+                               th:value="${appointment.date != null} ? ${#temporals.format(appointment.date, 'yyyy-MM-dd')} : ''"
+                               type="date">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Nueva Hora</label>
-                        <input class="form-control" id="time" name="time" required type="time"
-                               th:value="${appointment.time != null} ? ${#temporals.format(appointment.time, 'HH:mm')} : ''">
+                        <input class="form-control" id="time" name="time" required
+                               th:value="${appointment.time != null} ? ${#temporals.format(appointment.time, 'HH:mm')} : ''"
+                               type="time">
                     </div>
                 </div>
                 <div class="row mb-3">
