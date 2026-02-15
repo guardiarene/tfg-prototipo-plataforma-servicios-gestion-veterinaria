@@ -1,0 +1,35 @@
+name: Java CD with Maven (Production)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Build Production Artifact
+        run: mvn clean package -DskipTests
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-jar
+          path: target/*.jar
+
+      - name: Deploy to Production
+        # TODO: Lógica de despliegue
+        run: echo "Desplegando la aplicación en el entorno de producción..."
