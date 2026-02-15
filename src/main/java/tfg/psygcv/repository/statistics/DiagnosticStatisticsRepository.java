@@ -12,7 +12,7 @@ import tfg.psygcv.model.medical.Diagnostic;
 public interface DiagnosticStatisticsRepository extends JpaRepository<Diagnostic, Long> {
 
   @Query(
-      "SELECT d.problems FROM Diagnostic d JOIN d.medicalRecord mr JOIN mr.veterinarian v JOIN v.clinicsOwned c WHERE c.id = :clinicId AND mr.date BETWEEN :startDate AND :endDate")
+      "SELECT d.problems FROM Diagnostic d JOIN d.visit v JOIN v.medicalRecord mr JOIN v.veterinarian vet JOIN vet.clinicsOwned c WHERE c.id = :clinicId AND v.date BETWEEN :startDate AND :endDate")
   List<String> getFrequentProblemsByClinicAndDate(
       @Param("clinicId") Long clinicId,
       @Param("startDate") LocalDate startDate,

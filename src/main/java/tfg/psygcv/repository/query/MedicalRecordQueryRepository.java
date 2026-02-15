@@ -10,21 +10,30 @@ import tfg.psygcv.model.medical.MedicalRecord;
 @Repository
 public interface MedicalRecordQueryRepository extends JpaRepository<MedicalRecord, Long> {
 
-  @Query(
-      "SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.clinicalExam LEFT JOIN FETCH mr.anamnesis WHERE mr.id = :id")
-  Optional<MedicalRecord> findWithBasicRelations(@Param("id") Long id);
+  @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.pet WHERE mr.id = :id")
+  Optional<MedicalRecord> findWithPet(@Param("id") Long id);
 
-  @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.treatments WHERE mr.id = :id")
-  Optional<MedicalRecord> findWithTreatments(@Param("id") Long id);
+  @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.visits WHERE mr.id = :id")
+  Optional<MedicalRecord> findWithVisits(@Param("id") Long id);
 
-  @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.diagnostics WHERE mr.id = :id")
-  Optional<MedicalRecord> findWithDiagnostics(@Param("id") Long id);
-
-  @Query(
-      "SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.anamnesis a LEFT JOIN FETCH a.vaccines WHERE mr.id = :id")
+  @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.vaccines WHERE mr.id = :id")
   Optional<MedicalRecord> findWithVaccines(@Param("id") Long id);
 
   @Query(
-      "SELECT DISTINCT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.clinicalExam LEFT JOIN FETCH mr.anamnesis a LEFT JOIN FETCH a.vaccines LEFT JOIN FETCH mr.treatments LEFT JOIN FETCH mr.diagnostics WHERE mr.id = :id")
-  Optional<MedicalRecord> findCompleteForEditing(@Param("id") Long id);
+      "SELECT DISTINCT mr FROM MedicalRecord mr "
+          + "LEFT JOIN FETCH mr.pet "
+          + "LEFT JOIN FETCH mr.visits v "
+          + "LEFT JOIN FETCH v.veterinarian "
+          + "WHERE mr.id = :id")
+  Optional<MedicalRecord> findCompleteForViewing(@Param("id") Long id);
+
+  @Query(
+      "SELECT DISTINCT mr FROM MedicalRecord mr "
+          + "LEFT JOIN FETCH mr.pet "
+          + "LEFT JOIN FETCH mr.vaccines "
+          + "WHERE mr.id = :id")
+  Optional<MedicalRecord> findWithAllVaccines(@Param("id") Long id);
+
+  @Query("SELECT mr FROM MedicalRecord mr WHERE mr.pet.id = :petId")
+  Optional<MedicalRecord> findByPetId(@Param("petId") Long petId);
 }

@@ -11,6 +11,6 @@ import tfg.psygcv.model.medical.MedicalRecord;
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Long> {
 
   @Query(
-      "SELECT mr FROM MedicalRecord mr WHERE mr.pet IN (SELECT mr.pet FROM Appointment a WHERE a.clinic.id = :clinicId) AND mr.pet.active = true ORDER BY mr.date ASC")
+      "SELECT mr FROM MedicalRecord mr WHERE mr.pet IN (SELECT a.pet FROM Appointment a WHERE a.clinic.id = :clinicId) AND mr.pet.active = true ORDER BY mr.createdAt ASC")
   List<MedicalRecord> findByClinicId(@Param("clinicId") Long clinicId);
 }
