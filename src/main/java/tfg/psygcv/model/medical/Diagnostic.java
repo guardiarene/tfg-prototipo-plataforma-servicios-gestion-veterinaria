@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -27,10 +28,6 @@ import lombok.Setter;
 @Table(name = "DIAGNOSTIC")
 public class Diagnostic {
 
-  @Version
-  @Column(name = "VERSION")
-  private Integer version;
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID")
@@ -42,14 +39,29 @@ public class Diagnostic {
   private List<@NotBlank String> problems = new ArrayList<>();
 
   @NotNull
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false)
-  private MedicalRecord medicalRecord;
+  @Column(name = "CREATED_AT", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-  public void setMedicalRecord(MedicalRecord medicalRecord) {
-    this.medicalRecord = medicalRecord;
-    if (medicalRecord != null && !medicalRecord.getDiagnostics().contains(this)) {
-      medicalRecord.getDiagnostics().add(this);
+  @Column(name = "UPDATED_AT")
+  private LocalDateTime updatedAt;
+
+  @NotNull
+  @Column(name = "ACTIVE", nullable = false)
+  private Boolean active = true;
+
+  @Version
+  @Column(name = "VERSION")
+  private Integer version;
+
+  @NotNull
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "VISIT_ID", nullable = false)
+  private Visit visit;
+
+  public void setVisit(Visit visit) {
+    this.visit = visit;
+    if (visit != null && !visit.getDiagnostics().contains(this)) {
+      visit.getDiagnostics().add(this);
     }
   }
 }

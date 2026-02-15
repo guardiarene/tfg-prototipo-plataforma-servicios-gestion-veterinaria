@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,10 +25,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "TREATMENT")
 public class Treatment {
-
-  @Version
-  @Column(name = "VERSION")
-  private Integer version;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,14 +53,29 @@ public class Treatment {
   private LocalDate endDate;
 
   @NotNull
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false)
-  private MedicalRecord medicalRecord;
+  @Column(name = "CREATED_AT", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-  public void setMedicalRecord(MedicalRecord medicalRecord) {
-    this.medicalRecord = medicalRecord;
-    if (medicalRecord != null && !medicalRecord.getTreatments().contains(this)) {
-      medicalRecord.getTreatments().add(this);
+  @Column(name = "UPDATED_AT")
+  private LocalDateTime updatedAt;
+
+  @NotNull
+  @Column(name = "ACTIVE", nullable = false)
+  private Boolean active = true;
+
+  @Version
+  @Column(name = "VERSION")
+  private Integer version;
+
+  @NotNull
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "VISIT_ID", nullable = false)
+  private Visit visit;
+
+  public void setVisit(Visit visit) {
+    this.visit = visit;
+    if (visit != null && !visit.getTreatments().contains(this)) {
+      visit.getTreatments().add(this);
     }
   }
 }

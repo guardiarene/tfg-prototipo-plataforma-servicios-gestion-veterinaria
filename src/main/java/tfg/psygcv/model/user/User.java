@@ -10,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
@@ -90,8 +89,8 @@ public class User implements UserDetails {
   @Fetch(FetchMode.JOIN)
   private List<VeterinaryClinic> clinicsOwned = new ArrayList<>();
 
-  @OneToOne(mappedBy = "receptionist", fetch = FetchType.LAZY)
-  private VeterinaryClinic clinicAsReceptionist;
+  @OneToMany(mappedBy = "receptionist", fetch = FetchType.LAZY)
+  private List<VeterinaryClinic> clinicsAsReceptionist = new ArrayList<>();
 
   @NotNull
   @Column(name = "ACTIVE", nullable = false)
