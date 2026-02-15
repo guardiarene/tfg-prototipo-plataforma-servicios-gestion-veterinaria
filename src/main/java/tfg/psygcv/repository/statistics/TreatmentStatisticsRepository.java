@@ -12,7 +12,7 @@ import tfg.psygcv.model.medical.Treatment;
 public interface TreatmentStatisticsRepository extends JpaRepository<Treatment, Long> {
 
   @Query(
-      "SELECT t.product FROM Treatment t JOIN t.medicalRecord mr JOIN mr.veterinarian v JOIN v.clinicsOwned c WHERE c.id = :clinicId AND mr.date BETWEEN :startDate AND :endDate")
+      "SELECT t.product FROM Treatment t JOIN t.visit v JOIN v.veterinarian vet JOIN vet.clinicsOwned c WHERE c.id = :clinicId AND v.date BETWEEN :startDate AND :endDate")
   List<String> getFrequentTreatmentsByClinicAndDate(
       @Param("clinicId") Long clinicId,
       @Param("startDate") LocalDate startDate,

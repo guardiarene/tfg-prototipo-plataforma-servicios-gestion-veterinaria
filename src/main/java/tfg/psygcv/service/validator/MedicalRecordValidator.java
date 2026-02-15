@@ -38,10 +38,10 @@ public class MedicalRecordValidator {
     if (medicalRecord == null) {
       throw new IllegalArgumentException("Medical record cannot be null");
     }
-    if (medicalRecord.getReasonForVisit() == null
+    /*if (medicalRecord.getReasonForVisit() == null
         || medicalRecord.getReasonForVisit().trim().isEmpty()) {
       throw new IllegalArgumentException("Reason for visit is required");
-    }
+    }*/
   }
 
   private void validatePetForCreation(MedicalRecord medicalRecord) {

@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.medical.Anamnesis;
 import tfg.psygcv.model.medical.MedicalRecord;
+import tfg.psygcv.model.medical.Visit;
+import tfg.psygcv.model.medical.VisitType;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
@@ -36,7 +38,8 @@ public class MedicalRecordController extends BaseController {
   public String showMedicalRecordDetails(
       @PathVariable Long id, Model model, Authentication authentication) {
     User user = getCurrentUser(authentication);
-    model.addAttribute("medicalRecord", medicalRecordService.findCompleteForEditing(id));
+    MedicalRecord medicalRecord = medicalRecordService.findCompleteById(id);
+    model.addAttribute("medicalRecord", medicalRecord);
     return "medical_records/details";
   }
 
@@ -53,13 +56,14 @@ public class MedicalRecordController extends BaseController {
   public String saveMedicalRecord(
       @Valid @ModelAttribute("medicalRecord") MedicalRecord medicalRecord,
       BindingResult result,
-      Authentication authentication) {
+      Authentication authentication,
+      Model model) {
     if (result.hasErrors()) {
+      User veterinarian = getCurrentUser(authentication);
+      model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
       return "medical_records/new";
     }
     User veterinarian = getCurrentUser(authentication);
-    medicalRecord.setVeterinarian(veterinarian);
-    medicalRecord.setDate(LocalDate.now());
     medicalRecordService.save(medicalRecord, veterinarian);
     return REDIRECT_VETERINARIAN_DASHBOARD;
   }
@@ -77,8 +81,10 @@ public class MedicalRecordController extends BaseController {
       @PathVariable Long id,
       @Valid @ModelAttribute("medicalRecord") MedicalRecord medicalRecord,
       BindingResult result,
-      Authentication authentication) {
+      Authentication authentication,
+      Model model) {
     if (result.hasErrors()) {
+      model.addAttribute("pets", List.of(medicalRecord.getPet()));
       return "medical_records/edit";
     }
     User veterinarian = getCurrentUser(authentication);
@@ -86,12 +92,29 @@ public class MedicalRecordController extends BaseController {
     return "redirect:/medical-records/" + id;
   }
 
+  /**
+   * Initializes a new MedicalRecord with a first Visit for backward compatibility with existing
+   * forms
+   */
   private MedicalRecord initializeNewMedicalRecord() {
     MedicalRecord medicalRecord = new MedicalRecord();
-    medicalRecord.setTreatments(new ArrayList<>());
-    medicalRecord.setDiagnostics(new ArrayList<>());
-    medicalRecord.setAnamnesis(new Anamnesis());
-    medicalRecord.getAnamnesis().setVaccines(new ArrayList<>());
+
+    // Create first visit (backward compatibility)
+    Visit firstVisit = new Visit();
+    firstVisit.setDate(LocalDate.now());
+    firstVisit.setVisitType(VisitType.CONSULTATION);
+    firstVisit.setReasonForVisit("");
+    firstVisit.setDiagnostics(new ArrayList<>());
+    firstVisit.setTreatments(new ArrayList<>());
+    firstVisit.setVaccines(new ArrayList<>());
+
+    // Initialize anamnesis
+    Anamnesis anamnesis = new Anamnesis();
+    firstVisit.setAnamnesis(anamnesis);
+
+    // Add first visit to medical record
+    medicalRecord.getVisits().add(firstVisit);
+
     return medicalRecord;
   }
 }
