@@ -72,7 +72,7 @@ public class Pet {
   @JoinColumn(name = "OWNER_ID", nullable = false)
   private User owner;
 
-  @OneToOne(mappedBy = "pet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "pet", cascade = CascadeType.ALL)
   private MedicalRecord medicalRecord;
 
   @OneToMany(

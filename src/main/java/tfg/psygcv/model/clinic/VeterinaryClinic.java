@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -72,8 +71,8 @@ public class VeterinaryClinic {
   private User veterinarian;
 
   @NotNull
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "RECEPTIONIST_ID", nullable = false, unique = true)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "RECEPTIONIST_ID", nullable = false)
   private User receptionist;
 
   @NotNull
@@ -84,6 +83,13 @@ public class VeterinaryClinic {
     this.veterinarian = veterinarian;
     if (veterinarian != null && !veterinarian.getClinicsOwned().contains(this)) {
       veterinarian.getClinicsOwned().add(this);
+    }
+  }
+
+  public void setReceptionist(User receptionist) {
+    this.receptionist = receptionist;
+    if (receptionist != null && !receptionist.getClinicsAsReceptionist().contains(this)) {
+      receptionist.getClinicsAsReceptionist().add(this);
     }
   }
 }

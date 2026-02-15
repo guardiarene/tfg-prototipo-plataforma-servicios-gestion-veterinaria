@@ -1,19 +1,19 @@
 package tfg.psygcv.model.medical;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -59,16 +59,31 @@ public class ClinicalExam {
   @Column(name = "TEMPERAMENT", nullable = false)
   private Temperament temperament;
 
-  @Column(name = "DESCRIPTION")
+  @Column(name = "DESCRIPTION", columnDefinition = "TEXT")
   private String description;
 
-  @OneToOne(mappedBy = "clinicalExam", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private MedicalRecord medicalRecord;
+  @NotNull
+  @Column(name = "CREATED_AT", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-  public void setMedicalRecord(MedicalRecord medicalRecord) {
-    this.medicalRecord = medicalRecord;
-    if (medicalRecord != null && medicalRecord.getClinicalExam() != this) {
-      medicalRecord.setClinicalExam(this);
+  @Column(name = "UPDATED_AT")
+  private LocalDateTime updatedAt;
+
+  @NotNull
+  @Column(name = "ACTIVE", nullable = false)
+  private Boolean active = true;
+
+  @Version
+  @Column(name = "VERSION")
+  private Integer version;
+
+  @OneToOne(mappedBy = "clinicalExam")
+  private Visit visit;
+
+  public void setVisit(Visit visit) {
+    this.visit = visit;
+    if (visit != null && visit.getClinicalExam() != this) {
+      visit.setClinicalExam(this);
     }
   }
 }

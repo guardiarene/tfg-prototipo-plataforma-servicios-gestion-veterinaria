@@ -1,6 +1,5 @@
 package tfg.psygcv.model.medical;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,15 +9,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,25 +33,28 @@ public class Anamnesis {
   @Column(name = "ID")
   private Long id;
 
+  @Column(name = "ALLERGIES", columnDefinition = "TEXT")
+  private String allergies;
+
+  @Column(name = "PREVIOUS_DISEASES", columnDefinition = "TEXT")
+  private String previousDiseases;
+
+  @Column(name = "SURGERIES", columnDefinition = "TEXT")
+  private String surgeries;
+
+  @Column(name = "CURRENT_MEDICATIONS", columnDefinition = "TEXT")
+  private String currentMedications;
+
+  @Column(name = "DIET", columnDefinition = "TEXT")
+  private String diet;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "REPRODUCTIVE_STATUS", length = 30)
+  private ReproductiveStatus reproductiveStatus;
+
   @PastOrPresent
   @Column(name = "LAST_DEWORMING_DATE")
   private LocalDate lastDewormingDate;
-
-  @OneToMany(
-      mappedBy = "anamnesis",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
-  private List<Vaccine> vaccines = new ArrayList<>();
-
-  @NotBlank
-  @Column(name = "DIET")
-  private String diet;
-
-  @NotNull
-  @Enumerated(EnumType.STRING)
-  @Column(name = "REPRODUCTIVE_STATUS", nullable = false)
-  private ReproductiveStatus reproductiveStatus;
 
   @PastOrPresent
   @Column(name = "LAST_HEAT_DATE")
@@ -65,14 +65,28 @@ public class Anamnesis {
   private LocalDate lastBirthDate;
 
   @NotNull
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false, unique = true)
-  private MedicalRecord medicalRecord;
+  @Column(name = "CREATED_AT", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-  public void setMedicalRecord(MedicalRecord medicalRecord) {
-    this.medicalRecord = medicalRecord;
-    if (medicalRecord != null && medicalRecord.getAnamnesis() != this) {
-      medicalRecord.setAnamnesis(this);
+  @Column(name = "UPDATED_AT")
+  private LocalDateTime updatedAt;
+
+  @NotNull
+  @Column(name = "ACTIVE", nullable = false)
+  private Boolean active = true;
+
+  @Version
+  @Column(name = "VERSION")
+  private Integer version;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "VISIT_ID", unique = true)
+  private Visit visit;
+
+  public void setVisit(Visit visit) {
+    this.visit = visit;
+    if (visit != null && visit.getAnamnesis() != this) {
+      visit.setAnamnesis(this);
     }
   }
 }

@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tfg.psygcv.model.clinic.MedicalService;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.model.medical.Visit;
 import tfg.psygcv.model.pet.Pet;
 import tfg.psygcv.model.user.User;
 
@@ -67,7 +69,18 @@ public class Appointment {
   @JoinColumn(name = "PET_ID", nullable = false)
   private Pet pet;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "VISIT_ID", unique = true)
+  private Visit visit;
+
   @NotNull
   @Column(name = "ACTIVE", nullable = false)
   private Boolean active = true;
+
+  public void setVisit(Visit visit) {
+    this.visit = visit;
+    if (visit != null && visit.getAppointment() != this) {
+      visit.setAppointment(this);
+    }
+  }
 }
