@@ -4,7 +4,7 @@
 <div th:fragment="listContainer(items, emptyMessage, content)">
     <div class="row g-4">
         <div class="col-12" th:each="item : ${items}">
-            <div th:replace="${content}"></div>
+            <div th:replace="~{${content}}"></div>
         </div>
         <div class="col-12" th:if="${#lists.isEmpty(items)}">
             <div th:replace="~{fragments/alert :: emptyState(${emptyMessage})}"></div>

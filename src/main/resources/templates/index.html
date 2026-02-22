@@ -8,31 +8,33 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/navbar :: navbar()}"></div>
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
-            <div class="card shadow">
-                <div th:replace="~{fragments/card-header :: cardHeader('bi-heart-pulse', 'Plataforma de Servicios y Gestión de Clínicas Veterinarias')}"></div>
-                <div class="card-body p-5 text-center">
-                    <p class="lead mb-4 fs-5">
-                        Gestione la salud de tus mascotas en la red de clínicas veterinarias asociadas.
-                        Accede a historias clínicas, programa turnos citas y mantén todo bajo control.
-                    </p>
-                    <div class="d-grid gap-3 d-md-flex justify-content-center mb-4">
-                        <a class="btn btn-primary btn-lg px-5" th:href="@{/users/register}">
-                            <i class="bi bi-person-plus me-2"></i> Registrarse
-                        </a>
-                        <a class="btn btn-outline-primary btn-lg px-5" th:href="@{/users/login}">
-                            <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión
-                        </a>
-                    </div>
-                    <div class="alert alert-info mt-4">
-                        <i class="bi bi-info-circle me-2"></i>
-                        ¿Eres veterinario?
-                        <a class="alert-link" th:href="@{/clinics/register}">
-                            <i class="bi bi-building-add me-1"></i>Registra tu clínica aquí
-                        </a>
+<div th:replace="~{layouts/layout :: layout('Inicio - Prototipo TFG', ~{layouts/navbar :: navbar(null)}, ~{::content})}">
+    <div th:fragment="content" class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow border-0 overflow-hidden">
+                    <div th:replace="~{fragments/card-header :: cardHeader('bi-heart-pulse-fill', 'Bienvenido a PSyGCV', null)}"></div>
+                    <div class="card-body p-5 text-center bg-white">
+                        <h2 class="h4 mb-4 text-secondary">Plataforma de Servicios y Gestión de Clínicas Veterinarias</h2>
+                        <p class="lead mb-5 fs-5 px-lg-5">
+                            Gestione la salud de sus mascotas de forma integral. 
+                            Acceda a historias clínicas, programe turnos y mantenga el historial de sus fieles compañeros bajo control en nuestra red de clínicas asociadas.
+                        </p>
+                        <div class="d-grid gap-3 d-md-flex justify-content-center mb-5">
+                            <a class="btn btn-primary btn-lg px-5 py-3 shadow-sm" th:href="@{/users/register}">
+                                <i class="bi bi-person-plus me-2"></i> Crear Cuenta
+                            </a>
+                            <a class="btn btn-outline-primary btn-lg px-5 py-3 shadow-sm" th:href="@{/users/login}">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión
+                            </a>
+                        </div>
+                        <div class="alert alert-info border-0 shadow-sm py-3 px-4 d-inline-block">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <strong>¿Es profesional veterinario?</strong>
+                            <a class="alert-link ms-1" th:href="@{/clinics/register}">
+                                Registre su clínica y comience a gestionar sus pacientes
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
