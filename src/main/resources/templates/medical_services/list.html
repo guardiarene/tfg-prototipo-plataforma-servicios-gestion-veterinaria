@@ -8,57 +8,60 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/navbar :: navbar('VETERINARIAN')}"></div>
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
-            <div class="card shadow">
-                <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-pulse', 'Gestión de Servicios Médicos')}"></div>
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-end mb-4">
-                        <a class="btn btn-primary" th:href="@{/medical-services/new}">
-                            <i class="bi bi-plus-circle me-2"></i> Nuevo Servicio
-                        </a>
-                    </div>
-                    <div class="row g-4">
-                        <div class="col-12" th:each="service : ${services}">
-                            <div class="card shadow-sm border-primary">
-                                <div class="card-header bg-light">
-                                    <h5 class="mb-0" th:text="${service.name}"></h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3 align-items-center">
-                                        <div class="col-md-8">
-                                            <p class="mb-0 text-muted" th:text="${service.description}"></p>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <a class="btn btn-warning btn-sm"
-                                                   th:href="@{/medical-services/{id}/edit(id=${service.id})}">
-                                                    <i class="bi bi-pencil me-2"></i> Editar
-                                                </a>
-                                                <form method="post"
-                                                      th:action="@{/medical-services/{id}/delete(id=${service.id})}">
-                                                    <button class="btn btn-danger btn-sm" type="submit">
-                                                        <i class="bi bi-trash me-2"></i> Eliminar
-                                                    </button>
-                                                </form>
+<div th:replace="~{layouts/layout :: layout('Servicios Médicos', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
+    <div th:fragment="content" class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow">
+                    <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-pulse', 'Gestión de Servicios Médicos', null)}"></div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                            <h4 class="mb-0 text-primary">Listado de Servicios</h4>
+                            <a class="btn btn-success" th:href="@{/medical-services/new}">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Servicio
+                            </a>
+                        </div>
+                        
+                        <div class="row g-4">
+                            <div class="col-12" th:each="service : ${services}">
+                                <div class="card shadow-sm border-primary">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-8">
+                                                <h5 class="mb-2 text-primary" th:text="${service.name}"></h5>
+                                                <p class="mb-0 text-muted small" th:text="${service.description}"></p>
+                                            </div>
+                                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                    <a class="btn btn-outline-warning btn-sm px-3"
+                                                       th:href="@{/medical-services/{id}/edit(id=${service.id})}">
+                                                        <i class="bi bi-pencil me-1"></i>Editar
+                                                    </a>
+                                                    <form method="post" class="d-inline"
+                                                          th:action="@{/medical-services/{id}/delete(id=${service.id})}"
+                                                          onsubmit="return confirm('¿Estás seguro de eliminar este servicio?');">
+                                                        <button class="btn btn-outline-danger btn-sm px-3" type="submit">
+                                                            <i class="bi bi-trash me-1"></i>Eliminar
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12" th:if="${#lists.isEmpty(services)}">
-                            <div class="alert alert-info mb-0">
-                                <i class="bi bi-info-circle me-2"></i>No hay servicios médicos registrados
+                            <div class="col-12" th:if="${#lists.isEmpty(services)}">
+                                <div class="alert alert-info text-center py-4">
+                                    <i class="bi bi-info-circle fs-2 d-block mb-2"></i>
+                                    No hay servicios médicos registrados en tu clínica.
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="d-flex justify-content-start mt-5">
-                        <a class="btn btn-secondary" th:href="@{/veterinarian/dashboard}">
-                            <i class="bi bi-arrow-left-circle me-2"></i> Volver
-                        </a>
+                        <div class="d-flex justify-content-start mt-5">
+                            <a class="btn btn-secondary px-4" th:href="@{/veterinarian/dashboard}">
+                                <i class="bi bi-arrow-left-circle me-2"></i> Volver
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
