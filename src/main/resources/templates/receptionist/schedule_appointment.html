@@ -7,64 +7,82 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/navbar :: navbar('RECEPTIONIST')}"></div>
-<div class="container mt-4">
-    <div class="card shadow">
-        <div th:replace="~{fragments/card-header :: cardHeader('bi-calendar-plus', 'Agendar Turno')}"></div>
-        <div class="card-body">
-            <form method="post" th:action="@{/appointments/schedule}" th:object="${appointment}">
-                <input th:field="*{id}" type="hidden"/>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Cliente</label>
-                        <select class="form-select" id="clientId" name="clientId" required th:field="*{customer.id}">
-                            <option disabled value="">Seleccione un cliente</option>
-                            <option th:each="client : ${clients}"
-                                    th:selected="${client.id == appointment.customer?.id}"
-                                    th:text="${client.firstName + ' ' + client.lastName}"
-                                    th:value="${client.id}"></option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Mascota</label>
-                        <select class="form-select" id="petId" name="petId" required th:field="*{pet.id}">
-                            <option disabled value="">Seleccione una mascota</option>
-                            <option th:each="pet : ${pets}"
-                                    th:selected="${pet.id == appointment.pet?.id}"
-                                    th:text="${pet.name}"
-                                    th:value="${pet.id}"></option>
-                        </select>
+<div th:replace="~{layouts/layout :: layout('Agendar Turno', ~{layouts/navbar :: navbar('RECEPTIONIST')}, ~{::content})}">
+    <div th:fragment="content" class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow">
+                    <div th:replace="~{fragments/card-header :: cardHeader('bi-calendar-plus', 'Agendar Nuevo Turno', null)}"></div>
+                    <div class="card-body p-4">
+                        <form method="post" th:action="@{/appointments/schedule}" th:object="${appointment}">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Cliente</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                        <select class="form-select" id="clientId" name="clientId" required>
+                                            <option disabled selected value="">Seleccione un cliente...</option>
+                                            <option th:each="client : ${clients}"
+                                                    th:selected="${client.id == clientId}"
+                                                    th:text="${client.firstName + ' ' + client.lastName}"
+                                                    th:value="${client.id}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Mascota</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-heart"></i></span>
+                                        <select class="form-select" id="petId" name="pet.id" required th:field="*{pet.id}">
+                                            <option disabled selected value="">Seleccione una mascota...</option>
+                                            <option th:each="pet : ${pets}"
+                                                    th:text="${pet.name + ' (' + pet.species + ')'}"
+                                                    th:value="${pet.id}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="alert alert-warning mt-2 py-2 small" th:if="${clientId != null && #lists.isEmpty(pets)}">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Este cliente no tiene mascotas registradas.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Fecha</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-calendar3"></i></span>
+                                        <input class="form-control" required th:field="*{date}" type="date"
+                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Hora</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
+                                        <input class="form-control" required th:field="*{time}" type="time">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Servicio Médico</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-clipboard2-pulse"></i></span>
+                                        <select class="form-select" id="serviceId" name="serviceId" required>
+                                            <option disabled selected value="">Seleccione un servicio...</option>
+                                            <option th:each="service : ${services}" th:text="${service.name}"
+                                                    th:value="${service.id}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-3 mt-5">
+                                <a class="btn btn-secondary px-4" th:href="@{/receptionist/dashboard}">
+                                    <i class="bi bi-arrow-left-circle me-2"></i> Volver
+                                </a>
+                                <button class="btn btn-primary px-4" type="submit" th:disabled="${clientId == null || #lists.isEmpty(pets)}">
+                                    <i class="bi bi-save2 me-2"></i> Registrar Turno
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha</label>
-                        <input class="form-control" required th:field="*{date}" type="date">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Hora</label>
-                        <input class="form-control" required th:field="*{time}" type="time">
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Servicio</label>
-                        <select class="form-select" id="serviceId" name="serviceId" required>
-                            <option disabled selected value="">Seleccione un servicio</option>
-                            <option th:each="service : ${services}" th:text="${service.name}"
-                                    th:value="${service.id}"></option>
-                        </select>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center mt-4">
-                    <button class="btn btn-success mx-2" type="submit">
-                        <i class="bi bi-calendar-plus"></i> Registrar Turno
-                    </button>
-                    <a class="btn btn-secondary mx-2" th:href="@{/receptionist/dashboard}">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

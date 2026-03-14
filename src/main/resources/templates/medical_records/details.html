@@ -7,213 +7,134 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}"
-     th:replace="~{layouts/navbar :: navbar('VETERINARIAN')}"></div>
-<div th:if="${#authentication.principal.role.toString() == 'CUSTOMER'}"
-     th:replace="~{layouts/navbar :: navbar('CLIENT')}"></div>
-<div class="container mt-4">
-    <div class="card shadow">
-        <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica')}"></div>
-        <div class="card-body">
-            <div class="mb-4">
-                <h4 class="mb-3 border-bottom pb-2">Información Básica</h4>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Autor original:</strong></label>
-                        <div>
-                            <span class="d-block"
-                                  th:text="${medicalRecord.veterinarian.firstName + ' ' + medicalRecord.veterinarian.lastName}"></span>
+<div th:replace="~{layouts/layout :: layout('Detalle Historia Clínica', ~{layouts/navbar :: navbar(#authentication.principal.role.toString() == 'VETERINARIAN' ? 'VETERINARIAN' : 'CLIENT')}, ~{::content})}">
+    <div th:fragment="content" class="container mt-4">
+        <div class="card shadow">
+            <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica de ' + medicalRecord.pet.name, null)}"></div>
+            <div class="card-body">
+                <!-- Información de la Mascota -->
+                <div class="mb-4">
+                    <h4 class="mb-3 border-bottom pb-2 text-primary">Información de la Mascota</h4>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <strong>Nombre:</strong> <span th:text="${medicalRecord.pet.name}"></span>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Última actualización por:</strong></label>
-                        <div>
-                            <span class="d-block"
-                                  th:text="${medicalRecord.lastVeterinarian != null ? medicalRecord.lastVeterinarian.firstName + ' ' + medicalRecord.lastVeterinarian.lastName : 'N/A'}"></span>
+                        <div class="col-md-3">
+                            <strong>Especie:</strong> <span th:text="${medicalRecord.pet.species}"></span>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Fecha:</strong></label>
-                        <div>
-                            <span class="d-block"
-                                  th:text="${#temporals.format(medicalRecord.date, 'dd/MM/yyyy')}"></span>
+                        <div class="col-md-3">
+                            <strong>Raza:</strong> <span th:text="${medicalRecord.pet.breed}"></span>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Propietario:</strong></label>
-                        <div>
-                            <span class="d-block"
-                                  th:text="${medicalRecord.owner.firstName + ' ' + medicalRecord.owner.lastName}"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Motivo Consulta:</strong></label>
-                        <div>
-                            <span class="d-block" th:text="${medicalRecord.reasonForVisit}"></span>
+                        <div class="col-md-3">
+                            <strong>Propietario:</strong> <span th:text="${medicalRecord.pet.owner.firstName + ' ' + medicalRecord.pet.owner.lastName}"></span>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="mb-4 border p-3 rounded" th:if="${medicalRecord.clinicalExam != null}">
-                <h4 class="mb-3 border-bottom pb-2">Examen Clínico</h4>
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label"><strong>Temperatura (°C):</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.clinicalExam.temperature}"></span></div>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label"><strong>Frec. Cardíaca (lpm):</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.clinicalExam.heartRate}"></span></div>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label"><strong>Frec. Respiratoria (rpm):</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.clinicalExam.respiratoryRate}"></span></div>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label"><strong>Pulso (lpm):</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.clinicalExam.pulse}"></span></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><strong>Mucosas:</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.clinicalExam.mucosalMembranes}"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><strong>Temperamento:</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.clinicalExam.temperament?.name()}"></span>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label"><strong>Descripción:</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.clinicalExam.description}"></span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-4" th:if="${medicalRecord.anamnesis != null}">
-                <h4 class="mb-3 border-bottom pb-2">Anamnesis</h4>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Última Desparasitación:</strong></label>
-                        <div>
-                            <span class="d-block"
-                                  th:text="${medicalRecord.anamnesis.lastDewormingDate != null ? #temporals.format(medicalRecord.anamnesis.lastDewormingDate, 'dd/MM/yyyy') : 'N/A'}"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Estado Reproductivo:</strong></label>
-                        <div><span class="d-block"
-                                   th:text="${medicalRecord.anamnesis.reproductiveStatus?.name()}"></span></div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Alimentación:</strong></label>
-                        <div><span class="d-block" th:text="${medicalRecord.anamnesis.diet}"></span></div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Último Celo:</strong></label>
-                        <div>
-                            <span class="d-block"
-                                  th:text="${medicalRecord.anamnesis.lastHeatDate != null ? #temporals.format(medicalRecord.anamnesis.lastHeatDate, 'dd/MM/yyyy') : 'N/A'}"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label"><strong>Último Parto:</strong></label>
-                        <div>
-                            <span class="d-block"
-                                  th:text="${medicalRecord.anamnesis.lastBirthDate != null ? #temporals.format(medicalRecord.anamnesis.lastBirthDate, 'dd/MM/yyyy') : 'N/A'}"></span>
-                        </div>
-                    </div>
-                    <div class="col-12" th:if="${not #lists.isEmpty(medicalRecord.anamnesis.vaccines)}">
-                        <div class="card shadow-sm">
-                            <div class="card-header"><h5 class="mb-0">Vacunas aplicadas</h5></div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead class="table-light">
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Marca</th>
-                                            <th>Lote</th>
-                                            <th>Dosis</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="vaccine : ${medicalRecord.anamnesis.vaccines}">
-                                            <td th:text="${#temporals.format(vaccine.applicationDate, 'dd/MM/yyyy')}"></td>
-                                            <td th:text="${vaccine.brand}"></td>
-                                            <td th:text="${vaccine.batch}"></td>
-                                            <td th:text="${vaccine.dose}"></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-4" th:if="${not #lists.isEmpty(medicalRecord.diagnostics)}">
-                <h4 class="mb-3 border-bottom pb-2">Diagnósticos</h4>
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="list-group">
-                            <div class="list-group-item mb-2 shadow-sm"
-                                 th:each="diagnostic, diagnosticStat : ${medicalRecord.diagnostics}">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="fw-bold">Diagnóstico #<span th:text="${diagnosticStat.count}"></span>
+
+                <!-- Lista de Visitas -->
+                <div th:if="${not #lists.isEmpty(medicalRecord.visits)}">
+                    <h4 class="mb-3 border-bottom pb-2 text-primary">Historial de Visitas</h4>
+                    <div class="accordion" id="visitsAccordion">
+                        <div class="accordion-item" th:each="visit, iterStat : ${medicalRecord.visits}">
+                            <h2 class="accordion-header" th:id="'heading' + ${visit.id}">
+                                <button class="accordion-button" th:classappend="${iterStat.first ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${visit.id}" th:aria-expanded="${iterStat.first}" th:aria-controls="'collapse' + ${visit.id}">
+                                    <div class="d-flex justify-content-between w-100 me-3">
+                                        <span>
+                                            <i class="bi bi-calendar-check me-2"></i>
+                                            <strong th:text="${#temporals.format(visit.date, 'dd/MM/yyyy')}"></strong>
+                                            - <span th:text="${visit.visitType}"></span>
+                                        </span>
+                                        <span class="text-muted small">
+                                            Veterinario: <span th:text="${visit.veterinarian.firstName + ' ' + visit.veterinarian.lastName}"></span>
+                                        </span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div th:id="'collapse' + ${visit.id}" class="accordion-collapse collapse" th:classappend="${iterStat.first ? 'show' : ''}" th:aria-labelledby="'heading' + ${visit.id}" data-bs-parent="#visitsAccordion">
+                                <div class="accordion-body">
+                                    <div class="row g-4">
+                                        <!-- Detalles de la Visita -->
+                                        <div class="col-12">
+                                            <h6><strong>Motivo de Consulta:</strong></h6>
+                                            <p th:text="${visit.reasonForVisit}"></p>
+                                            <div th:if="${visit.observations != null}">
+                                                <h6><strong>Observaciones:</strong></h6>
+                                                <p th:text="${visit.observations}"></p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Examen Clínico -->
+                                        <div class="col-12" th:if="${visit.clinicalExam != null}">
+                                            <div class="card bg-light border-0">
+                                                <div class="card-body">
+                                                    <h6 class="card-title border-bottom pb-2"><strong>Examen Clínico</strong></h6>
+                                                    <div class="row g-3">
+                                                        <div class="col-md-3"><strong>Temp:</strong> <span th:text="${visit.clinicalExam.temperature + ' °C'}"></span></div>
+                                                        <div class="col-md-3"><strong>F.C:</strong> <span th:text="${visit.clinicalExam.heartRate + ' lpm'}"></span></div>
+                                                        <div class="col-md-3"><strong>F.R:</strong> <span th:text="${visit.clinicalExam.respiratoryRate + ' rpm'}"></span></div>
+                                                        <div class="col-md-3"><strong>Peso:</strong> <span th:text="${visit.clinicalExam.weight + ' kg'}"></span></div>
+                                                        <div class="col-md-6"><strong>Mucosas:</strong> <span th:text="${visit.clinicalExam.mucosalMembranes}"></span></div>
+                                                        <div class="col-md-6"><strong>Temperamento:</strong> <span th:text="${visit.clinicalExam.temperament?.description}"></span></div>
+                                                        <div class="col-12"><strong>Descripción:</strong> <span th:text="${visit.clinicalExam.description}"></span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Anamnesis -->
+                                        <div class="col-12" th:if="${visit.anamnesis != null}">
+                                            <div class="card bg-light border-0">
+                                                <div class="card-body">
+                                                    <h6 class="card-title border-bottom pb-2"><strong>Anamnesis</strong></h6>
+                                                    <div class="row g-3">
+                                                        <div class="col-md-4"><strong>Alimentación:</strong> <span th:text="${visit.anamnesis.diet}"></span></div>
+                                                        <div class="col-md-4"><strong>Estado Repro:</strong> <span th:text="${visit.anamnesis.reproductiveStatus?.description}"></span></div>
+                                                        <div class="col-md-4"><strong>Desparasitación:</strong> <span th:text="${visit.anamnesis.lastDewormingDate != null ? #temporals.format(visit.anamnesis.lastDewormingDate, 'dd/MM/yyyy') : 'N/A'}"></span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Diagnósticos y Tratamientos -->
+                                        <div class="col-md-6" th:if="${not #lists.isEmpty(visit.diagnostics)}">
+                                            <h6><strong>Diagnósticos:</strong></h6>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item bg-transparent" th:each="diag : ${visit.diagnostics}" th:text="${#strings.listJoin(diag.problems, ', ')}"></li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6" th:if="${not #lists.isEmpty(visit.treatments)}">
+                                            <h6><strong>Tratamientos:</strong></h6>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item bg-transparent" th:each="treat : ${visit.treatments}">
+                                                    <span th:text="${treat.product + ' (' + treat.route + ')'}"></span> - 
+                                                    <span th:text="${treat.frequency}"></span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mt-2">
-                                    <span class="d-block"
-                                          th:text="${#strings.listJoin(diagnostic.problems, ', ')}"></span>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="mb-4" th:if="${not #lists.isEmpty(medicalRecord.treatments)}">
-                <h4 class="mb-3 border-bottom pb-2">Tratamientos</h4>
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead class="table-light">
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Vía</th>
-                                    <th>Frecuencia</th>
-                                    <th>Periodo</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="treatment : ${medicalRecord.treatments}">
-                                    <td th:text="${treatment.product}"></td>
-                                    <td th:text="${treatment.route}"></td>
-                                    <td th:text="${treatment.frequency}"></td>
-                                    <td>
-                                        <span th:text="${#temporals.format(treatment.startDate, 'dd/MM/yyyy')}"></span>
-                                        -
-                                        <span th:text="${treatment.endDate != null ? #temporals.format(treatment.endDate, 'dd/MM/yyyy') : 'En curso'}"></span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="alert alert-info" th:if="${#lists.isEmpty(medicalRecord.visits)}">
+                    No hay visitas registradas en esta historia clínica.
                 </div>
-            </div>
-            <div class="mt-4">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-12">
-                        <a class="btn btn-secondary btn-lg w-100" th:href="@{/veterinarian/dashboard}"
-                           th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}">
-                            <i class="bi bi-arrow-left me-2"></i>Volver
-                        </a>
-                        <a class="btn btn-secondary btn-lg w-100" th:href="@{/pets}"
-                           th:if="${#authentication.principal.role.toString() == 'CUSTOMER'}">
-                            <i class="bi bi-arrow-left me-2"></i>Volver
-                        </a>
-                    </div>
+
+                <!-- Botones de Acción -->
+                <div class="mt-5 d-flex gap-2">
+                    <a class="btn btn-secondary px-4" th:href="@{/veterinarian/dashboard}"
+                       th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}">
+                        <i class="bi bi-arrow-left me-2"></i>Volver
+                    </a>
+                    <a class="btn btn-secondary px-4" th:href="@{/pets}"
+                       th:if="${#authentication.principal.role.toString() == 'CUSTOMER'}">
+                        <i class="bi bi-arrow-left me-2"></i>Volver
+                    </a>
+                    <a class="btn btn-warning px-4" th:href="@{/medical-records/{id}/edit(id=${medicalRecord.id})}"
+                       th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}">
+                        <i class="bi bi-pencil me-2"></i>Editar Historia
+                    </a>
                 </div>
             </div>
         </div>
