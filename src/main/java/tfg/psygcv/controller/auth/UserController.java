@@ -31,16 +31,18 @@ public class UserController extends BaseController {
 
   @GetMapping("/register")
   public String showRegistrationForm(Model model) {
-    model.addAttribute("user", new User());
+    model.addAttribute("registrationUser", new User());
     return VIEW_USER_REGISTER;
   }
 
   @PostMapping("/register")
-  public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult result) {
+  public String registerUser(
+      @Valid @ModelAttribute("registrationUser") User user, BindingResult result) {
     if (result.hasErrors()) {
       return VIEW_USER_REGISTER;
     }
     user.setRole(Role.CUSTOMER);
+    user.setActive(true);
     userService.save(user);
     return REDIRECT_LOGIN;
   }
