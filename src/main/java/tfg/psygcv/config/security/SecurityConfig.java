@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,15 +19,48 @@ public class SecurityConfig {
   private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
     httpSecurity
-        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/users/login", "/logout")
+                auth.requestMatchers(
+                        "/",
+                        "/users/login",
+                        "/users/register",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/webjars/**",
+                        "/error",
+                        "/access_denied")
                     .permitAll()
+                    .requestMatchers("/users/new", "/users/edit/**", "/users/delete/**")
+                    .hasRole("SYSTEM_ADMINISTRATOR")
+                    .requestMatchers("/admin/**")
+                    .hasRole("SYSTEM_ADMINISTRATOR")
+                    .requestMatchers("/customer/**")
+                    .hasRole("CUSTOMER")
+                    .requestMatchers("/profile/**", "/pets/**", "/clinics/**")
+                    .hasRole("CUSTOMER")
+                    .requestMatchers("/medical-services/**")
+                    .hasRole("VETERINARIAN")
+                    .requestMatchers("/medical_records/**")
+                    .hasAnyRole("CUSTOMER", "VETERINARIAN")
+                    .requestMatchers("/reports/**")
+                    .hasAnyRole("RECEPTIONIST", "VETERINARIAN")
+                    .requestMatchers(
+                        "/appointments/schedule",
+                        "/appointments/*/reschedule",
+                        "/appointments/*/update-status")
+                    .hasRole("RECEPTIONIST")
+                    .requestMatchers("/appointments/**")
+                    .hasAnyRole("CUSTOMER", "RECEPTIONIST")
+                    .requestMatchers("/receptionist/**")
+                    .hasRole("RECEPTIONIST")
+                    .requestMatchers("/veterinarian/**")
+                    .hasRole("VETERINARIAN")
                     .anyRequest()
-                    .permitAll())
+                    .authenticated())
         .exceptionHandling(exceptions -> exceptions.accessDeniedPage("/access_denied"))
         .formLogin(
             form ->
