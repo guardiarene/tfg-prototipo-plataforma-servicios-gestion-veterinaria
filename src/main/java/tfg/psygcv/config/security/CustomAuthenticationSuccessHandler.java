@@ -3,20 +3,25 @@ package tfg.psygcv.config.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.user.User;
 
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
   @Override
   public void onAuthenticationSuccess(
-      HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull Authentication authentication)
       throws IOException {
-    User user = (User) authentication.getPrincipal();
-    String role = user.getAuthorities().iterator().next().getAuthority();
+    String role =
+        authentication.getAuthorities().stream()
+            .findFirst()
+            .map(authority -> authority.getAuthority())
+            .orElseThrow(() -> new IllegalStateException("Authenticated user has no authorities"));
     String redirectUrl =
         switch (role) {
           case "ROLE_VETERINARIAN" -> "/veterinarian/dashboard";
