@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tfg.psygcv.model.appointment.Appointment;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.user.User;
 
 @Getter
@@ -27,7 +28,7 @@ import tfg.psygcv.model.user.User;
 @NoArgsConstructor
 @Entity
 @Table(name = "VETERINARY_CLINIC")
-public class VeterinaryClinic {
+public class VeterinaryClinic extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,11 +75,7 @@ public class VeterinaryClinic {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "RECEPTIONIST_ID", nullable = false)
   private User receptionist;
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
-
+  
   public void setVeterinarian(User veterinarian) {
     this.veterinarian = veterinarian;
     if (veterinarian != null && !veterinarian.getClinicsOwned().contains(this)) {

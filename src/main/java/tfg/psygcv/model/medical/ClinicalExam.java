@@ -9,14 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.pet.Temperament;
 
 @Getter
@@ -24,7 +23,7 @@ import tfg.psygcv.model.pet.Temperament;
 @NoArgsConstructor
 @Entity
 @Table(name = "CLINICAL_EXAM")
-public class ClinicalExam {
+public class ClinicalExam extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,21 +60,6 @@ public class ClinicalExam {
 
   @Column(name = "DESCRIPTION", columnDefinition = "TEXT")
   private String description;
-
-  @NotNull
-  @Column(name = "CREATED_AT", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
-
-  @Column(name = "UPDATED_AT")
-  private LocalDateTime updatedAt;
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
-
-  @Version
-  @Column(name = "VERSION")
-  private Integer version;
 
   @OneToOne(mappedBy = "clinicalExam")
   private Visit visit;

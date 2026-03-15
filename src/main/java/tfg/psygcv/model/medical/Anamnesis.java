@@ -11,14 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.pet.ReproductiveStatus;
 
 @Getter
@@ -26,7 +24,7 @@ import tfg.psygcv.model.pet.ReproductiveStatus;
 @NoArgsConstructor
 @Entity
 @Table(name = "ANAMNESIS")
-public class Anamnesis {
+public class Anamnesis extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,21 +61,6 @@ public class Anamnesis {
   @PastOrPresent
   @Column(name = "LAST_BIRTH_DATE")
   private LocalDate lastBirthDate;
-
-  @NotNull
-  @Column(name = "CREATED_AT", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
-
-  @Column(name = "UPDATED_AT")
-  private LocalDateTime updatedAt;
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
-
-  @Version
-  @Column(name = "VERSION")
-  private Integer version;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "VISIT_ID", unique = true)

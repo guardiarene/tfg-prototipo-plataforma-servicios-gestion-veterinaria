@@ -14,18 +14,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tfg.psygcv.model.appointment.Appointment;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.user.User;
 
 @Getter
@@ -33,7 +32,7 @@ import tfg.psygcv.model.user.User;
 @NoArgsConstructor
 @Entity
 @Table(name = "VISIT")
-public class Visit {
+public class Visit extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,21 +55,6 @@ public class Visit {
 
   @Column(name = "OBSERVATIONS", columnDefinition = "TEXT")
   private String observations;
-
-  @NotNull
-  @Column(name = "CREATED_AT", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
-
-  @Column(name = "UPDATED_AT")
-  private LocalDateTime updatedAt;
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
-
-  @Version
-  @Column(name = "VERSION")
-  private Integer version;
 
   @NotNull
   @ManyToOne(fetch = FetchType.LAZY)

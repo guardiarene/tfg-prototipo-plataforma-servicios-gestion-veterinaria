@@ -18,6 +18,7 @@ import java.time.LocalTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.clinic.MedicalService;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
 import tfg.psygcv.model.medical.Visit;
@@ -29,7 +30,7 @@ import tfg.psygcv.model.user.User;
 @NoArgsConstructor
 @Entity
 @Table(name = "APPOINTMENT")
-public class Appointment {
+public class Appointment extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,10 +73,6 @@ public class Appointment {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "VISIT_ID", unique = true)
   private Visit visit;
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
 
   public void setVisit(Visit visit) {
     this.visit = visit;

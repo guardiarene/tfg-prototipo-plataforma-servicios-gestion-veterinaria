@@ -28,6 +28,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import tfg.psygcv.model.appointment.Appointment;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
 import tfg.psygcv.model.pet.Pet;
 
@@ -38,7 +39,7 @@ import tfg.psygcv.model.pet.Pet;
 @Table(
     name = "USER",
     uniqueConstraints = {@UniqueConstraint(columnNames = "EMAIL")})
-public class User implements UserDetails {
+public class User extends AuditableEntity implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,11 +92,7 @@ public class User implements UserDetails {
 
   @OneToMany(mappedBy = "receptionist", fetch = FetchType.LAZY)
   private List<VeterinaryClinic> clinicsAsReceptionist = new ArrayList<>();
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
-
+  
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     String roleName = "ROLE_" + this.role.name();
@@ -129,6 +126,6 @@ public class User implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return Boolean.TRUE.equals(this.active);
+    return Boolean.TRUE.equals(this.getActive());
   }
 }

@@ -13,14 +13,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.pet.Pet;
 
 @Getter
@@ -28,30 +27,15 @@ import tfg.psygcv.model.pet.Pet;
 @NoArgsConstructor
 @Entity
 @Table(name = "MEDICAL_RECORD")
-public class MedicalRecord {
+public class MedicalRecord extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID")
   private Long id;
 
-  @NotNull
-  @Column(name = "CREATED_AT", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
-
-  @Column(name = "UPDATED_AT")
-  private LocalDateTime updatedAt;
-
   @Column(name = "GENERAL_OBSERVATIONS", columnDefinition = "TEXT")
   private String generalObservations;
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
-
-  @Version
-  @Column(name = "VERSION")
-  private Integer version;
 
   @NotNull
   @OneToOne(fetch = FetchType.LAZY)

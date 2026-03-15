@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tfg.psygcv.model.appointment.Appointment;
+import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.medical.MedicalRecord;
 import tfg.psygcv.model.user.User;
 
@@ -33,7 +34,7 @@ import tfg.psygcv.model.user.User;
 @NoArgsConstructor
 @Entity
 @Table(name = "PET")
-public class Pet {
+public class Pet extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,10 +82,6 @@ public class Pet {
       orphanRemoval = true,
       fetch = FetchType.LAZY)
   private List<Appointment> appointments = new ArrayList<>();
-
-  @NotNull
-  @Column(name = "ACTIVE", nullable = false)
-  private Boolean active = true;
 
   public void setMedicalRecord(MedicalRecord record) {
     this.medicalRecord = record;
