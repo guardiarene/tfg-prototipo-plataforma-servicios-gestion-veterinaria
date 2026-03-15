@@ -16,6 +16,7 @@
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-person-plus', 'Registro de Usuario', null)}"></div>
                     <div class="card-body p-4">
                         <form method="POST" th:action="@{/users/register}" th:object="${registrationUser}">
+                            <input type="hidden" name="role" value="CUSTOMER">
                             <div class="row g-4 mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold" for="firstName">Nombre</label>
