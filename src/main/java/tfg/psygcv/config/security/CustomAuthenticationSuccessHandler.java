@@ -19,10 +19,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     String role = user.getAuthorities().iterator().next().getAuthority();
     String redirectUrl =
         switch (role) {
-          case "ROLE_VETERINARIO" -> "/veterinarian/dashboard";
-          case "ROLE_RECEPCIONISTA" -> "/receptionist/dashboard";
-          case "ROLE_CLIENTE" -> "/client/dashboard";
-          case "ROLE_ADMINISTRADOR" -> "/admin/dashboard";
+          case "ROLE_VETERINARIAN" -> "/veterinarian/dashboard";
+          case "ROLE_RECEPTIONIST" -> "/receptionist/dashboard";
+          case "ROLE_CUSTOMER" -> "/customer/dashboard";
+          case "ROLE_SYSTEM_ADMINISTRATOR" -> "/admin/dashboard";
           default -> throw new IllegalStateException("Non-existent role: " + role);
         };
     response.sendRedirect(redirectUrl);

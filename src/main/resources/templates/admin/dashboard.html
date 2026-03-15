@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/layout :: layout('Gestión de Usuarios', ~{layouts/navbar :: navbar('ADMIN')}, ~{::content})}">
+<div th:replace="~{layouts/layout :: layout('Gestión de Usuarios', ~{layouts/navbar :: navbar('SYSTEM_ADMINISTRATOR')}, ~{::content})}">
     <div th:fragment="content" class="container mt-4">
         <div class="row justify-content-center">
             <div class="col-md-10">
