@@ -35,7 +35,7 @@ public class JpaAuditConfig {
       String username = userDetails.getUsername();
       return !username.isBlank() ? username : SYSTEM_AUDITOR;
     }
-
+    
     if (principal instanceof String username) {
       if (!username.isBlank() && !"anonymousUser".equalsIgnoreCase(username)) {
         return username;
