@@ -23,25 +23,21 @@ public class JpaAuditConfig {
 
   private String resolveCurrentAuditor() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
     if (authentication == null
         || !authentication.isAuthenticated()
         || authentication instanceof AnonymousAuthenticationToken) {
       return SYSTEM_AUDITOR;
     }
-
     Object principal = authentication.getPrincipal();
     if (principal instanceof UserDetails userDetails) {
       String username = userDetails.getUsername();
       return !username.isBlank() ? username : SYSTEM_AUDITOR;
     }
-    
     if (principal instanceof String username) {
       if (!username.isBlank() && !"anonymousUser".equalsIgnoreCase(username)) {
         return username;
       }
     }
-
     return SYSTEM_AUDITOR;
   }
 }

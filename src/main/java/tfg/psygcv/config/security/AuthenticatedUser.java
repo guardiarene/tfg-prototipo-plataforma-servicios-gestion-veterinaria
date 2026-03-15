@@ -16,17 +16,11 @@ import tfg.psygcv.model.user.User;
 public final class AuthenticatedUser implements UserDetails, Serializable {
 
   @Serial private static final long serialVersionUID = 1L;
-
   private final Long id;
-
   private final String email;
-
   private final String password;
-
   private final Role role;
-
   private final boolean active;
-
   private final List<GrantedAuthority> authorities;
 
   private AuthenticatedUser(
