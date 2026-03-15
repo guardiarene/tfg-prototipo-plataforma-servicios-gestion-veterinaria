@@ -40,6 +40,7 @@ public class MedicalRecordController extends BaseController {
     User user = getCurrentUser(authentication);
     MedicalRecord medicalRecord = medicalRecordService.findCompleteById(id);
     model.addAttribute("medicalRecord", medicalRecord);
+    model.addAttribute("role", user.getRole().name());
     return "medical_records/details";
   }
 
@@ -92,14 +93,8 @@ public class MedicalRecordController extends BaseController {
     return "redirect:/medical-records/" + id;
   }
 
-  /**
-   * Initializes a new MedicalRecord with a first Visit for backward compatibility with existing
-   * forms
-   */
   private MedicalRecord initializeNewMedicalRecord() {
     MedicalRecord medicalRecord = new MedicalRecord();
-
-    // Create first visit (backward compatibility)
     Visit firstVisit = new Visit();
     firstVisit.setDate(LocalDate.now());
     firstVisit.setVisitType(VisitType.CONSULTATION);
@@ -107,14 +102,9 @@ public class MedicalRecordController extends BaseController {
     firstVisit.setDiagnostics(new ArrayList<>());
     firstVisit.setTreatments(new ArrayList<>());
     firstVisit.setVaccines(new ArrayList<>());
-
-    // Initialize anamnesis
     Anamnesis anamnesis = new Anamnesis();
     firstVisit.setAnamnesis(anamnesis);
-
-    // Add first visit to medical record
     medicalRecord.getVisits().add(firstVisit);
-
     return medicalRecord;
   }
 }

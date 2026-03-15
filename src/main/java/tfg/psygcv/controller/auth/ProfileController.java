@@ -29,6 +29,7 @@ public class ProfileController extends BaseController {
   public String showProfile(Model model, Authentication authentication) {
     User currentUser = getCurrentUser(authentication);
     model.addAttribute("user", userService.findById(currentUser.getId()));
+    model.addAttribute("role", currentUser.getRole().name());
     return "profile/view";
   }
 
@@ -36,6 +37,7 @@ public class ProfileController extends BaseController {
   public String showEditForm(Model model, Authentication authentication) {
     User currentUser = getCurrentUser(authentication);
     model.addAttribute("user", userService.findById(currentUser.getId()));
+    model.addAttribute("role", currentUser.getRole().name());
     return "profile/edit";
   }
 
