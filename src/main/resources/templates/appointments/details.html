@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Detalle del Turno', ~{layouts/navbar :: navbar(#authentication.principal.role.toString())}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -40,7 +40,8 @@
                                     </h5>
                                     <dl class="mb-0">
                                         <dt><i class="bi bi-calendar2-check me-1 text-muted"></i>Fecha:</dt>
-                                        <dd class="ms-4" th:text="${#temporals.format(appointment.date, 'dd/MM/yyyy')}"></dd>
+                                        <dd class="ms-4"
+                                            th:text="${#temporals.format(appointment.date, 'dd/MM/yyyy')}"></dd>
                                         <dt class="mt-2"><i class="bi bi-clock me-1 text-muted"></i>Hora:</dt>
                                         <dd class="ms-4" th:text="${appointment.time}"></dd>
                                         <dt class="mt-2"><i class="bi bi-heart-pulse me-1 text-muted"></i>Servicio:</dt>
@@ -82,10 +83,10 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-end mt-5 gap-2">
-                            <form th:if="${appointment.appointmentStatus.name() == 'PENDING' || appointment.appointmentStatus.name() == 'CONFIRMED'}"
-                                  th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="POST"
-                                  onsubmit="return confirm('¿Estás seguro de que deseas cancelar este turno?');">
-                                <button type="submit" class="btn btn-outline-danger px-4">
+                            <form method="POST"
+                                  onsubmit="return confirm('¿Estás seguro de que deseas cancelar este turno?');" th:action="@{/appointments/{id}/cancel(id=${appointment.id})}"
+                                  th:if="${appointment.appointmentStatus.name() == 'PENDING' || appointment.appointmentStatus.name() == 'CONFIRMED'}">
+                                <button class="btn btn-outline-danger px-4" type="submit">
                                     <i class="bi bi-x-circle me-2"></i> Cancelar Turno
                                 </button>
                             </form>

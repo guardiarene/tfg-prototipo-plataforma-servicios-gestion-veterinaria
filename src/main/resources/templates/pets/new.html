@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Registrar Mascota', ~{layouts/navbar :: navbar('CUSTOMER')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -22,22 +22,25 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
                                         <label>
-                                            <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                   required th:field="*{name}" type="text">
+                                            <input class="form-control form-control-lg" required
+                                                   th:errorclass="is-invalid" th:field="*{name}" type="text">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                                        <div class="invalid-feedback" th:errors="*{name}"
+                                             th:if="${#fields.hasErrors('name')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Especie</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-tropical-storm"></i></span>
+                                        <span class="input-group-text bg-light"><i
+                                                class="bi bi-tropical-storm"></i></span>
                                         <label>
-                                            <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                   required th:field="*{species}"
+                                            <input class="form-control form-control-lg" required
+                                                   th:errorclass="is-invalid" th:field="*{species}"
                                                    type="text">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('species')}" th:errors="*{species}"></div>
+                                        <div class="invalid-feedback" th:errors="*{species}"
+                                             th:if="${#fields.hasErrors('species')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -46,36 +49,41 @@
                                         <span class="input-group-text bg-light"><i
                                                 class="bi bi-gender-ambiguous"></i></span>
                                         <label>
-                                            <select class="form-select form-select-lg" th:errorclass="is-invalid"
-                                                    required th:field="*{sex}">
-                                                <option value="" selected disabled>Seleccionar sexo...</option>
+                                            <select class="form-select form-select-lg" required
+                                                    th:errorclass="is-invalid" th:field="*{sex}">
+                                                <option disabled selected value="">Seleccionar sexo...</option>
                                                 <option th:each="sexValue : ${T(tfg.psygcv.model.pet.Sex).values()}"
-                                                        th:value="${sexValue}"
-                                                        th:text="${sexValue == T(tfg.psygcv.model.pet.Sex).MALE ? 'Macho' : 'Hembra'}"></option>
+                                                        th:text="${sexValue == T(tfg.psygcv.model.pet.Sex).MALE ? 'Macho' : 'Hembra'}"
+                                                        th:value="${sexValue}"></option>
                                             </select>
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('sex')}" th:errors="*{sex}"></div>
+                                        <div class="invalid-feedback" th:errors="*{sex}"
+                                             th:if="${#fields.hasErrors('sex')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Fecha Nacimiento</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-calendar"></i></span>
-                                        <input class="form-control form-control-lg" th:errorclass="is-invalid" required th:field="*{birthDate}"
+                                        <input class="form-control form-control-lg" required th:errorclass="is-invalid"
+                                               th:field="*{birthDate}"
                                                type="date">
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
+                                        <div class="invalid-feedback" th:errors="*{birthDate}"
+                                             th:if="${#fields.hasErrors('birthDate')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Peso (kg)</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-speedometer2"></i></span>
+                                        <span class="input-group-text bg-light"><i
+                                                class="bi bi-speedometer2"></i></span>
                                         <label>
-                                            <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                   required step="0.1" th:field="*{weight}"
+                                            <input class="form-control form-control-lg" required
+                                                   step="0.1" th:errorclass="is-invalid" th:field="*{weight}"
                                                    type="number">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></div>
+                                        <div class="invalid-feedback" th:errors="*{weight}"
+                                             th:if="${#fields.hasErrors('weight')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -83,11 +91,12 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
                                         <label>
-                                            <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                   required th:field="*{breed}"
+                                            <input class="form-control form-control-lg" required
+                                                   th:errorclass="is-invalid" th:field="*{breed}"
                                                    type="text">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('breed')}" th:errors="*{breed}"></div>
+                                        <div class="invalid-feedback" th:errors="*{breed}"
+                                             th:if="${#fields.hasErrors('breed')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-12">

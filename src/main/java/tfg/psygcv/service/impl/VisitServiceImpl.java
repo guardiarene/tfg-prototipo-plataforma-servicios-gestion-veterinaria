@@ -105,8 +105,7 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (medicalRecordId == null || medicalRecordId <= 0) {
       throw new IllegalArgumentException("Medical record ID must be a positive number");
     }
-    return visitRepository.findByMedicalRecordIdAndActiveOrderByDateDesc(
-        medicalRecordId, pageable);
+    return visitRepository.findByMedicalRecordIdAndActiveOrderByDateDesc(medicalRecordId, pageable);
   }
 
   @Override
@@ -146,7 +145,8 @@ public class VisitServiceImpl implements VisitServiceInterface {
     visitRepository.save(visit);
   }
 
-  private void setupVisitRelationships(Visit visit, MedicalRecord medicalRecord, User veterinarian) {
+  private void setupVisitRelationships(
+      Visit visit, MedicalRecord medicalRecord, User veterinarian) {
     visit.setMedicalRecord(medicalRecord);
     visit.setVeterinarian(veterinarian);
     visit.setActive(true);
@@ -184,31 +184,40 @@ public class VisitServiceImpl implements VisitServiceInterface {
 
   private void saveDiagnostics(Visit visit) {
     if (visit.getDiagnostics() != null && !visit.getDiagnostics().isEmpty()) {
-      visit.getDiagnostics().forEach(d -> {
-        d.setVisit(visit);
-        d.setActive(true);
-      });
+      visit
+          .getDiagnostics()
+          .forEach(
+              d -> {
+                d.setVisit(visit);
+                d.setActive(true);
+              });
       diagnosticRepository.saveAll(visit.getDiagnostics());
     }
   }
 
   private void saveTreatments(Visit visit) {
     if (visit.getTreatments() != null && !visit.getTreatments().isEmpty()) {
-      visit.getTreatments().forEach(t -> {
-        t.setVisit(visit);
-        t.setActive(true);
-      });
+      visit
+          .getTreatments()
+          .forEach(
+              t -> {
+                t.setVisit(visit);
+                t.setActive(true);
+              });
       treatmentRepository.saveAll(visit.getTreatments());
     }
   }
 
   private void saveVaccines(Visit visit) {
     if (visit.getVaccines() != null && !visit.getVaccines().isEmpty()) {
-      visit.getVaccines().forEach(v -> {
-        v.setVisit(visit);
-        v.setMedicalRecord(visit.getMedicalRecord());
-        v.setActive(true);
-      });
+      visit
+          .getVaccines()
+          .forEach(
+              v -> {
+                v.setVisit(visit);
+                v.setMedicalRecord(visit.getMedicalRecord());
+                v.setActive(true);
+              });
       vaccineRepository.saveAll(visit.getVaccines());
     }
   }

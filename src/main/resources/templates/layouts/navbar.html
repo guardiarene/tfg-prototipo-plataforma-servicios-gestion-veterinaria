@@ -13,7 +13,9 @@
                     <li class="nav-item" th:if="${role == 'SYSTEM_ADMINISTRATOR'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
                             <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar Sesión</button>
+                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
+                                Sesión
+                            </button>
                         </form>
                     </li>
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
@@ -28,7 +30,9 @@
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
                             <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar Sesión</button>
+                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
+                                Sesión
+                            </button>
                         </form>
                     </li>
                     <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
@@ -40,7 +44,9 @@
                     <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
                             <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar Sesión</button>
+                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
+                                Sesión
+                            </button>
                         </form>
                     </li>
                     <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
@@ -60,7 +66,9 @@
                     <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
                             <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar Sesión</button>
+                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
+                                Sesión
+                            </button>
                         </form>
                     </li>
                     <li class="nav-item" th:unless="${role}">

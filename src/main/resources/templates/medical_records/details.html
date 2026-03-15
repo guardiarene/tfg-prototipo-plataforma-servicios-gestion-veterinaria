@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Detalle Historia Clínica', ~{layouts/navbar :: navbar(${role})}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica de ' + medicalRecord.pet.name, null)}"></div>
             <div class="card-body">
@@ -25,7 +25,8 @@
                             <strong>Raza:</strong> <span th:text="${medicalRecord.pet.breed}"></span>
                         </div>
                         <div class="col-md-3">
-                            <strong>Propietario:</strong> <span th:text="${medicalRecord.pet.owner.firstName + ' ' + medicalRecord.pet.owner.lastName}"></span>
+                            <strong>Propietario:</strong> <span
+                                th:text="${medicalRecord.pet.owner.firstName + ' ' + medicalRecord.pet.owner.lastName}"></span>
                         </div>
                     </div>
                 </div>
@@ -35,7 +36,11 @@
                     <div class="accordion" id="visitsAccordion">
                         <div class="accordion-item" th:each="visit, iterStat : ${medicalRecord.visits}">
                             <h2 class="accordion-header" th:id="'heading' + ${visit.id}">
-                                <button class="accordion-button" th:classappend="${iterStat.first ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${visit.id}" th:aria-expanded="${iterStat.first}" th:aria-controls="'collapse' + ${visit.id}">
+                                <button class="accordion-button" data-bs-toggle="collapse"
+                                        th:aria-controls="'collapse' + ${visit.id}" th:aria-expanded="${iterStat.first}"
+                                        th:classappend="${iterStat.first ? '' : 'collapsed'}"
+                                        th:data-bs-target="'#collapse' + ${visit.id}"
+                                        type="button">
                                     <div class="d-flex justify-content-between w-100 me-3">
                                         <span>
                                             <i class="bi bi-calendar-check me-2"></i>
@@ -43,12 +48,15 @@
                                             - <span th:text="${visit.visitType}"></span>
                                         </span>
                                         <span class="text-muted small">
-                                            Veterinario: <span th:text="${visit.veterinarian.firstName + ' ' + visit.veterinarian.lastName}"></span>
+                                            Veterinario: <span
+                                                th:text="${visit.veterinarian.firstName + ' ' + visit.veterinarian.lastName}"></span>
                                         </span>
                                     </div>
                                 </button>
                             </h2>
-                            <div th:id="'collapse' + ${visit.id}" class="accordion-collapse collapse" th:classappend="${iterStat.first ? 'show' : ''}" th:aria-labelledby="'heading' + ${visit.id}" data-bs-parent="#visitsAccordion">
+                            <div class="accordion-collapse collapse" data-bs-parent="#visitsAccordion"
+                                 th:aria-labelledby="'heading' + ${visit.id}"
+                                 th:classappend="${iterStat.first ? 'show' : ''}" th:id="'collapse' + ${visit.id}">
                                 <div class="accordion-body">
                                     <div class="row g-4">
                                         <div class="col-12">
@@ -63,15 +71,30 @@
                                         <div class="col-12" th:if="${visit.clinicalExam != null}">
                                             <div class="card bg-light border-0">
                                                 <div class="card-body">
-                                                    <h6 class="card-title border-bottom pb-2"><strong>Examen Clínico</strong></h6>
+                                                    <h6 class="card-title border-bottom pb-2"><strong>Examen
+                                                        Clínico</strong></h6>
                                                     <div class="row g-3">
-                                                        <div class="col-md-3"><strong>Temp:</strong> <span th:text="${visit.clinicalExam.temperature + ' °C'}"></span></div>
-                                                        <div class="col-md-3"><strong>F.C:</strong> <span th:text="${visit.clinicalExam.heartRate + ' lpm'}"></span></div>
-                                                        <div class="col-md-3"><strong>F.R:</strong> <span th:text="${visit.clinicalExam.respiratoryRate + ' rpm'}"></span></div>
-                                                        <div class="col-md-3"><strong>Peso:</strong> <span th:text="${visit.clinicalExam.weight + ' kg'}"></span></div>
-                                                        <div class="col-md-6"><strong>Mucosas:</strong> <span th:text="${visit.clinicalExam.mucosalMembranes}"></span></div>
-                                                        <div class="col-md-6"><strong>Temperamento:</strong> <span th:text="${visit.clinicalExam.temperament?.description}"></span></div>
-                                                        <div class="col-12"><strong>Descripción:</strong> <span th:text="${visit.clinicalExam.description}"></span></div>
+                                                        <div class="col-md-3"><strong>Temp:</strong> <span
+                                                                th:text="${visit.clinicalExam.temperature + ' °C'}"></span>
+                                                        </div>
+                                                        <div class="col-md-3"><strong>F.C:</strong> <span
+                                                                th:text="${visit.clinicalExam.heartRate + ' lpm'}"></span>
+                                                        </div>
+                                                        <div class="col-md-3"><strong>F.R:</strong> <span
+                                                                th:text="${visit.clinicalExam.respiratoryRate + ' rpm'}"></span>
+                                                        </div>
+                                                        <div class="col-md-3"><strong>Peso:</strong> <span
+                                                                th:text="${visit.clinicalExam.weight + ' kg'}"></span>
+                                                        </div>
+                                                        <div class="col-md-6"><strong>Mucosas:</strong> <span
+                                                                th:text="${visit.clinicalExam.mucosalMembranes}"></span>
+                                                        </div>
+                                                        <div class="col-md-6"><strong>Temperamento:</strong> <span
+                                                                th:text="${visit.clinicalExam.temperament?.description}"></span>
+                                                        </div>
+                                                        <div class="col-12"><strong>Descripción:</strong> <span
+                                                                th:text="${visit.clinicalExam.description}"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -80,11 +103,17 @@
                                         <div class="col-12" th:if="${visit.anamnesis != null}">
                                             <div class="card bg-light border-0">
                                                 <div class="card-body">
-                                                    <h6 class="card-title border-bottom pb-2"><strong>Anamnesis</strong></h6>
+                                                    <h6 class="card-title border-bottom pb-2"><strong>Anamnesis</strong>
+                                                    </h6>
                                                     <div class="row g-3">
-                                                        <div class="col-md-4"><strong>Alimentación:</strong> <span th:text="${visit.anamnesis.diet}"></span></div>
-                                                        <div class="col-md-4"><strong>Estado Repro:</strong> <span th:text="${visit.anamnesis.reproductiveStatus?.description}"></span></div>
-                                                        <div class="col-md-4"><strong>Desparasitación:</strong> <span th:text="${visit.anamnesis.lastDewormingDate != null ? #temporals.format(visit.anamnesis.lastDewormingDate, 'dd/MM/yyyy') : 'N/A'}"></span></div>
+                                                        <div class="col-md-4"><strong>Alimentación:</strong> <span
+                                                                th:text="${visit.anamnesis.diet}"></span></div>
+                                                        <div class="col-md-4"><strong>Estado Repro:</strong> <span
+                                                                th:text="${visit.anamnesis.reproductiveStatus?.description}"></span>
+                                                        </div>
+                                                        <div class="col-md-4"><strong>Desparasitación:</strong> <span
+                                                                th:text="${visit.anamnesis.lastDewormingDate != null ? #temporals.format(visit.anamnesis.lastDewormingDate, 'dd/MM/yyyy') : 'N/A'}"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -93,14 +122,18 @@
                                         <div class="col-md-6" th:if="${not #lists.isEmpty(visit.diagnostics)}">
                                             <h6><strong>Diagnósticos:</strong></h6>
                                             <ul class="list-group list-group-flush">
-                                                <li class="list-group-item bg-transparent" th:each="diag : ${visit.diagnostics}" th:text="${#strings.listJoin(diag.problems, ', ')}"></li>
+                                                <li class="list-group-item bg-transparent"
+                                                    th:each="diag : ${visit.diagnostics}"
+                                                    th:text="${#strings.listJoin(diag.problems, ', ')}"></li>
                                             </ul>
                                         </div>
                                         <div class="col-md-6" th:if="${not #lists.isEmpty(visit.treatments)}">
                                             <h6><strong>Tratamientos:</strong></h6>
                                             <ul class="list-group list-group-flush">
-                                                <li class="list-group-item bg-transparent" th:each="treat : ${visit.treatments}">
-                                                    <span th:text="${treat.product + ' (' + treat.route + ')'}"></span> - 
+                                                <li class="list-group-item bg-transparent"
+                                                    th:each="treat : ${visit.treatments}">
+                                                    <span th:text="${treat.product + ' (' + treat.route + ')'}"></span>
+                                                    -
                                                     <span th:text="${treat.frequency}"></span>
                                                 </li>
                                             </ul>

@@ -75,7 +75,7 @@ public class VeterinaryClinic extends AuditableEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "RECEPTIONIST_ID", nullable = false)
   private User receptionist;
-  
+
   public void setVeterinarian(User veterinarian) {
     this.veterinarian = veterinarian;
     if (veterinarian != null && !veterinarian.getClinicsOwned().contains(this)) {

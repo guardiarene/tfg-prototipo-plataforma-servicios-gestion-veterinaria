@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Información de la Mascota', ~{layouts/navbar :: navbar('CUSTOMER')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -31,7 +31,8 @@
                                 <div class="col-md-6">
                                     <dl class="mb-0">
                                         <dt><i class="bi bi-calendar me-2"></i>Fecha Nacimiento:</dt>
-                                        <dd class="ms-4" th:text="${#temporals.format(pet.birthDate, 'dd/MM/yyyy')}"></dd>
+                                        <dd class="ms-4"
+                                            th:text="${#temporals.format(pet.birthDate, 'dd/MM/yyyy')}"></dd>
                                         <dt class="mt-3"><i class="bi bi-brightness-alt-high me-2"></i>Peso:</dt>
                                         <dd class="ms-4" th:text="${pet.weight + ' kg'}"></dd>
                                     </dl>

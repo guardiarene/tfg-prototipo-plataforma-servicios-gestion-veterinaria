@@ -51,6 +51,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
           + "WHERE v.id = :id AND v.active = true")
   Optional<Visit> findByIdWithVeterinarian(@Param("id") Long id);
 
-  @Query("SELECT COUNT(v) FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true")
+  @Query(
+      "SELECT COUNT(v) FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true")
   Long countByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
 }

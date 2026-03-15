@@ -9,16 +9,18 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Inicio - Prototipo TFG', ~{layouts/navbar :: navbar(null)}, ~{::content})}">
-    <div th:fragment="content" class="container mt-5">
+    <div class="container mt-5" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow border-0 overflow-hidden">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-heart-pulse-fill', 'Bienvenido a PSyGCV', null)}"></div>
                     <div class="card-body p-5 text-center bg-white">
-                        <h2 class="h4 mb-4 text-secondary">Plataforma de Servicios y Gestión de Clínicas Veterinarias</h2>
+                        <h2 class="h4 mb-4 text-secondary">Plataforma de Servicios y Gestión de Clínicas
+                            Veterinarias</h2>
                         <p class="lead mb-5 fs-5 px-lg-5">
-                            Gestione la salud de sus mascotas de forma integral. 
-                            Acceda a historias clínicas, programe turnos y mantenga el historial de sus fieles compañeros bajo control en nuestra red de clínicas asociadas.
+                            Gestione la salud de sus mascotas de forma integral.
+                            Acceda a historias clínicas, programe turnos y mantenga el historial de sus fieles
+                            compañeros bajo control en nuestra red de clínicas asociadas.
                         </p>
                         <div class="d-grid gap-3 d-md-flex justify-content-center mb-5">
                             <a class="btn btn-primary btn-lg px-5 py-3 shadow-sm" th:href="@{/users/register}">

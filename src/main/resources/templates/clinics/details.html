@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Detalles - ' + clinic.name, ~{layouts/navbar :: navbar('CUSTOMER')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -75,7 +75,8 @@
                                     <a class="btn btn-secondary px-4" th:href="@{/customer/dashboard}">
                                         <i class="bi bi-arrow-left-circle me-2"></i>Volver
                                     </a>
-                                    <a class="btn btn-primary px-4" th:href="@{/appointments/new(clinicId=${clinic.id})}">
+                                    <a class="btn btn-primary px-4"
+                                       th:href="@{/appointments/new(clinicId=${clinic.id})}">
                                         <i class="bi bi-calendar-plus me-2"></i>Solicitar Turno
                                     </a>
                                 </div>

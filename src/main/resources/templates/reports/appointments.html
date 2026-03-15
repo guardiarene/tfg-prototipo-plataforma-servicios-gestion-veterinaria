@@ -8,17 +8,18 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Reporte de Turnos', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-graph-up-arrow', 'Reporte de Solicitudes y Servicios', null)}"></div>
             <div class="card-body p-4">
-                <form method="POST" th:action="@{/reports/appointments}" class="mb-4">
+                <form class="mb-4" method="POST" th:action="@{/reports/appointments}">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Fecha Desde:</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-calendar-event"></i></span>
-                                <input class="form-control" name="startDate" required th:value="${startDate}" type="date">
+                                <input class="form-control" name="startDate" required th:value="${startDate}"
+                                       type="date">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -41,7 +42,8 @@
 
                 <div class="alert alert-light border shadow-sm mb-4" th:if="${startDate != null and endDate != null}">
                     <i class="bi bi-info-circle me-2 text-primary"></i>
-                    Mostrando actividad desde el <strong th:text="${#temporals.format(startDate, 'dd/MM/yyyy')}"></strong>
+                    Mostrando actividad desde el <strong
+                        th:text="${#temporals.format(startDate, 'dd/MM/yyyy')}"></strong>
                     hasta el <strong th:text="${#temporals.format(endDate, 'dd/MM/yyyy')}"></strong>
                 </div>
 
@@ -49,7 +51,8 @@
                     <div class="col-lg-8">
                         <div class="card border-0 bg-white shadow-sm h-100">
                             <div class="card-body">
-                                <h5 class="card-title border-bottom pb-2 mb-4 text-primary">Visualización de Tendencia</h5>
+                                <h5 class="card-title border-bottom pb-2 mb-4 text-primary">Visualización de
+                                    Tendencia</h5>
                                 <div class="chart-container" style="position: relative; height:300px; width:100%">
                                     <canvas id="graficoAppointments"></canvas>
                                 </div>
@@ -72,7 +75,8 @@
                                         <tr th:each="appointment : ${appointments}">
                                             <td th:text="${#temporals.format(appointment.key, 'dd/MM/yyyy')}"></td>
                                             <td class="text-center">
-                                                <span class="badge bg-primary rounded-pill px-3" th:text="${appointment.value}"></span>
+                                                <span class="badge bg-primary rounded-pill px-3"
+                                                      th:text="${appointment.value}"></span>
                                             </td>
                                         </tr>
                                         </tbody>

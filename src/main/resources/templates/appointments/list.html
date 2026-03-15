@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Mis Turnos', ~{layouts/navbar :: navbar('CUSTOMER')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">

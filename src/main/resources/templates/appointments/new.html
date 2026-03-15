@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Solicitar Turno', ~{layouts/navbar :: navbar('CUSTOMER')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -33,8 +33,8 @@
                                         <i class="bi bi-calendar3"></i>
                                     </span>
                                     <label for="date"></label><input class="form-control form-control-lg" id="date"
-                                                                     name="date" required type="date"
-                                                                     th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                                                     name="date" required th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                                                     type="date">
                                 </div>
                             </div>
                             <div class="mb-4 border-bottom pb-3">
@@ -47,11 +47,11 @@
                                     </span>
                                     <label for="petId"></label><select class="form-select form-select-lg" id="petId"
                                                                        name="petId" required>
-                                        <option disabled selected value="">Seleccione una mascota...</option>
-                                        <option th:each="pet : ${pets}"
-                                                th:text="${pet.name + ' (' + pet.species + ')'}"
-                                                th:value="${pet.id}"></option>
-                                    </select>
+                                    <option disabled selected value="">Seleccione una mascota...</option>
+                                    <option th:each="pet : ${pets}"
+                                            th:text="${pet.name + ' (' + pet.species + ')'}"
+                                            th:value="${pet.id}"></option>
+                                </select>
                                 </div>
                                 <div class="alert alert-warning mt-3" th:if="${#lists.isEmpty(pets)}">
                                     <i class="bi bi-exclamation-triangle me-2"></i>
@@ -69,11 +69,11 @@
                                     </span>
                                     <label for="serviceId"></label><select class="form-select form-select-lg"
                                                                            id="serviceId" name="serviceId" required>
-                                        <option disabled selected value="">Seleccione un servicio...</option>
-                                        <option th:each="service : ${services}"
-                                                th:text="${service.name}"
-                                                th:value="${service.id}"></option>
-                                    </select>
+                                    <option disabled selected value="">Seleccione un servicio...</option>
+                                    <option th:each="service : ${services}"
+                                            th:text="${service.name}"
+                                            th:value="${service.id}"></option>
+                                </select>
                                 </div>
                                 <div class="alert alert-warning mt-3" th:if="${#lists.isEmpty(services)}">
                                     <i class="bi bi-exclamation-triangle me-2"></i>

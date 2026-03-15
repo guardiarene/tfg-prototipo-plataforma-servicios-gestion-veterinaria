@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Buscar Clínicas', ~{layouts/navbar :: navbar('CUSTOMER')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -20,14 +20,16 @@
                         <form method="GET" th:action="@{/clinics/search}">
                             <div class="input-group mb-4">
                                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                                <input aria-label="Buscar veterinarias" class="form-control form-control-lg border-start-0"
+                                <input aria-label="Buscar veterinarias"
+                                       class="form-control form-control-lg border-start-0"
                                        name="q" placeholder="Buscar clínicas o servicios..." th:value="${searchQuery}"
                                        type="search">
                                 <button class="btn btn-primary px-4" type="submit">Buscar</button>
                             </div>
                         </form>
                         <div class="mb-4 border-bottom pb-2">
-                            <h4 class="mb-0"><i class="bi bi-list-task me-2 text-primary"></i>Resultados de Búsqueda</h4>
+                            <h4 class="mb-0"><i class="bi bi-list-task me-2 text-primary"></i>Resultados de Búsqueda
+                            </h4>
                         </div>
                         <div class="row g-4">
                             <div class="col-12" th:each="clinic : ${veterinaryClinics}">
@@ -35,7 +37,8 @@
                                     <div class="card-header bg-light">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0" th:text="${clinic.name}"></h5>
-                                            <a class="btn btn-primary btn-sm px-3" th:href="@{/clinics/{id}(id=${clinic.id})}">
+                                            <a class="btn btn-primary btn-sm px-3"
+                                               th:href="@{/clinics/{id}(id=${clinic.id})}">
                                                 <i class="bi bi-info-circle me-2"></i>Más Información
                                             </a>
                                         </div>

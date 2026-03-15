@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Mis Mascotas', ~{layouts/navbar :: navbar('CUSTOMER')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -50,7 +50,8 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                                    <a class="btn btn-primary btn-sm" th:href="@{/pets/{id}(id=${pet.id})}">
+                                                    <a class="btn btn-primary btn-sm"
+                                                       th:href="@{/pets/{id}(id=${pet.id})}">
                                                         <i class="bi bi-info-circle me-2"></i>Detalles
                                                     </a>
                                                     <a class="btn btn-success btn-sm"
@@ -62,8 +63,8 @@
                                                         <i class="bi bi-pencil me-2"></i>Editar
                                                     </a>
                                                     <form class="d-inline" method="POST"
-                                                          th:action="@{/pets/{id}/delete(id=${pet.id})}"
-                                                          onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta mascota?');">
+                                                          onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta mascota?');"
+                                                          th:action="@{/pets/{id}/delete(id=${pet.id})}">
                                                         <button class="btn btn-danger btn-sm" type="submit">
                                                             <i class="bi bi-trash me-2"></i>Eliminar
                                                         </button>

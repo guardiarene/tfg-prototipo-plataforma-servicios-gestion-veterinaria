@@ -66,8 +66,7 @@ public class VisitValidator {
             pet, veterinarianClinics, pet.getOwner());
 
     if (!hasPetAccess) {
-      throw new IllegalStateException(
-          "Pet is not registered in any of the veterinarian's clinics");
+      throw new IllegalStateException("Pet is not registered in any of the veterinarian's clinics");
     }
   }
 

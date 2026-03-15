@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Nueva Historia Clínica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical-fill', 'Nueva Historia Clínica', null)}"></div>
             <form class="card-body" method="POST" th:action="@{/medical-records/new}" th:object="${medicalRecord}">
@@ -37,33 +37,35 @@
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Temperatura (°C)</label>
-                            <input class="form-control" placeholder="Ej: 38.5" step="0.1"
-                                   th:field="*{visits[0].clinicalExam.temperature}" type="number" required>
+                            <input class="form-control" placeholder="Ej: 38.5" required
+                                   step="0.1" th:field="*{visits[0].clinicalExam.temperature}" type="number">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Frec. Cardíaca (lpm)</label>
-                            <input class="form-control" placeholder="Ej: 90" th:field="*{visits[0].clinicalExam.heartRate}"
-                                   type="number" required>
+                            <input class="form-control" placeholder="Ej: 90"
+                                   required
+                                   th:field="*{visits[0].clinicalExam.heartRate}" type="number">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Frec. Respiratoria (rpm)</label>
-                            <input class="form-control" placeholder="Ej: 25" th:field="*{visits[0].clinicalExam.respiratoryRate}"
-                                   type="number" required>
+                            <input class="form-control" placeholder="Ej: 25"
+                                   required
+                                   th:field="*{visits[0].clinicalExam.respiratoryRate}" type="number">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Pulso (lpm)</label>
-                            <input class="form-control" placeholder="Ej: 100" th:field="*{visits[0].clinicalExam.pulse}"
-                                   type="number" required>
+                            <input class="form-control" placeholder="Ej: 100" required
+                                   th:field="*{visits[0].clinicalExam.pulse}" type="number">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Mucosas</label>
                             <input class="form-control" placeholder="Ej: Rosadas, húmedas"
-                                   th:field="*{visits[0].clinicalExam.mucosalMembranes}" type="text" required>
+                                   required th:field="*{visits[0].clinicalExam.mucosalMembranes}" type="text">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Temperamento</label>
-                            <select class="form-select" th:field="*{visits[0].clinicalExam.temperament}" required>
-                                <option value="" selected disabled>Seleccionar temperamento...</option>
+                            <select class="form-select" required th:field="*{visits[0].clinicalExam.temperament}">
+                                <option disabled selected value="">Seleccionar temperamento...</option>
                                 <option th:each="temp : ${T(tfg.psygcv.model.pet.Temperament).values()}"
                                         th:text="${temp.description}" th:value="${temp}"></option>
                             </select>
@@ -87,7 +89,7 @@
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Estado Reproductivo</label>
                             <select class="form-select" th:field="*{visits[0].anamnesis.reproductiveStatus}">
-                                <option value="" selected disabled>Seleccionar estado...</option>
+                                <option disabled selected value="">Seleccionar estado...</option>
                                 <option th:each="status : ${T(tfg.psygcv.model.pet.ReproductiveStatus).values()}"
                                         th:text="${status.description}" th:value="${status}"></option>
                             </select>

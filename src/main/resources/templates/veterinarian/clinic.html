@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Mi Clínica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -23,11 +23,12 @@
                                     <div class="card-body">
                                         <dl class="mb-0">
                                             <dt class="small text-muted">Nombre Completo</dt>
-                                            <dd class="fw-bold mb-3" th:text="${veterinarian.firstName + ' ' + veterinarian.lastName}"></dd>
-                                            
+                                            <dd class="fw-bold mb-3"
+                                                th:text="${veterinarian.firstName + ' ' + veterinarian.lastName}"></dd>
+
                                             <dt class="small text-muted">Teléfono</dt>
                                             <dd class="mb-3" th:text="${veterinarian.phone}"></dd>
-                                            
+
                                             <dt class="small text-muted">Email</dt>
                                             <dd class="mb-0 text-truncate" th:text="${veterinarian.email}"></dd>
                                         </dl>
@@ -43,13 +44,13 @@
                                         <dl class="mb-0">
                                             <dt class="small text-muted">Nombre Comercial</dt>
                                             <dd class="fw-bold mb-3" th:text="${clinic.name}"></dd>
-                                            
+
                                             <dt class="small text-muted">Dirección</dt>
                                             <dd class="mb-3" th:text="${clinic.address}"></dd>
-                                            
+
                                             <dt class="small text-muted">Teléfono</dt>
                                             <dd class="mb-3" th:text="${clinic.phone}"></dd>
-                                            
+
                                             <dt class="small text-muted">Email de Contacto</dt>
                                             <dd class="mb-0 text-truncate" th:text="${clinic.email}"></dd>
                                         </dl>
@@ -66,8 +67,8 @@
                                 <a class="btn btn-primary px-4" th:href="@{/veterinarian/clinic/edit}">
                                     <i class="bi bi-pencil-square me-2"></i>Actualizar Datos
                                 </a>
-                                <form class="d-inline" method="POST" th:action="@{/profile/deactivate}"
-                                      onsubmit="return confirm('¿Estás seguro de que deseas desactivar tu cuenta?');">
+                                <form class="d-inline" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas desactivar tu cuenta?');"
+                                      th:action="@{/profile/deactivate}">
                                     <button class="btn btn-outline-danger px-4" type="submit">
                                         <i class="bi bi-trash3 me-2"></i>Eliminar Cuenta
                                     </button>

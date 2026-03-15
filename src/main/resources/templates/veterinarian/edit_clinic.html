@@ -8,15 +8,16 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Actualizar Clínica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Actualizar Datos del Establecimiento', null)}"></div>
                     <div class="card-body p-4">
-                        
+
                         <!-- Formulario Veterinario -->
-                        <form method="POST" th:action="@{/veterinarian/profile/update}" th:object="${veterinarian}" class="mb-5">
+                        <form class="mb-5" method="POST" th:action="@{/veterinarian/profile/update}"
+                              th:object="${veterinarian}">
                             <input th:field="*{id}" type="hidden"/>
                             <h5 class="mb-3 border-bottom pb-2 text-primary">
                                 <i class="bi bi-person-badge me-2"></i>Datos del Responsable
@@ -24,19 +25,19 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Nombre</label>
-                                    <input class="form-control" th:field="*{firstName}" type="text" required/>
+                                    <input class="form-control" required th:field="*{firstName}" type="text"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Apellido</label>
-                                    <input class="form-control" th:field="*{lastName}" type="text" required/>
+                                    <input class="form-control" required th:field="*{lastName}" type="text"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Teléfono</label>
-                                    <input class="form-control" th:field="*{phone}" type="tel" required/>
+                                    <input class="form-control" required th:field="*{phone}" type="tel"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Email</label>
-                                    <input class="form-control" th:field="*{email}" type="email" required/>
+                                    <input class="form-control" required th:field="*{email}" type="email"/>
                                 </div>
                                 <div class="col-12">
                                     <button class="btn btn-outline-primary" type="submit">
@@ -57,19 +58,19 @@
                             <div class="row g-3">
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Nombre Comercial</label>
-                                    <input class="form-control" th:field="*{name}" type="text" required/>
+                                    <input class="form-control" required th:field="*{name}" type="text"/>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Dirección</label>
-                                    <input class="form-control" th:field="*{address}" type="text" required/>
+                                    <input class="form-control" required th:field="*{address}" type="text"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Teléfono de Contacto</label>
-                                    <input class="form-control" th:field="*{phone}" type="tel" required/>
+                                    <input class="form-control" required th:field="*{phone}" type="tel"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Email Público</label>
-                                    <input class="form-control" th:field="*{email}" type="email" required/>
+                                    <input class="form-control" required th:field="*{email}" type="email"/>
                                 </div>
                                 <div class="col-12 mt-4">
                                     <div class="d-flex justify-content-end gap-3">

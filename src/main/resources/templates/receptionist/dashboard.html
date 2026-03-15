@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Dashboard Recepcionista', ~{layouts/navbar :: navbar('RECEPTIONIST')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-11 col-lg-10">
                 <div class="card shadow">
@@ -20,13 +20,14 @@
                                     <span class="input-group-text bg-light border-end-0">
                                         <i class="bi bi-search"></i>
                                     </span>
-                                    <input aria-label="Buscar" class="form-control form-control-lg border-start-0" name="query"
+                                    <input aria-label="Buscar" class="form-control form-control-lg border-start-0"
+                                           name="query"
                                            placeholder="Buscar por cliente o mascota..." type="search">
                                     <button class="btn btn-primary px-4" type="submit">Buscar</button>
                                 </form>
                             </div>
                         </div>
-                        
+
                         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                             <h4 class="mb-0 text-primary">Agenda de Turnos</h4>
                             <a class="btn btn-success" th:href="@{/appointments/schedule}">
@@ -56,9 +57,12 @@
                                                 </p>
                                             </div>
                                             <div class="col-md-3">
-                                                <form method="POST" th:action="@{/appointments/{id}/update-status(id=${appointment.id})}">
-                                                    <label class="form-label small fw-bold text-muted mb-1">Cambiar Estado:</label>
-                                                    <select class="form-select form-select-sm" name="status" onchange="this.form.submit()">
+                                                <form method="POST"
+                                                      th:action="@{/appointments/{id}/update-status(id=${appointment.id})}">
+                                                    <label class="form-label small fw-bold text-muted mb-1">Cambiar
+                                                        Estado:</label>
+                                                    <select class="form-select form-select-sm" name="status"
+                                                            onchange="this.form.submit()">
                                                         <option th:each="status : ${T(tfg.psygcv.model.appointment.AppointmentStatus).values()}"
                                                                 th:selected="${appointment.appointmentStatus == status}"
                                                                 th:text="${status.description}"
@@ -76,8 +80,9 @@
                                                        th:href="@{/appointments/{id}/reschedule(id=${appointment.id})}">
                                                         <i class="bi bi-calendar-event"></i>
                                                     </a>
-                                                    <form method="POST" th:action="@{/appointments/{id}/cancel(id=${appointment.id})}"
-                                                          onsubmit="return confirm('¿Estás seguro de cancelar este turno?');">
+                                                    <form method="POST"
+                                                          onsubmit="return confirm('¿Estás seguro de cancelar este turno?');"
+                                                          th:action="@{/appointments/{id}/cancel(id=${appointment.id})}">
                                                         <button class="btn btn-outline-danger btn-sm" type="submit">
                                                             <i class="bi bi-x-circle"></i>
                                                         </button>

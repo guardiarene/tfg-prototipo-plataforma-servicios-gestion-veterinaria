@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Agendar Turno', ~{layouts/navbar :: navbar('RECEPTIONIST')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -33,23 +33,26 @@
                                     <label class="form-label fw-bold">Mascota</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-heart"></i></span>
-                                        <select class="form-select" id="petId" name="pet.id" required th:field="*{pet.id}">
+                                        <select class="form-select" id="petId" name="pet.id" required
+                                                th:field="*{pet.id}">
                                             <option disabled selected value="">Seleccione una mascota...</option>
                                             <option th:each="pet : ${pets}"
                                                     th:text="${pet.name + ' (' + pet.species + ')'}"
                                                     th:value="${pet.id}"></option>
                                         </select>
                                     </div>
-                                    <div class="alert alert-warning mt-2 py-2 small" th:if="${clientId != null && #lists.isEmpty(pets)}">
-                                        <i class="bi bi-exclamation-triangle me-1"></i>Este cliente no tiene mascotas registradas.
+                                    <div class="alert alert-warning mt-2 py-2 small"
+                                         th:if="${clientId != null && #lists.isEmpty(pets)}">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Este cliente no tiene mascotas
+                                        registradas.
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Fecha</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-calendar3"></i></span>
-                                        <input class="form-control" required th:field="*{date}" type="date"
-                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                        <input class="form-control" required th:field="*{date}" th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                               type="date">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -62,7 +65,8 @@
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Servicio Médico</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-clipboard2-pulse"></i></span>
+                                        <span class="input-group-text bg-light"><i
+                                                class="bi bi-clipboard2-pulse"></i></span>
                                         <select class="form-select" id="serviceId" name="serviceId" required>
                                             <option disabled selected value="">Seleccione un servicio...</option>
                                             <option th:each="service : ${services}" th:text="${service.name}"
@@ -75,7 +79,8 @@
                                 <a class="btn btn-secondary px-4" th:href="@{/receptionist/dashboard}">
                                     <i class="bi bi-arrow-left-circle me-2"></i> Volver
                                 </a>
-                                <button class="btn btn-primary px-4" type="submit" th:disabled="${clientId == null || #lists.isEmpty(pets)}">
+                                <button class="btn btn-primary px-4" th:disabled="${clientId == null || #lists.isEmpty(pets)}"
+                                        type="submit">
                                     <i class="bi bi-save2 me-2"></i> Registrar Turno
                                 </button>
                             </div>

@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Registro de Clínica', ~{layouts/navbar :: navbar(null)}, ~{::content})}">
-    <div th:fragment="content" class="container mt-5">
+    <div class="container mt-5" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -28,35 +28,43 @@
                                                 <label class="form-label fw-bold">Nombre</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                                    <input class="form-control" placeholder="Ej. Juan" required th:field="*{firstName}" type="text">
+                                                    <input class="form-control" placeholder="Ej. Juan" required
+                                                           th:field="*{firstName}" type="text">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Apellido</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                                    <input class="form-control" placeholder="Ej. Pérez" required th:field="*{lastName}" type="text">
+                                                    <input class="form-control" placeholder="Ej. Pérez" required
+                                                           th:field="*{lastName}" type="text">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Teléfono</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
-                                                    <input class="form-control" placeholder="Ej. 123-456-789" required th:field="*{phone}" type="text">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-telephone"></i></span>
+                                                    <input class="form-control" placeholder="Ej. 123-456-789" required
+                                                           th:field="*{phone}" type="text">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Email</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-                                                    <input class="form-control" placeholder="Ej. juan.perez@mail.com" required th:field="*{email}" type="email">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-envelope"></i></span>
+                                                    <input class="form-control" placeholder="Ej. juan.perez@mail.com"
+                                                           required th:field="*{email}" type="email">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Contraseña</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
-                                                    <input class="form-control" placeholder="Contraseña segura" required th:field="*{password}" type="password">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-lock"></i></span>
+                                                    <input class="form-control" placeholder="Contraseña segura" required
+                                                           th:field="*{password}" type="password">
                                                 </div>
                                             </div>
                                         </div>
@@ -72,29 +80,38 @@
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Nombre</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-building"></i></span>
-                                                    <input class="form-control" placeholder="Ej. Clínica Veterinaria San Juan" required th:field="*{name}" type="text">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-building"></i></span>
+                                                    <input class="form-control"
+                                                           placeholder="Ej. Clínica Veterinaria San Juan" required
+                                                           th:field="*{name}" type="text">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Teléfono</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
-                                                    <input class="form-control" placeholder="Ej. 987-654-321" required th:field="*{phone}" type="text">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-telephone"></i></span>
+                                                    <input class="form-control" placeholder="Ej. 987-654-321" required
+                                                           th:field="*{phone}" type="text">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Dirección</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
-                                                    <input class="form-control" placeholder="Ej. Calle Ficticia 123" required th:field="*{address}" type="text">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-geo-alt"></i></span>
+                                                    <input class="form-control" placeholder="Ej. Calle Ficticia 123"
+                                                           required th:field="*{address}" type="text">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Email</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-                                                    <input class="form-control" placeholder="Ej. info@clinica.com" required th:field="*{email}" type="email">
+                                                    <span class="input-group-text bg-light"><i
+                                                            class="bi bi-envelope"></i></span>
+                                                    <input class="form-control" placeholder="Ej. info@clinica.com"
+                                                           required th:field="*{email}" type="email">
                                                 </div>
                                             </div>
                                         </div>

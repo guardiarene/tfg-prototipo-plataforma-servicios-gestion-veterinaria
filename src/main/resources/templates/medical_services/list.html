@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Servicios Médicos', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -21,7 +21,7 @@
                                 <i class="bi bi-plus-circle me-2"></i>Nuevo Servicio
                             </a>
                         </div>
-                        
+
                         <div class="row g-4">
                             <div class="col-12" th:each="service : ${services}">
                                 <div class="card shadow-sm border-primary">
@@ -37,10 +37,11 @@
                                                        th:href="@{/medical-services/{id}/edit(id=${service.id})}">
                                                         <i class="bi bi-pencil me-1"></i>Editar
                                                     </a>
-                                                    <form method="post" class="d-inline"
-                                                          th:action="@{/medical-services/{id}/delete(id=${service.id})}"
-                                                          onsubmit="return confirm('¿Estás seguro de eliminar este servicio?');">
-                                                        <button class="btn btn-outline-danger btn-sm px-3" type="submit">
+                                                    <form class="d-inline" method="post"
+                                                          onsubmit="return confirm('¿Estás seguro de eliminar este servicio?');"
+                                                          th:action="@{/medical-services/{id}/delete(id=${service.id})}">
+                                                        <button class="btn btn-outline-danger btn-sm px-3"
+                                                                type="submit">
                                                             <i class="bi bi-trash me-1"></i>Eliminar
                                                         </button>
                                                     </form>

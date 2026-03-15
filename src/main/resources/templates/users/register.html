@@ -9,14 +9,14 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Registro de Usuario', ~{layouts/navbar :: navbar(null)}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-person-plus', 'Registro de Usuario', null)}"></div>
                     <div class="card-body p-4">
                         <form method="POST" th:action="@{/users/register}" th:object="${registrationUser}">
-                            <input type="hidden" name="role" value="CUSTOMER">
+                            <input name="role" type="hidden" value="CUSTOMER">
                             <div class="row g-4 mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold" for="firstName">Nombre</label>
@@ -25,11 +25,11 @@
                                             <i class="bi bi-person"></i>
                                         </span>
                                         <input class="form-control form-control-lg border-start-0" id="firstName"
-                                               placeholder="Juan" required th:field="*{firstName}" type="text"
-                                               th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'">
+                                               placeholder="Juan" required th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'" th:field="*{firstName}"
+                                               type="text">
                                     </div>
-                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('firstName')}"
-                                         th:errors="*{firstName}"></div>
+                                    <div class="invalid-feedback d-block" th:errors="*{firstName}"
+                                         th:if="${#fields.hasErrors('firstName')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold" for="lastName">Apellido</label>
@@ -38,11 +38,11 @@
                                             <i class="bi bi-person"></i>
                                         </span>
                                         <input class="form-control form-control-lg border-start-0" id="lastName"
-                                               placeholder="Pérez" required th:field="*{lastName}" type="text"
-                                               th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'">
+                                               placeholder="Pérez" required th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'" th:field="*{lastName}"
+                                               type="text">
                                     </div>
-                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('lastName')}"
-                                         th:errors="*{lastName}"></div>
+                                    <div class="invalid-feedback d-block" th:errors="*{lastName}"
+                                         th:if="${#fields.hasErrors('lastName')}"></div>
                                 </div>
                             </div>
                             <div class="row g-4 mb-4">
@@ -53,11 +53,11 @@
                                             <i class="bi bi-telephone"></i>
                                         </span>
                                         <input class="form-control form-control-lg border-start-0" id="phone"
-                                               placeholder="+54 9 11 2345-6789" required th:field="*{phone}" type="tel"
-                                               th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'">
+                                               placeholder="+54 9 11 2345-6789" required th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'" th:field="*{phone}"
+                                               type="tel">
                                     </div>
-                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('phone')}"
-                                         th:errors="*{phone}"></div>
+                                    <div class="invalid-feedback d-block" th:errors="*{phone}"
+                                         th:if="${#fields.hasErrors('phone')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold" for="email">Email</label>
@@ -66,11 +66,11 @@
                                             <i class="bi bi-envelope"></i>
                                         </span>
                                         <input class="form-control form-control-lg border-start-0" id="email"
-                                               placeholder="juan@ejemplo.com" required th:field="*{email}" type="email"
-                                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                                               placeholder="juan@ejemplo.com" required th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" th:field="*{email}"
+                                               type="email">
                                     </div>
-                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}"
-                                         th:errors="*{email}"></div>
+                                    <div class="invalid-feedback d-block" th:errors="*{email}"
+                                         th:if="${#fields.hasErrors('email')}"></div>
                                 </div>
                             </div>
                             <div class="row g-4 mb-4">
@@ -81,12 +81,12 @@
                                             <i class="bi bi-key"></i>
                                         </span>
                                         <input class="form-control form-control-lg border-start-0" id="password"
-                                               placeholder="Mínimo 8 caracteres" required th:field="*{password}"
-                                               type="password"
-                                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'">
+                                               placeholder="Mínimo 8 caracteres" required th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                                               th:field="*{password}"
+                                               type="password">
                                     </div>
-                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}"
-                                         th:errors="*{password}"></div>
+                                    <div class="invalid-feedback d-block" th:errors="*{password}"
+                                         th:if="${#fields.hasErrors('password')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold" for="confirmPassword">Confirmar Contraseña</label>
@@ -109,15 +109,15 @@
                                     ¿Ya tienes cuenta? <u>Inicia Sesión</u>
                                 </a>
                             </div>
-                            <div id="passwordError" class="mt-3" style="display:none;">
+                            <div class="mt-3" id="passwordError" style="display:none;">
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                                     <span id="passwordErrorMessage"></span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                            aria-label="Close"></button>
+                                    <button aria-label="Close" class="btn-close" data-bs-dismiss="alert"
+                                            type="button"></button>
                                 </div>
                             </div>
-                            <div th:if="${error}" class="mt-3">
+                            <div class="mt-3" th:if="${error}">
                                 <div th:replace="~{fragments/alert :: errorAlert(${error})}"></div>
                             </div>
                         </form>

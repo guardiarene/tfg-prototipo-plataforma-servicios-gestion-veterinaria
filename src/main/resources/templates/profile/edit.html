@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Actualizar Perfil', ~{layouts/navbar :: navbar(${role})}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -26,11 +26,12 @@
                                         <div class="input-group">
                                             <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
                                             <label>
-                                                <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                       required th:field="*{firstName}"
+                                                <input class="form-control form-control-lg" required
+                                                       th:errorclass="is-invalid" th:field="*{firstName}"
                                                        type="text">
                                             </label>
-                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                            <div class="invalid-feedback" th:errors="*{firstName}"
+                                                 th:if="${#fields.hasErrors('firstName')}"></div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -38,35 +39,40 @@
                                         <div class="input-group">
                                             <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
                                             <label>
-                                                <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                       required th:field="*{lastName}"
+                                                <input class="form-control form-control-lg" required
+                                                       th:errorclass="is-invalid" th:field="*{lastName}"
                                                        type="text">
                                             </label>
-                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                                            <div class="invalid-feedback" th:errors="*{lastName}"
+                                                 th:if="${#fields.hasErrors('lastName')}"></div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Email</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                            <span class="input-group-text bg-light"><i
+                                                    class="bi bi-envelope"></i></span>
                                             <label>
-                                                <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                       required th:field="*{email}"
+                                                <input class="form-control form-control-lg" required
+                                                       th:errorclass="is-invalid" th:field="*{email}"
                                                        type="email">
                                             </label>
-                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                            <div class="invalid-feedback" th:errors="*{email}"
+                                                 th:if="${#fields.hasErrors('email')}"></div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Teléfono</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                                            <span class="input-group-text bg-light"><i
+                                                    class="bi bi-telephone"></i></span>
                                             <label>
-                                                <input class="form-control form-control-lg" th:errorclass="is-invalid"
-                                                       required th:field="*{phone}"
+                                                <input class="form-control form-control-lg" required
+                                                       th:errorclass="is-invalid" th:field="*{phone}"
                                                        type="text">
                                             </label>
-                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                            <div class="invalid-feedback" th:errors="*{phone}"
+                                                 th:if="${#fields.hasErrors('phone')}"></div>
                                         </div>
                                     </div>
                                 </div>

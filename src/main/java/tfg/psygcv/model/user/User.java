@@ -87,5 +87,4 @@ public class User extends AuditableEntity {
 
   @OneToMany(mappedBy = "receptionist", fetch = FetchType.LAZY)
   private List<VeterinaryClinic> clinicsAsReceptionist = new ArrayList<>();
-  
 }

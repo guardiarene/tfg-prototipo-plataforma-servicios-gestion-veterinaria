@@ -9,7 +9,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Reprogramar Turno', ~{layouts/navbar :: navbar('RECEPTIONIST')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -32,7 +32,8 @@
                                     <label class="form-label fw-bold">Mascota</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-heart"></i></span>
-                                        <input class="form-control bg-light" readonly th:value="${appointment.pet.name}" type="text">
+                                        <input class="form-control bg-light" readonly th:value="${appointment.pet.name}"
+                                               type="text">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -40,8 +41,9 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-calendar3"></i></span>
                                         <input class="form-control" id="date" name="date" required
+                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
                                                th:value="${appointment.date != null} ? ${#temporals.format(appointment.date, 'yyyy-MM-dd')} : ''"
-                                               type="date" th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                               type="date">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -56,7 +58,8 @@
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Servicio</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-clipboard2-pulse"></i></span>
+                                        <span class="input-group-text bg-light"><i
+                                                class="bi bi-clipboard2-pulse"></i></span>
                                         <select class="form-select" required th:field="*{medicalService}">
                                             <option th:each="service : ${services}"
                                                     th:selected="${appointment.medicalService.id == service.id}"

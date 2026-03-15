@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Editar Historia Clínica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Editar Historia Clínica', null)}"></div>
             <form class="card-body" method="POST" th:action="@{/medical-records/{id}/edit(id=${medicalRecord.id})}"
@@ -37,32 +37,34 @@
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Temperatura (°C)</label>
-                            <input class="form-control" placeholder="Ej: 38.5" step="0.1"
-                                   th:field="*{visits[0].clinicalExam.temperature}" type="number" required>
+                            <input class="form-control" placeholder="Ej: 38.5" required
+                                   step="0.1" th:field="*{visits[0].clinicalExam.temperature}" type="number">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Frec. Cardíaca (lpm)</label>
-                            <input class="form-control" placeholder="Ej: 90" th:field="*{visits[0].clinicalExam.heartRate}"
-                                   type="number" required>
+                            <input class="form-control" placeholder="Ej: 90"
+                                   required
+                                   th:field="*{visits[0].clinicalExam.heartRate}" type="number">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Frec. Respiratoria (rpm)</label>
-                            <input class="form-control" placeholder="Ej: 25" th:field="*{visits[0].clinicalExam.respiratoryRate}"
-                                   type="number" required>
+                            <input class="form-control" placeholder="Ej: 25"
+                                   required
+                                   th:field="*{visits[0].clinicalExam.respiratoryRate}" type="number">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Pulso (lpm)</label>
-                            <input class="form-control" placeholder="Ej: 100" th:field="*{visits[0].clinicalExam.pulse}"
-                                   type="number" required>
+                            <input class="form-control" placeholder="Ej: 100" required
+                                   th:field="*{visits[0].clinicalExam.pulse}" type="number">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Mucosas</label>
                             <input class="form-control" placeholder="Ej: Irritadas, húmedas"
-                                   th:field="*{visits[0].clinicalExam.mucosalMembranes}" type="text" required>
+                                   required th:field="*{visits[0].clinicalExam.mucosalMembranes}" type="text">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Temperamento</label>
-                            <select class="form-select" th:field="*{visits[0].clinicalExam.temperament}" required>
+                            <select class="form-select" required th:field="*{visits[0].clinicalExam.temperament}">
                                 <option th:each="temp : ${T(tfg.psygcv.model.pet.Temperament).values()}"
                                         th:text="${temp.description}" th:value="${temp}"></option>
                             </select>
@@ -105,7 +107,8 @@
                             </button>
                         </div>
                         <div class="col-md-6">
-                            <a class="btn btn-secondary w-100" th:href="@{/medical-records/{id}(id=${medicalRecord.id})}">
+                            <a class="btn btn-secondary w-100"
+                               th:href="@{/medical-records/{id}(id=${medicalRecord.id})}">
                                 <i class="bi bi-x-circle me-2"></i> Cancelar
                             </a>
                         </div>

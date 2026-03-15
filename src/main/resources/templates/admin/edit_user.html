@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 <div th:replace="~{layouts/layout :: layout('Editar Usuario', ~{layouts/navbar :: navbar('SYSTEM_ADMINISTRATOR')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
@@ -29,7 +29,8 @@
                                             <input class="form-control" required th:errorclass="is-invalid"
                                                    th:field="*{firstName}" type="text">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                        <div class="invalid-feedback" th:errors="*{firstName}"
+                                             th:if="${#fields.hasErrors('firstName')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -40,7 +41,8 @@
                                             <input class="form-control" required th:errorclass="is-invalid"
                                                    th:field="*{lastName}" type="text">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                                        <div class="invalid-feedback" th:errors="*{lastName}"
+                                             th:if="${#fields.hasErrors('lastName')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -51,7 +53,8 @@
                                             <input class="form-control" th:errorclass="is-invalid" th:field="*{phone}"
                                                    type="tel">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                        <div class="invalid-feedback" th:errors="*{phone}"
+                                             th:if="${#fields.hasErrors('phone')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -62,7 +65,8 @@
                                             <input class="form-control" required th:errorclass="is-invalid"
                                                    th:field="*{email}" type="email">
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                        <div class="invalid-feedback" th:errors="*{email}"
+                                             th:if="${#fields.hasErrors('email')}"></div>
                                     </div>
                                 </div>
 
@@ -74,7 +78,8 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Rol</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
+                                        <span class="input-group-text bg-light"><i
+                                                class="bi bi-shield-check"></i></span>
                                         <label>
                                             <select class="form-select" required th:errorclass="is-invalid"
                                                     th:field="*{role}">
@@ -82,12 +87,14 @@
                                                         th:value="${role}"></option>
                                             </select>
                                         </label>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+                                        <div class="invalid-feedback" th:errors="*{role}"
+                                             th:if="${#fields.hasErrors('role')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6 d-flex align-items-center">
                                     <div class="form-check form-switch mt-3">
-                                        <input class="form-check-input" id="activeSwitch" role="switch" th:field="*{active}"
+                                        <input class="form-check-input" id="activeSwitch" role="switch"
+                                               th:field="*{active}"
                                                type="checkbox">
                                         <label class="form-check-label fw-bold" for="activeSwitch">Cuenta Activa</label>
                                     </div>
