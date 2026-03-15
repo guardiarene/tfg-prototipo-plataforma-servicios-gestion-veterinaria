@@ -7,12 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/layout :: layout('Detalle Historia Clínica', ~{layouts/navbar :: navbar(#authentication.principal.role.toString() == 'VETERINARIAN' ? 'VETERINARIAN' : 'CLIENT')}, ~{::content})}">
+<div th:replace="~{layouts/layout :: layout('Detalle Historia Clínica', ~{layouts/navbar :: navbar(#authentication.principal.role.toString())}, ~{::content})}">
     <div th:fragment="content" class="container mt-4">
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica de ' + medicalRecord.pet.name, null)}"></div>
             <div class="card-body">
-                <!-- Información de la Mascota -->
                 <div class="mb-4">
                     <h4 class="mb-3 border-bottom pb-2 text-primary">Información de la Mascota</h4>
                     <div class="row g-3">
@@ -31,7 +30,6 @@
                     </div>
                 </div>
 
-                <!-- Lista de Visitas -->
                 <div th:if="${not #lists.isEmpty(medicalRecord.visits)}">
                     <h4 class="mb-3 border-bottom pb-2 text-primary">Historial de Visitas</h4>
                     <div class="accordion" id="visitsAccordion">
@@ -53,7 +51,6 @@
                             <div th:id="'collapse' + ${visit.id}" class="accordion-collapse collapse" th:classappend="${iterStat.first ? 'show' : ''}" th:aria-labelledby="'heading' + ${visit.id}" data-bs-parent="#visitsAccordion">
                                 <div class="accordion-body">
                                     <div class="row g-4">
-                                        <!-- Detalles de la Visita -->
                                         <div class="col-12">
                                             <h6><strong>Motivo de Consulta:</strong></h6>
                                             <p th:text="${visit.reasonForVisit}"></p>
@@ -63,7 +60,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- Examen Clínico -->
                                         <div class="col-12" th:if="${visit.clinicalExam != null}">
                                             <div class="card bg-light border-0">
                                                 <div class="card-body">
@@ -81,7 +77,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- Anamnesis -->
                                         <div class="col-12" th:if="${visit.anamnesis != null}">
                                             <div class="card bg-light border-0">
                                                 <div class="card-body">
@@ -95,7 +90,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- Diagnósticos y Tratamientos -->
                                         <div class="col-md-6" th:if="${not #lists.isEmpty(visit.diagnostics)}">
                                             <h6><strong>Diagnósticos:</strong></h6>
                                             <ul class="list-group list-group-flush">
@@ -121,7 +115,6 @@
                     No hay visitas registradas en esta historia clínica.
                 </div>
 
-                <!-- Botones de Acción -->
                 <div class="mt-5 d-flex gap-2">
                     <a class="btn btn-secondary px-4" th:href="@{/veterinarian/dashboard}"
                        th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}">
