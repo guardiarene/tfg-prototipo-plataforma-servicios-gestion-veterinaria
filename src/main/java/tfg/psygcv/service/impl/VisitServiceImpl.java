@@ -2,7 +2,6 @@ package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -82,7 +81,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
     updateVisitFields(existingVisit, updatedVisit);
     updateRelatedEntities(existingVisit, updatedVisit);
 
-    existingVisit.setUpdatedAt(LocalDateTime.now());
     return visitRepository.save(existingVisit);
   }
 
@@ -145,14 +143,12 @@ public class VisitServiceImpl implements VisitServiceInterface {
             .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
 
     visit.setActive(false);
-    visit.setUpdatedAt(LocalDateTime.now());
     visitRepository.save(visit);
   }
 
   private void setupVisitRelationships(Visit visit, MedicalRecord medicalRecord, User veterinarian) {
     visit.setMedicalRecord(medicalRecord);
     visit.setVeterinarian(veterinarian);
-    visit.setCreatedAt(LocalDateTime.now());
     visit.setActive(true);
 
     if (visit.getDate() == null) {
@@ -172,7 +168,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (visit.getClinicalExam() != null) {
       ClinicalExam exam = visit.getClinicalExam();
       exam.setVisit(visit);
-      exam.setCreatedAt(LocalDateTime.now());
       exam.setActive(true);
       clinicalExamRepository.save(exam);
     }
@@ -182,7 +177,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (visit.getAnamnesis() != null) {
       Anamnesis anamnesis = visit.getAnamnesis();
       anamnesis.setVisit(visit);
-      anamnesis.setCreatedAt(LocalDateTime.now());
       anamnesis.setActive(true);
       anamnesisRepository.save(anamnesis);
     }
@@ -192,7 +186,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (visit.getDiagnostics() != null && !visit.getDiagnostics().isEmpty()) {
       visit.getDiagnostics().forEach(d -> {
         d.setVisit(visit);
-        d.setCreatedAt(LocalDateTime.now());
         d.setActive(true);
       });
       diagnosticRepository.saveAll(visit.getDiagnostics());
@@ -203,7 +196,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (visit.getTreatments() != null && !visit.getTreatments().isEmpty()) {
       visit.getTreatments().forEach(t -> {
         t.setVisit(visit);
-        t.setCreatedAt(LocalDateTime.now());
         t.setActive(true);
       });
       treatmentRepository.saveAll(visit.getTreatments());
@@ -215,7 +207,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
       visit.getVaccines().forEach(v -> {
         v.setVisit(visit);
         v.setMedicalRecord(visit.getMedicalRecord());
-        v.setCreatedAt(LocalDateTime.now());
         v.setActive(true);
       });
       vaccineRepository.saveAll(visit.getVaccines());
@@ -245,12 +236,10 @@ public class VisitServiceImpl implements VisitServiceInterface {
       ClinicalExam existingExam = existing.getClinicalExam();
       if (existingExam == null) {
         existingExam = new ClinicalExam();
-        existingExam.setCreatedAt(LocalDateTime.now());
         existingExam.setActive(true);
         existing.setClinicalExam(existingExam);
       }
       BeanUtils.copyProperties(updatedExam, existingExam, "id", "version", "createdAt", "visit");
-      existingExam.setUpdatedAt(LocalDateTime.now());
     }
   }
 
@@ -259,13 +248,11 @@ public class VisitServiceImpl implements VisitServiceInterface {
       Anamnesis existingAnamnesis = existing.getAnamnesis();
       if (existingAnamnesis == null) {
         existingAnamnesis = new Anamnesis();
-        existingAnamnesis.setCreatedAt(LocalDateTime.now());
         existingAnamnesis.setActive(true);
         existing.setAnamnesis(existingAnamnesis);
       }
       BeanUtils.copyProperties(
           updatedAnamnesis, existingAnamnesis, "id", "version", "createdAt", "visit");
-      existingAnamnesis.setUpdatedAt(LocalDateTime.now());
     }
   }
 
@@ -287,7 +274,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
             Diagnostic diagnostic = new Diagnostic();
             BeanUtils.copyProperties(newDiagnostic, diagnostic, "id", "version");
             diagnostic.setVisit(existing);
-            diagnostic.setCreatedAt(LocalDateTime.now());
             diagnostic.setActive(true);
             existing.getDiagnostics().add(diagnostic);
           } else {
@@ -298,7 +284,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
                     .orElseThrow(() -> new EntityNotFoundException("Diagnostic not found"));
             BeanUtils.copyProperties(
                 newDiagnostic, existingDiagnostic, "id", "version", "createdAt", "visit");
-            existingDiagnostic.setUpdatedAt(LocalDateTime.now());
           }
         });
   }
@@ -321,7 +306,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
             Treatment treatment = new Treatment();
             BeanUtils.copyProperties(newTreatment, treatment, "id", "version");
             treatment.setVisit(existing);
-            treatment.setCreatedAt(LocalDateTime.now());
             treatment.setActive(true);
             existing.getTreatments().add(treatment);
           } else {
@@ -332,7 +316,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
                     .orElseThrow(() -> new EntityNotFoundException("Treatment not found"));
             BeanUtils.copyProperties(
                 newTreatment, existingTreatment, "id", "version", "createdAt", "visit");
-            existingTreatment.setUpdatedAt(LocalDateTime.now());
           }
         });
   }
@@ -342,7 +325,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
       return;
     }
 
-    // Get all vaccines from medical record
     List<Vaccine> allVaccines = existing.getMedicalRecord().getVaccines();
     Map<Long, Vaccine> existingVaccinesMap =
         allVaccines.stream()
@@ -352,7 +334,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
     List<Long> newVaccineIds =
         newVaccines.stream().map(Vaccine::getId).filter(Objects::nonNull).toList();
 
-    // Remove vaccines that are not in the new list
     allVaccines.removeIf(
         v ->
             v.getVisit() != null
@@ -367,7 +348,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
             BeanUtils.copyProperties(newVaccine, vaccine, "id", "version");
             vaccine.setVisit(existing);
             vaccine.setMedicalRecord(existing.getMedicalRecord());
-            vaccine.setCreatedAt(LocalDateTime.now());
             vaccine.setActive(true);
             allVaccines.add(vaccine);
           } else {
@@ -385,7 +365,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
                 "createdAt",
                 "visit",
                 "medicalRecord");
-            existingVaccine.setUpdatedAt(LocalDateTime.now());
           }
         });
   }

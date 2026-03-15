@@ -1,7 +1,6 @@
 package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,18 +37,15 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   public MedicalRecord findCompleteForEditing(Long id) {
     medicalRecordValidator.validateId(id);
 
-    // This method now returns a MedicalRecord with its latest visit loaded for editing
     MedicalRecord medicalRecord =
         medicalRecordQueryRepository
             .findCompleteForViewing(id)
             .orElseThrow(
                 () -> new EntityNotFoundException("Medical record not found with ID: " + id));
 
-    // Load the latest visit with all details if exists
     Visit latestVisit = visitService.findLatestVisit(id);
     if (latestVisit != null) {
       Visit completeVisit = visitService.findCompleteById(latestVisit.getId());
-      // Replace with complete visit
       medicalRecord.getVisits().clear();
       medicalRecord.getVisits().add(completeVisit);
     }
@@ -70,7 +66,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
                     new EntityNotFoundException(
                         "Medical record not found with ID: " + medicalRecordId));
 
-    // Load all visits
     List<Visit> visits = visitService.findByMedicalRecord(medicalRecordId);
     medicalRecord.getVisits().clear();
     medicalRecord.getVisits().addAll(visits);
@@ -99,11 +94,9 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
     validatePetAppointments(pet, veterinarian);
     validateExistingMedicalRecord(pet);
 
-    // Create MedicalRecord
     MedicalRecord newMedicalRecord = createMedicalRecord(pet);
     MedicalRecord savedRecord = medicalRecordRepository.save(newMedicalRecord);
 
-    // Create first Visit from the medicalRecord data (backward compatibility)
     Visit firstVisit = createFirstVisitFromMedicalRecord(medicalRecord);
     visitService.createVisit(savedRecord.getId(), firstVisit, veterinarian);
 
@@ -120,12 +113,9 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Medical record not found"));
 
-    // Update general observations if provided
     if (updatedRecord.getGeneralObservations() != null) {
       existingRecord.setGeneralObservations(updatedRecord.getGeneralObservations());
     }
-
-    existingRecord.setUpdatedAt(LocalDateTime.now());
 
     return medicalRecordRepository.save(existingRecord);
   }
@@ -133,7 +123,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   private MedicalRecord createMedicalRecord(Pet pet) {
     MedicalRecord medicalRecord = new MedicalRecord();
     medicalRecord.setPet(pet);
-    medicalRecord.setCreatedAt(LocalDateTime.now());
     medicalRecord.setActive(true);
     pet.setMedicalRecord(medicalRecord);
     return medicalRecord;
@@ -142,8 +131,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   private Visit createFirstVisitFromMedicalRecord(MedicalRecord medicalRecord) {
     Visit visit = new Visit();
 
-    // Extract visit data from MedicalRecord (backward compatibility)
-    // The old MedicalRecord had these fields directly, now they go into the first Visit
     visit.setReasonForVisit(
         medicalRecord.getGeneralObservations() != null
             ? medicalRecord.getGeneralObservations()
@@ -152,9 +139,8 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
         tfg.psygcv.model.medical.VisitType.CONSULTATION); // Default type for backward compatibility
     visit.setDate(java.time.LocalDate.now());
 
-    // Transfer related entities to the visit (backward compatibility)
     if (medicalRecord.getVisits() != null && !medicalRecord.getVisits().isEmpty()) {
-      Visit sourceVisit = medicalRecord.getVisits().get(0);
+      Visit sourceVisit = medicalRecord.getVisits().getFirst();
       visit.setClinicalExam(sourceVisit.getClinicalExam());
       visit.setAnamnesis(sourceVisit.getAnamnesis());
       visit.setDiagnostics(sourceVisit.getDiagnostics());
