@@ -24,6 +24,7 @@ import tfg.psygcv.model.medical.VisitType;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 
 @RequiredArgsConstructor
 @RequestMapping("/medical-records")
@@ -31,13 +32,13 @@ import tfg.psygcv.service.interfaces.PetServiceInterface;
 public class MedicalRecordController extends BaseController {
 
   private final MedicalRecordServiceInterface medicalRecordService;
-
   private final PetServiceInterface petService;
+  private final UserServiceInterface userService;
 
   @GetMapping("/{id}")
   public String showMedicalRecordDetails(
       @PathVariable Long id, Model model, Authentication authentication) {
-    User user = getCurrentUser(authentication);
+    User user = getCurrentUser(authentication, userService);
     MedicalRecord medicalRecord = medicalRecordService.findCompleteById(id);
     model.addAttribute("medicalRecord", medicalRecord);
     model.addAttribute("role", user.getRole().name());
@@ -46,7 +47,7 @@ public class MedicalRecordController extends BaseController {
 
   @GetMapping("/new")
   public String showNewMedicalRecordForm(Model model, Authentication authentication) {
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     MedicalRecord medicalRecord = initializeNewMedicalRecord();
     model.addAttribute("medicalRecord", medicalRecord);
     model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
@@ -60,17 +61,17 @@ public class MedicalRecordController extends BaseController {
       Authentication authentication,
       Model model) {
     if (result.hasErrors()) {
-      User veterinarian = getCurrentUser(authentication);
+      User veterinarian = getCurrentUser(authentication, userService);
       model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
       return "medical_records/new";
     }
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     medicalRecordService.save(medicalRecord, veterinarian);
     return REDIRECT_VETERINARIAN_DASHBOARD;
   }
 
   @GetMapping("/{id}/edit")
-  public String showEditForm(@PathVariable Long id, Model model, Authentication authentication) {
+  public String showEditForm(@PathVariable Long id, Model model) {
     MedicalRecord medicalRecord = medicalRecordService.findCompleteForEditing(id);
     model.addAttribute("medicalRecord", medicalRecord);
     model.addAttribute("pets", List.of(medicalRecord.getPet()));
@@ -88,7 +89,7 @@ public class MedicalRecordController extends BaseController {
       model.addAttribute("pets", List.of(medicalRecord.getPet()));
       return "medical_records/edit";
     }
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     medicalRecordService.update(id, medicalRecord, veterinarian);
     return "redirect:/medical-records/" + id;
   }

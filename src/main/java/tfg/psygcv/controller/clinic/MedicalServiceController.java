@@ -4,7 +4,7 @@ import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_SERVICES;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +19,7 @@ import tfg.psygcv.model.clinic.MedicalService;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 
 @RequiredArgsConstructor
@@ -27,11 +28,12 @@ import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 public class MedicalServiceController extends BaseController {
 
   private final MedicalServiceServiceInterface medicalServiceService;
-
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
+  private final UserServiceInterface userService;
 
   @GetMapping
-  public String listServices(Model model, @AuthenticationPrincipal User veterinarian) {
+  public String listServices(Model model, Authentication authentication) {
+    User veterinarian = getCurrentUser(authentication, userService);
     VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
     model.addAttribute("clinic", clinic);
     model.addAttribute("services", medicalServiceService.findByVeterinarianClinic(veterinarian));
@@ -39,7 +41,8 @@ public class MedicalServiceController extends BaseController {
   }
 
   @GetMapping("/new")
-  public String showNewServiceForm(Model model, @AuthenticationPrincipal User user) {
+  public String showNewServiceForm(Model model, Authentication authentication) {
+    User user = getCurrentUser(authentication, userService);
     VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(user.getId());
     model.addAttribute("medicalService", new MedicalService());
     model.addAttribute("clinicId", clinic.getId());
@@ -59,8 +62,8 @@ public class MedicalServiceController extends BaseController {
   }
 
   @GetMapping("/{id}/edit")
-  public String showEditForm(
-      @PathVariable Long id, Model model, @AuthenticationPrincipal User veterinarian) {
+  public String showEditForm(@PathVariable Long id, Model model, Authentication authentication) {
+    User veterinarian = getCurrentUser(authentication, userService);
     VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
     model.addAttribute(
         "medicalService", medicalServiceService.findByIdAndValidateClinic(id, clinic.getId()));
@@ -82,7 +85,8 @@ public class MedicalServiceController extends BaseController {
   }
 
   @PostMapping("/{id}/delete")
-  public String deleteService(@PathVariable Long id, @AuthenticationPrincipal User veterinarian) {
+  public String deleteService(@PathVariable Long id, Authentication authentication) {
+    User veterinarian = getCurrentUser(authentication, userService);
     VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
     medicalServiceService.deactivate(id, clinic.getId());
     return REDIRECT_MY_SERVICES;

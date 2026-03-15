@@ -21,6 +21,7 @@ import tfg.psygcv.model.medical.Visit;
 import tfg.psygcv.model.medical.VisitType;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.interfaces.VisitServiceInterface;
 
 @RequiredArgsConstructor
@@ -30,24 +31,22 @@ public class VisitController extends BaseController {
 
   private final VisitServiceInterface visitService;
   private final MedicalRecordServiceInterface medicalRecordService;
+  private final UserServiceInterface userService;
 
   @GetMapping("/{id}")
-  public String showVisitDetails(@PathVariable Long id, Model model, Authentication authentication) {
+  public String showVisitDetails(@PathVariable Long id, Model model) {
     Visit visit = visitService.findCompleteById(id);
     model.addAttribute("visit", visit);
     return "visits/details";
   }
 
   @GetMapping("/new")
-  public String showNewVisitForm(
-      @RequestParam Long medicalRecordId, Model model, Authentication authentication) {
+  public String showNewVisitForm(@RequestParam Long medicalRecordId, Model model) {
     MedicalRecord medicalRecord = medicalRecordService.findCompleteById(medicalRecordId);
     Visit visit = initializeNewVisit();
-
     model.addAttribute("visit", visit);
     model.addAttribute("medicalRecord", medicalRecord);
     model.addAttribute("visitTypes", VisitType.values());
-
     return "visits/new";
   }
 
@@ -64,15 +63,13 @@ public class VisitController extends BaseController {
       model.addAttribute("visitTypes", VisitType.values());
       return "visits/new";
     }
-
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     Visit savedVisit = visitService.createVisit(medicalRecordId, visit, veterinarian);
-
     return "redirect:/visits/" + savedVisit.getId();
   }
 
   @GetMapping("/{id}/edit")
-  public String showEditForm(@PathVariable Long id, Model model, Authentication authentication) {
+  public String showEditForm(@PathVariable Long id, Model model) {
     Visit visit = visitService.findCompleteById(id);
     model.addAttribute("visit", visit);
     model.addAttribute("visitTypes", VisitType.values());
@@ -90,22 +87,17 @@ public class VisitController extends BaseController {
       model.addAttribute("visitTypes", VisitType.values());
       return "visits/edit";
     }
-
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     Visit updatedVisit = visitService.updateVisit(id, visit, veterinarian);
-
     return "redirect:/visits/" + updatedVisit.getId();
   }
 
   @PostMapping("/{id}/delete")
-  public String deleteVisit(
-      @PathVariable Long id, Authentication authentication) {
-    User veterinarian = getCurrentUser(authentication);
+  public String deleteVisit(@PathVariable Long id, Authentication authentication) {
+    User veterinarian = getCurrentUser(authentication, userService);
     Visit visit = visitService.findCompleteById(id);
     Long medicalRecordId = visit.getMedicalRecord().getId();
-
     visitService.deleteVisit(id, veterinarian);
-
     return "redirect:/medical-records/" + medicalRecordId;
   }
 
@@ -116,11 +108,8 @@ public class VisitController extends BaseController {
     visit.setDiagnostics(new ArrayList<>());
     visit.setTreatments(new ArrayList<>());
     visit.setVaccines(new ArrayList<>());
-
-    // Initialize anamnesis
     Anamnesis anamnesis = new Anamnesis();
     visit.setAnamnesis(anamnesis);
-
     return visit;
   }
 }

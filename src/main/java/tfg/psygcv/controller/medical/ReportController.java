@@ -15,6 +15,7 @@ import tfg.psygcv.config.util.JsonUtil;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.StatisticsServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 
 @RequiredArgsConstructor
 @RequestMapping("/reports")
@@ -22,8 +23,8 @@ import tfg.psygcv.service.interfaces.StatisticsServiceInterface;
 public class ReportController extends BaseController {
 
   private final StatisticsServiceInterface statisticsService;
-
   private final JsonUtil jsonUtil;
+  private final UserServiceInterface userService;
 
   @GetMapping("/diseases-treatments")
   public String showDiseasesTreatmentsReport(Model model) {
@@ -37,7 +38,7 @@ public class ReportController extends BaseController {
       @RequestParam LocalDate endDate,
       Authentication authentication,
       Model model) {
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     Map<String, Long> diseases =
         statisticsService.getCommonDiseases(veterinarian, startDate, endDate);
     Map<String, Long> treatments =
@@ -61,7 +62,7 @@ public class ReportController extends BaseController {
       @RequestParam LocalDate endDate,
       Authentication authentication,
       Model model) {
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     Map<LocalDate, Long> appointments =
         statisticsService.getAppointmentsByDate(veterinarian, startDate, endDate);
     model.addAttribute("appointments", appointments);

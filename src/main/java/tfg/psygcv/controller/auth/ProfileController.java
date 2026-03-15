@@ -25,17 +25,17 @@ public class ProfileController extends BaseController {
 
   @GetMapping
   public String showProfile(Model model, Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    User currentUser = getCurrentUser(authentication, userService);
     model.addAttribute("user", userService.findById(currentUser.getId()));
-    model.addAttribute("role", currentUser.getRole().name());
+    model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
     return "profile/view";
   }
 
   @GetMapping("/edit")
   public String showEditForm(Model model, Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    User currentUser = getCurrentUser(authentication, userService);
     model.addAttribute("user", userService.findById(currentUser.getId()));
-    model.addAttribute("role", currentUser.getRole().name());
+    model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
     return "profile/edit";
   }
 
@@ -45,9 +45,9 @@ public class ProfileController extends BaseController {
       BindingResult result,
       Authentication authentication,
       Model model) {
-    User currentUser = getCurrentUser(authentication);
+    User currentUser = getCurrentUser(authentication, userService);
     if (result.hasErrors()) {
-      model.addAttribute("role", currentUser.getRole().name());
+      model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
       return "profile/edit";
     }
     User persistedUser = userService.findById(currentUser.getId());
@@ -62,7 +62,7 @@ public class ProfileController extends BaseController {
 
   @PostMapping("/deactivate")
   public String deactivateAccount(Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    User currentUser = getCurrentUser(authentication, userService);
     userService.deactivate(currentUser.getId());
     return REDIRECT_LOGIN_LOGOUT;
   }

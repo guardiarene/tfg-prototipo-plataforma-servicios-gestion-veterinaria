@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
 
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class PetController extends BaseController {
 
   @GetMapping
   public String listPets(Model model, Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
     model.addAttribute("pets", petService.findByOwnerId(currentUser.getId()));
     return "pets/list";
   }
@@ -50,7 +50,7 @@ public class PetController extends BaseController {
     if (result.hasErrors()) {
       return "pets/new";
     }
-    User currentUser = getCurrentUser(authentication);
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
     petService.save(pet, currentUser.getId());
     return REDIRECT_MY_PETS;
   }

@@ -27,7 +27,6 @@ import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 public class VeterinaryClinicController extends BaseController {
 
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
-
   private final UserServiceInterface userService;
 
   @GetMapping("/register")

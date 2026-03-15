@@ -6,10 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.appointment.AppointmentStatus;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 
@@ -19,12 +19,11 @@ import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 public class ReceptionistController extends BaseController {
 
   private final AppointmentServiceInterface appointmentService;
-
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
 
   @GetMapping("/dashboard")
   public String showReceptionistDashboard(Model model, Authentication authentication) {
-    User receptionist = getCurrentUser(authentication);
+    AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
     model.addAttribute("appointmentStatuses", AppointmentStatus.values());
     model.addAttribute("appointments", appointmentService.findByClinicId(clinic.getId()));

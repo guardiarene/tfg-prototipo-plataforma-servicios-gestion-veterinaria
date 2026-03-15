@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.appointment.AppointmentStatus;
@@ -33,18 +34,14 @@ import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 public class AppointmentController extends BaseController {
 
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
-
   private final MedicalServiceServiceInterface medicalServiceService;
-
   private final PetServiceInterface petService;
-
   private final AppointmentServiceInterface appointmentService;
-
   private final UserServiceInterface userService;
 
   @GetMapping
   public String listAppointments(Model model, Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
     model.addAttribute("appointments", appointmentService.findByCustomerId(currentUser.getId()));
     return "appointments/list";
   }
@@ -52,7 +49,7 @@ public class AppointmentController extends BaseController {
   @GetMapping("/new")
   public String showNewAppointmentForm(
       @RequestParam("clinicId") Long clinicId, Model model, Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
     VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
     model.addAttribute("clinic", clinic);
     model.addAttribute("services", medicalServiceService.findByClinicId(clinicId));
@@ -68,15 +65,13 @@ public class AppointmentController extends BaseController {
       @RequestParam("petId") Long petId,
       @RequestParam("serviceId") Long serviceId,
       Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    User currentUser = getCurrentUser(authentication, userService);
     appointmentService.createClientAppointment(date, petId, serviceId, clinicId, currentUser);
     return REDIRECT_MY_APPOINTMENTS;
   }
 
   @GetMapping("/{id}")
-  public String showAppointmentDetails(
-      @PathVariable Long id, Model model, Authentication authentication) {
-    User user = getCurrentUser(authentication);
+  public String showAppointmentDetails(@PathVariable Long id, Model model) {
     Appointment appointment = appointmentService.findWithDetails(id);
     model.addAttribute("appointment", appointment);
     model.addAttribute("veterinarianName", appointmentService.findVeterinarianName(appointment));
@@ -99,7 +94,7 @@ public class AppointmentController extends BaseController {
   @GetMapping("/{id}/reschedule")
   public String showRescheduleForm(
       @PathVariable Long id, Model model, Authentication authentication) {
-    User receptionist = getCurrentUser(authentication);
+    AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
     model.addAttribute("appointment", appointmentService.findById(id));
     model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
@@ -122,7 +117,7 @@ public class AppointmentController extends BaseController {
   @GetMapping("/schedule")
   public String showScheduleForm(
       @RequestParam(required = false) Long clientId, Model model, Authentication authentication) {
-    User receptionist = getCurrentUser(authentication);
+    AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
     model.addAttribute("clientId", clientId);
     model.addAttribute("clients", userService.findActiveCustomers());
@@ -141,7 +136,7 @@ public class AppointmentController extends BaseController {
     if (result.hasErrors()) {
       return "receptionist/schedule_appointment";
     }
-    User receptionist = getCurrentUser(authentication);
+    AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
     appointmentService.createReceptionistAppointment(appointment, serviceId, receptionist.getId());
     return REDIRECT_RECEPTIONIST_DASHBOARD;
   }

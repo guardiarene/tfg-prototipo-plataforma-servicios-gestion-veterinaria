@@ -5,7 +5,6 @@ import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_CLINIC;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,22 +25,20 @@ import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 public class VeterinarianController extends BaseController {
 
   private final MedicalRecordServiceInterface medicalRecordService;
-
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
-
   private final UserServiceInterface userService;
 
   @GetMapping("/dashboard")
-  public String showDashboard(Model model, @AuthenticationPrincipal User veterinarian) {
+  public String showDashboard(Model model, Authentication authentication) {
+    User veterinarian = getCurrentUser(authentication, userService);
     model.addAttribute("medicalRecords", medicalRecordService.findByVeterinarian(veterinarian));
     return "veterinarian/dashboard";
   }
 
   @GetMapping("/clinic")
   public String showClinicData(Model model, Authentication authentication) {
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
-
     model.addAttribute("clinic", clinic);
     model.addAttribute("veterinarian", veterinarian);
     return "veterinarian/clinic";
@@ -49,9 +46,8 @@ public class VeterinarianController extends BaseController {
 
   @GetMapping("/clinic/edit")
   public String showEditClinicForm(Model model, Authentication authentication) {
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
-
     model.addAttribute("veterinarian", veterinarian);
     model.addAttribute("clinic", clinic);
     return "veterinarian/edit_clinic";
@@ -65,7 +61,7 @@ public class VeterinarianController extends BaseController {
     if (result.hasErrors()) {
       return "veterinarian/edit_clinic";
     }
-    User currentVeterinarian = getCurrentUser(authentication);
+    User currentVeterinarian = getCurrentUser(authentication, userService);
     updatedVeterinarian.setId(currentVeterinarian.getId());
     userService.update(updatedVeterinarian);
     return REDIRECT_MY_CLINIC;
@@ -79,7 +75,7 @@ public class VeterinarianController extends BaseController {
     if (result.hasErrors()) {
       return "veterinarian/edit_clinic";
     }
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     VeterinaryClinic currentClinic =
         veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
     updatedClinic.setId(currentClinic.getId());
