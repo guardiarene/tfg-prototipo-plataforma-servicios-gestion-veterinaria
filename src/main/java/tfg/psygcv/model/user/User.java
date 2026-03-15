@@ -16,17 +16,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
@@ -39,7 +34,7 @@ import tfg.psygcv.model.pet.Pet;
 @Table(
     name = "USER",
     uniqueConstraints = {@UniqueConstraint(columnNames = "EMAIL")})
-public class User extends AuditableEntity implements UserDetails {
+public class User extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,39 +88,4 @@ public class User extends AuditableEntity implements UserDetails {
   @OneToMany(mappedBy = "receptionist", fetch = FetchType.LAZY)
   private List<VeterinaryClinic> clinicsAsReceptionist = new ArrayList<>();
   
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    String roleName = "ROLE_" + this.role.name();
-    return Collections.singletonList(new SimpleGrantedAuthority(roleName));
-  }
-
-  @Override
-  public String getUsername() {
-    return this.email;
-  }
-
-  @Override
-  public String getPassword() {
-    return this.password;
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return Boolean.TRUE.equals(this.getActive());
-  }
 }
