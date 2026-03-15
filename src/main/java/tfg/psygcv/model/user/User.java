@@ -36,7 +36,7 @@ import tfg.psygcv.model.pet.Pet;
 @NoArgsConstructor
 @Entity
 @Table(
-    name = "USERS",
+    name = "USER",
     uniqueConstraints = {@UniqueConstraint(columnNames = "EMAIL")})
 public class User implements UserDetails {
 
