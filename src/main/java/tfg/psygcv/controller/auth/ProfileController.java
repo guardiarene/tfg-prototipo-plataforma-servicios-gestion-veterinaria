@@ -3,7 +3,6 @@ package tfg.psygcv.controller.auth;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_LOGIN_LOGOUT;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PROFILE;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.user.Role;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.UserServiceInterface;
 
@@ -43,16 +41,22 @@ public class ProfileController extends BaseController {
 
   @PostMapping("/edit")
   public String updateProfile(
-      @Valid @ModelAttribute("user") User user,
+      @ModelAttribute("user") User user,
       BindingResult result,
-      Authentication authentication) {
+      Authentication authentication,
+      Model model) {
+    User currentUser = getCurrentUser(authentication);
     if (result.hasErrors()) {
+      model.addAttribute("role", currentUser.getRole().name());
       return "profile/edit";
     }
-    User currentUser = getCurrentUser(authentication);
-    user.setId(currentUser.getId());
-    user.setRole(Role.CUSTOMER);
-    userService.update(user);
+    User persistedUser = userService.findById(currentUser.getId());
+    persistedUser.setFirstName(user.getFirstName());
+    persistedUser.setLastName(user.getLastName());
+    persistedUser.setEmail(user.getEmail());
+    persistedUser.setPhone(user.getPhone());
+    persistedUser.setRole(currentUser.getRole());
+    userService.update(persistedUser);
     return REDIRECT_MY_PROFILE;
   }
 
