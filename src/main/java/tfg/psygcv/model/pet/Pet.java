@@ -68,7 +68,6 @@ public class Pet extends AuditableEntity {
   @Column(name = "WEIGHT", nullable = false)
   private Float weight;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "OWNER_ID", nullable = false)
   private User owner;
