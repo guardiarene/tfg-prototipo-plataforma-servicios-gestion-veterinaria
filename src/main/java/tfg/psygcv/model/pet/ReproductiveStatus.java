@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum ReproductiveStatus {
-  INTACT("Not spayed/neutered"),
-  NEUTERED("Spayed or neutered"),
-  PREGNANT("Currently pregnant"),
-  LACTATING("Currently lactating"),
-  UNKNOWN("Status not determined");
+  INTACT("Entero/a (sin esterilizar)"),
+  NEUTERED("Esterilizado/a"),
+  PREGNANT("Gestante"),
+  LACTATING("Lactante"),
+  UNKNOWN("No determinado");
 
   private final String description;
 

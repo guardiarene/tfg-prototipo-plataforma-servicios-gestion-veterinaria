@@ -4,12 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum Temperament {
-  CALM("Calm and relaxed"),
-  AGITATED("Restless or irritable"),
-  ANXIOUS("Nervous or uneasy"),
-  FRIENDLY("Sociable and affectionate"),
-  AGGRESSIVE("Hostile or confrontational"),
-  UNKNOWN("Temperament not determined");
+  CALM("Calmado"),
+  AGITATED("Agitado"),
+  ANXIOUS("Ansioso"),
+  FRIENDLY("Amigable"),
+  AGGRESSIVE("Agresivo"),
+  UNKNOWN("No determinado");
 
   private final String description;
 
