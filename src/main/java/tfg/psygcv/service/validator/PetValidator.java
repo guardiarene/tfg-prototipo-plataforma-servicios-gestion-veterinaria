@@ -40,8 +40,11 @@ public class PetValidator {
     if (pet.getName() == null || pet.getName().trim().isEmpty()) {
       throw new IllegalArgumentException("Pet name cannot be null or empty");
     }
-    if (pet.getSpecies() == null || pet.getSpecies().trim().isEmpty()) {
-      throw new IllegalArgumentException("Pet species cannot be null or empty");
+    if (pet.getSpecies() == null) {
+      throw new IllegalArgumentException("Pet species cannot be null");
+    }
+    if (pet.getBreed() == null) {
+      throw new IllegalArgumentException("Pet breed cannot be null");
     }
   }
 }
