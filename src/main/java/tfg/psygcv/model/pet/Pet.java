@@ -24,6 +24,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.medical.MedicalRecord;
@@ -50,16 +51,19 @@ public class Pet extends AuditableEntity {
   @Column(name = "SEX", nullable = false)
   private Sex sex;
 
-  @NotBlank
+  @NotNull
+  @Enumerated(EnumType.STRING)
   @Column(name = "BREED", nullable = false)
-  private String breed;
+  private Breed breed;
 
-  @NotBlank
+  @NotNull
+  @Enumerated(EnumType.STRING)
   @Column(name = "SPECIES", nullable = false)
-  private String species;
+  private Species species;
 
   @NotNull
   @Past
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "BIRTH_DATE", nullable = false)
   private LocalDate birthDate;
 
