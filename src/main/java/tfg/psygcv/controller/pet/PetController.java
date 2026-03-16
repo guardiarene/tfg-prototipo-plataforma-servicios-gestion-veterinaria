@@ -1,6 +1,8 @@
 package tfg.psygcv.controller.pet;
 
-import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_CREATED;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_DELETED;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_UPDATED;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +54,7 @@ public class PetController extends BaseController {
     }
     AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
     petService.save(pet, currentUser.getId());
-    return REDIRECT_MY_PETS;
+    return REDIRECT_MY_PETS_CREATED;
   }
 
   @GetMapping("/{id}/edit")
@@ -68,12 +70,12 @@ public class PetController extends BaseController {
       return "pets/edit";
     }
     petService.update(id, pet);
-    return REDIRECT_MY_PETS;
+    return REDIRECT_MY_PETS_UPDATED;
   }
 
   @PostMapping("/{id}/delete")
   public String deletePet(@PathVariable Long id) {
     petService.deactivate(id);
-    return REDIRECT_MY_PETS;
+    return REDIRECT_MY_PETS_DELETED;
   }
 }

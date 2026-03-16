@@ -1,7 +1,7 @@
 package tfg.psygcv.controller.auth;
 
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_ADMIN_DASHBOARD;
-import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_LOGIN;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_LOGIN_REGISTERED;
 import static tfg.psygcv.config.constant.RouteConstant.VIEW_ADMIN_EDIT_USER;
 import static tfg.psygcv.config.constant.RouteConstant.VIEW_ADMIN_NEW_USER;
 import static tfg.psygcv.config.constant.RouteConstant.VIEW_USER_LOGIN;
@@ -44,7 +44,7 @@ public class UserController extends BaseController {
     user.setRole(Role.CUSTOMER);
     user.setActive(true);
     userService.save(user);
-    return REDIRECT_LOGIN;
+    return REDIRECT_LOGIN_REGISTERED;
   }
 
   @GetMapping("/login")
