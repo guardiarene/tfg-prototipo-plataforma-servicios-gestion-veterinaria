@@ -20,6 +20,15 @@
                                 <i class="bi bi-plus-circle me-2"></i>Agregar Mascota
                             </a>
                         </div>
+                        <div class="mb-3" th:if="${param.created}">
+                            <div th:replace="~{fragments/alert :: successAlert('Mascota creada correctamente.')}"></div>
+                        </div>
+                        <div class="mb-3" th:if="${param.updated}">
+                            <div th:replace="~{fragments/alert :: successAlert('Datos de la mascota actualizados correctamente.')}"></div>
+                        </div>
+                        <div class="mb-3" th:if="${param.deleted}">
+                            <div th:replace="~{fragments/alert :: successAlert('Mascota eliminada correctamente.')}"></div>
+                        </div>
                         <div class="row g-4">
                             <div class="col-12" th:each="pet : ${pets}">
                                 <div class="card shadow-sm border-primary">
