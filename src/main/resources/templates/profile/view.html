@@ -46,7 +46,8 @@
                                     <a class="btn btn-primary" th:href="@{/profile/edit}">
                                         <i class="bi bi-pencil-square me-2"></i>Actualizar Datos
                                     </a>
-                                    <form class="d-inline" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas desactivar tu cuenta? Esta acción no se puede deshacer fácilmente.');"
+                                    <form class="d-inline" method="POST"
+                                          onsubmit="return confirm('¿Estás seguro de que deseas desactivar tu cuenta? Esta acción no se puede deshacer fácilmente.');"
                                           th:action="@{/profile/deactivate}">
                                         <button class="btn btn-outline-danger" type="submit">
                                             <i class="bi bi-trash3 me-2"></i> Eliminar Cuenta

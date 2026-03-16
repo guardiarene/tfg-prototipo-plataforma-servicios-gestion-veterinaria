@@ -15,7 +15,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-plus', 'Registrar Nueva Mascota', null)}"></div>
                     <div class="card-body p-4">
-                        <form method="post" th:action="@{/pets/new}" th:object="${pet}">
+                        <form method="post" onsubmit="return confirm('¿Estás seguro de registrar esta mascota?');"
+                              th:action="@{/pets/new}" th:object="${pet}">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Nombre</label>
@@ -35,9 +36,13 @@
                                         <span class="input-group-text bg-light"><i
                                                 class="bi bi-tropical-storm"></i></span>
                                         <label>
-                                            <input class="form-control form-control-lg" required
-                                                   th:errorclass="is-invalid" th:field="*{species}"
-                                                   type="text">
+                                            <select class="form-select form-select-lg" required
+                                                    th:errorclass="is-invalid" th:field="*{species}">
+                                                <option disabled selected value="">Seleccionar especie...</option>
+                                                <option th:each="sp : ${T(tfg.psygcv.model.pet.Species).values()}"
+                                                        th:text="${sp.description}"
+                                                        th:value="${sp}"></option>
+                                            </select>
                                         </label>
                                         <div class="invalid-feedback" th:errors="*{species}"
                                              th:if="${#fields.hasErrors('species')}"></div>
@@ -53,7 +58,7 @@
                                                     th:errorclass="is-invalid" th:field="*{sex}">
                                                 <option disabled selected value="">Seleccionar sexo...</option>
                                                 <option th:each="sexValue : ${T(tfg.psygcv.model.pet.Sex).values()}"
-                                                        th:text="${sexValue == T(tfg.psygcv.model.pet.Sex).MALE ? 'Macho' : 'Hembra'}"
+                                                        th:text="${sexValue.description}"
                                                         th:value="${sexValue}"></option>
                                             </select>
                                         </label>
@@ -65,9 +70,12 @@
                                     <label class="form-label fw-bold">Fecha Nacimiento</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-calendar"></i></span>
-                                        <input class="form-control form-control-lg" required th:errorclass="is-invalid"
-                                               th:field="*{birthDate}"
-                                               type="date">
+                                        <label>
+                                            <input class="form-control form-control-lg" required
+                                                   th:errorclass="is-invalid"
+                                                   th:field="*{birthDate}"
+                                                   type="date">
+                                        </label>
                                         <div class="invalid-feedback" th:errors="*{birthDate}"
                                              th:if="${#fields.hasErrors('birthDate')}"></div>
                                     </div>
@@ -91,9 +99,15 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
                                         <label>
-                                            <input class="form-control form-control-lg" required
-                                                   th:errorclass="is-invalid" th:field="*{breed}"
-                                                   type="text">
+                                            <select class="form-select form-select-lg" required
+                                                    th:errorclass="is-invalid" th:field="*{breed}">
+                                                <option disabled selected value="">Selecciona primero una especie...
+                                                </option>
+                                                <option th:attr="data-species=${br.species}"
+                                                        th:each="br : ${T(tfg.psygcv.model.pet.Breed).values()}"
+                                                        th:text="${br.description}"
+                                                        th:value="${br}"></option>
+                                            </select>
                                         </label>
                                         <div class="invalid-feedback" th:errors="*{breed}"
                                              th:if="${#fields.hasErrors('breed')}"></div>
@@ -118,5 +132,32 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        var speciesSelect = document.getElementById('species');
+        var breedSelect = document.getElementById('breed');
+
+        function filterBreeds(resetSelection) {
+            var selectedSpecies = speciesSelect.value;
+            var allOptions = breedSelect.querySelectorAll('option[data-species]');
+            allOptions.forEach(function (opt) {
+                opt.style.display = opt.dataset.species === selectedSpecies ? '' : 'none';
+            });
+            breedSelect.disabled = !selectedSpecies;
+            if (resetSelection) {
+                var current = breedSelect.querySelector('option:checked');
+                if (current && current.dataset.species !== selectedSpecies) {
+                    breedSelect.value = '';
+                }
+            }
+        }
+
+        speciesSelect.addEventListener('change', function () {
+            filterBreeds(true);
+        });
+
+        filterBreeds(false);
+    })();
+</script>
 </body>
 </html>

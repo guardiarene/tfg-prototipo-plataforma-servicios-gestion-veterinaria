@@ -37,7 +37,7 @@
                                                 th:field="*{pet.id}">
                                             <option disabled selected value="">Seleccione una mascota...</option>
                                             <option th:each="pet : ${pets}"
-                                                    th:text="${pet.name + ' (' + pet.species + ')'}"
+                                                    th:text="${pet.name + ' (' + pet.species.description + ')'}"
                                                     th:value="${pet.id}"></option>
                                         </select>
                                     </div>
@@ -51,7 +51,8 @@
                                     <label class="form-label fw-bold">Fecha</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-calendar3"></i></span>
-                                        <input class="form-control" required th:field="*{date}" th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                        <input class="form-control" required th:field="*{date}"
+                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
                                                type="date">
                                     </div>
                                 </div>
@@ -79,7 +80,8 @@
                                 <a class="btn btn-secondary px-4" th:href="@{/receptionist/dashboard}">
                                     <i class="bi bi-arrow-left-circle me-2"></i> Volver
                                 </a>
-                                <button class="btn btn-primary px-4" th:disabled="${clientId == null || #lists.isEmpty(pets)}"
+                                <button class="btn btn-primary px-4"
+                                        th:disabled="${clientId == null || #lists.isEmpty(pets)}"
                                         type="submit">
                                     <i class="bi bi-save2 me-2"></i> Registrar Turno
                                 </button>
