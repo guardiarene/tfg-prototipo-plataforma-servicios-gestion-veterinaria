@@ -40,6 +40,8 @@ public class SecurityConfig {
                     .hasRole("SYSTEM_ADMINISTRATOR")
                     .requestMatchers("/customer/**")
                     .hasRole("CUSTOMER")
+                    .requestMatchers("/clinics/register")
+                    .permitAll()
                     .requestMatchers("/profile/**", "/pets/**", "/clinics/**")
                     .hasRole("CUSTOMER")
                     .requestMatchers("/medical-services/**")
