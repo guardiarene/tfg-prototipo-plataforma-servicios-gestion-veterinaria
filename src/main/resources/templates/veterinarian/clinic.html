@@ -14,6 +14,9 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-hospital', 'Información de la Clínica', null)}"></div>
                     <div class="card-body p-4">
+                        <div class="mb-3" th:if="${param.updated}">
+                            <div th:replace="~{fragments/alert :: successAlert('Datos actualizados correctamente.')}"></div>
+                        </div>
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="card h-100 border-0 bg-light shadow-sm">
