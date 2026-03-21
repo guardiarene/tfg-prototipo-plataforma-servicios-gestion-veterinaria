@@ -14,8 +14,10 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Actualizar Datos del Establecimiento', null)}"></div>
                     <div class="card-body p-4">
-
-                        <!-- Formulario Veterinario -->
+                        <div class="alert alert-danger" role="alert" th:if="${errorMessage}">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span th:text="${errorMessage}">Error message</span>
+                        </div>
                         <form class="mb-5" method="POST" th:action="@{/veterinarian/profile/update}"
                               th:object="${veterinarian}">
                             <input th:field="*{id}" type="hidden"/>
@@ -25,19 +27,35 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Nombre</label>
-                                    <input class="form-control" required th:field="*{firstName}" type="text"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{firstName}" type="text"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{firstName}"
+                                         th:if="${#fields.hasErrors('firstName')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Apellido</label>
-                                    <input class="form-control" required th:field="*{lastName}" type="text"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{lastName}" type="text"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{lastName}"
+                                         th:if="${#fields.hasErrors('lastName')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Teléfono</label>
-                                    <input class="form-control" required th:field="*{phone}" type="tel"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{phone}" type="tel"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{phone}"
+                                         th:if="${#fields.hasErrors('phone')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Email</label>
-                                    <input class="form-control" required th:field="*{email}" type="email"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{email}" type="email"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{email}"
+                                         th:if="${#fields.hasErrors('email')}"></div>
                                 </div>
                                 <div class="col-12">
                                     <button class="btn btn-outline-primary" type="submit">
@@ -48,8 +66,6 @@
                         </form>
 
                         <hr class="my-4">
-
-                        <!-- Formulario Clínica -->
                         <form method="POST" th:action="@{/veterinarian/clinic/update}" th:object="${clinic}">
                             <input th:field="*{id}" type="hidden"/>
                             <h5 class="mb-3 border-bottom pb-2 text-primary">
@@ -58,19 +74,35 @@
                             <div class="row g-3">
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Nombre Comercial</label>
-                                    <input class="form-control" required th:field="*{name}" type="text"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{name}" type="text"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{name}"
+                                         th:if="${#fields.hasErrors('name')}"></div>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Dirección</label>
-                                    <input class="form-control" required th:field="*{address}" type="text"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{address}" type="text"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{address}"
+                                         th:if="${#fields.hasErrors('address')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Teléfono de Contacto</label>
-                                    <input class="form-control" required th:field="*{phone}" type="tel"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{phone}" type="tel"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{phone}"
+                                         th:if="${#fields.hasErrors('phone')}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Email Público</label>
-                                    <input class="form-control" required th:field="*{email}" type="email"/>
+                                    <label>
+                                        <input class="form-control" required th:field="*{email}" type="email"/>
+                                    </label>
+                                    <div class="text-danger small" th:errors="*{email}"
+                                         th:if="${#fields.hasErrors('email')}"></div>
                                 </div>
                                 <div class="col-12 mt-4">
                                     <div class="d-flex justify-content-end gap-3">
