@@ -2,11 +2,15 @@ package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.model.user.Role;
+import tfg.psygcv.model.user.User;
 import tfg.psygcv.repository.base.VeterinaryClinicRepository;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 import tfg.psygcv.service.validator.VeterinaryClinicValidator;
 
@@ -16,8 +20,8 @@ import tfg.psygcv.service.validator.VeterinaryClinicValidator;
 public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInterface {
 
   private final VeterinaryClinicRepository veterinaryClinicRepository;
-
   private final VeterinaryClinicValidator veterinaryClinicValidator;
+  private final UserServiceInterface userService;
 
   @Override
   public List<VeterinaryClinic> findAll() {
@@ -83,6 +87,32 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
     VeterinaryClinic existingClinic = findById(clinicId);
     existingClinic.setActive(false);
     veterinaryClinicRepository.save(existingClinic);
+  }
+
+  @Override
+  @Transactional
+  public void registerClinicWithVeterinarian(Map<String, String> params) {
+    String password = params.get("userPassword");
+    String confirmPassword = params.get("confirmPassword");
+
+    User user = new User();
+    user.setFirstName(params.get("userFirstName"));
+    user.setLastName(params.get("userLastName"));
+    user.setEmail(params.get("userEmail"));
+    user.setPhone(params.get("userPhone"));
+    user.setPassword(password);
+    user.setRole(Role.VETERINARIAN);
+    user.setActive(true);
+    userService.saveComplete(user);
+
+    VeterinaryClinic clinic = new VeterinaryClinic();
+    clinic.setName(params.get("clinicName"));
+    clinic.setAddress(params.get("clinicAddress"));
+    clinic.setEmail(params.get("clinicEmail"));
+    clinic.setPhone(params.get("clinicPhone"));
+    clinic.setVeterinarian(user);
+    clinic.setActive(true);
+    save(clinic);
   }
 
   private void updateClinicFields(VeterinaryClinic existing, VeterinaryClinic updated) {
