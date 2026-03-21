@@ -21,5 +21,7 @@ public interface UserServiceInterface {
 
   User updateComplete(Long userId, User updatedUser);
 
+  void updateVeterinarianProfile(User currentVeterinarian, User updatedVeterinarian);
+
   void deactivate(Long userId);
 }

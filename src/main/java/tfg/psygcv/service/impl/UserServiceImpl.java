@@ -106,6 +106,14 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
 
   @Override
   @Transactional
+  public void updateVeterinarianProfile(User currentVeterinarian, User updatedVeterinarian) {
+    updatedUserFields(currentVeterinarian, updatedVeterinarian);
+    userValidator.validateForUpdate(currentVeterinarian);
+    userRepository.save(currentVeterinarian);
+  }
+
+  @Override
+  @Transactional
   public void deactivate(Long userId) {
     User user = findById(userId);
     user.setActive(false);
@@ -129,6 +137,13 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
     existing.setLastName(updated.getLastName());
     existing.setPhone(updated.getPhone());
     existing.setEmail(updated.getEmail());
+  }
+
+  private void updatedUserFields(User existing, User updated) {
+    existing.setFirstName(updated.getFirstName());
+    existing.setLastName(updated.getLastName());
+    existing.setEmail(updated.getEmail());
+    existing.setPhone(updated.getPhone());
   }
 
   private void updateAllUserFields(User existing, User updated) {
