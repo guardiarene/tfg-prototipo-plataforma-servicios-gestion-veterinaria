@@ -1,8 +1,9 @@
 package tfg.psygcv.controller.clinic;
 
-import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_SERVICES;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_SERVICES_CREATED;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_SERVICES_DELETED;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_SERVICES_UPDATED;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -51,14 +52,22 @@ public class MedicalServiceController extends BaseController {
 
   @PostMapping("/new")
   public String saveService(
-      @Valid @ModelAttribute MedicalService medicalService,
+      @ModelAttribute("medicalService") MedicalService medicalService,
       BindingResult result,
-      @RequestParam("clinicId") Long clinicId) {
-    if (result.hasErrors()) {
+      @RequestParam("clinicId") Long clinicId,
+      Model model) {
+    try {
+      if (result.hasErrors()) {
+        model.addAttribute("clinicId", clinicId);
+        return "medical_services/new";
+      }
+      medicalServiceService.save(medicalService, clinicId);
+      return REDIRECT_MY_SERVICES_CREATED;
+    } catch (Exception e) {
+      model.addAttribute("errorMessage", "Error al guardar el servicio: " + e.getMessage());
+      model.addAttribute("clinicId", clinicId);
       return "medical_services/new";
     }
-    medicalServiceService.save(medicalService, clinicId);
-    return REDIRECT_MY_SERVICES;
   }
 
   @GetMapping("/{id}/edit")
@@ -74,14 +83,22 @@ public class MedicalServiceController extends BaseController {
   @PostMapping("/{id}/edit")
   public String updateService(
       @PathVariable Long id,
-      @Valid @ModelAttribute MedicalService medicalService,
+      @ModelAttribute("medicalService") MedicalService medicalService,
       BindingResult result,
-      @RequestParam("clinicId") Long clinicId) {
-    if (result.hasErrors()) {
+      @RequestParam("clinicId") Long clinicId,
+      Model model) {
+    try {
+      if (result.hasErrors()) {
+        model.addAttribute("clinicId", clinicId);
+        return "medical_services/edit";
+      }
+      medicalServiceService.update(id, medicalService, clinicId);
+      return REDIRECT_MY_SERVICES_UPDATED;
+    } catch (Exception e) {
+      model.addAttribute("errorMessage", "Error al actualizar el servicio: " + e.getMessage());
+      model.addAttribute("clinicId", clinicId);
       return "medical_services/edit";
     }
-    medicalServiceService.update(id, medicalService, clinicId);
-    return REDIRECT_MY_SERVICES;
   }
 
   @PostMapping("/{id}/delete")
@@ -89,6 +106,6 @@ public class MedicalServiceController extends BaseController {
     User veterinarian = getCurrentUser(authentication, userService);
     VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
     medicalServiceService.deactivate(id, clinic.getId());
-    return REDIRECT_MY_SERVICES;
+    return REDIRECT_MY_SERVICES_DELETED;
   }
 }
