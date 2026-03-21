@@ -32,7 +32,7 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
   public VeterinaryClinic findById(Long clinicId) {
     veterinaryClinicValidator.validateId(clinicId);
     return veterinaryClinicRepository
-        .findByIdAndActive(clinicId)
+        .findByIdWithDetails(clinicId)
         .orElseThrow(
             () -> new EntityNotFoundException("Veterinary clinic not found with ID: " + clinicId));
   }
