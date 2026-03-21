@@ -15,7 +15,13 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-plus', 'Nuevo Servicio Médico', null)}"></div>
                     <div class="card-body p-4">
-                        <form method="post" th:action="@{/medical-services/new}" th:object="${medicalService}">
+                        <div class="alert alert-danger" role="alert" th:if="${errorMessage}">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span th:text="${errorMessage}">Error message</span>
+                        </div>
+                        <form method="post"
+                              onsubmit="return confirm('¿Estás seguro de que deseas guardar este servicio médico?');"
+                              th:action="@{/medical-services/new}" th:object="${medicalService}">
                             <input name="clinicId" th:value="${clinicId}" type="hidden">
                             <div class="row g-4">
                                 <div class="col-12">
@@ -23,10 +29,12 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i
                                                 class="bi bi-file-medical"></i></span>
-                                        <input class="form-control form-control-lg" maxlength="100"
-                                               placeholder="Ej: Cirugía de esterilización"
-                                               required th:errorclass="is-invalid" th:field="*{name}"
-                                               type="text">
+                                        <label>
+                                            <input class="form-control form-control-lg" maxlength="100"
+                                                   placeholder="Ej: Cirugía de esterilización"
+                                                   required th:errorclass="is-invalid" th:field="*{name}"
+                                                   type="text">
+                                        </label>
                                         <div class="invalid-feedback" th:errors="*{name}"
                                              th:if="${#fields.hasErrors('name')}"></div>
                                     </div>
@@ -36,10 +44,12 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light align-items-start pt-3"><i
                                                 class="bi bi-text-paragraph"></i></span>
-                                        <textarea class="form-control form-control-lg" maxlength="255"
-                                                  placeholder="Descripción detallada del servicio"
-                                                  required rows="3" th:errorclass="is-invalid"
-                                                  th:field="*{description}"></textarea>
+                                        <label>
+                                            <textarea class="form-control form-control-lg" maxlength="255"
+                                                      placeholder="Descripción detallada del servicio"
+                                                      required rows="3" th:errorclass="is-invalid"
+                                                      th:field="*{description}"></textarea>
+                                        </label>
                                         <div class="invalid-feedback" th:errors="*{description}"
                                              th:if="${#fields.hasErrors('description')}"></div>
                                     </div>

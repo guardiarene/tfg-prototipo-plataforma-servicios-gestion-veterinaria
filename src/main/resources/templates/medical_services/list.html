@@ -15,6 +15,16 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-pulse', 'Gestión de Servicios Médicos', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${param.created}">
+                            <div th:replace="~{fragments/alert :: successAlert('Servicio creado correctamente.')}"></div>
+                        </div>
+                        <div th:if="${param.updated}">
+                            <div th:replace="~{fragments/alert :: successAlert('Servicio actualizado correctamente.')}"></div>
+                        </div>
+                        <div th:if="${param.deleted}">
+                            <div th:replace="~{fragments/alert :: successAlert('Servicio eliminado correctamente.')}"></div>
+                        </div>
+
                         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                             <h4 class="mb-0 text-primary">Listado de Servicios</h4>
                             <a class="btn btn-success" th:href="@{/medical-services/new}">
