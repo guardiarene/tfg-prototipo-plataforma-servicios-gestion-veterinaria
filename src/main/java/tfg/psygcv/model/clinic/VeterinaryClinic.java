@@ -71,9 +71,8 @@ public class VeterinaryClinic extends AuditableEntity {
   @JoinColumn(name = "VETERINARIAN_ID", nullable = false)
   private User veterinarian;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "RECEPTIONIST_ID", nullable = false)
+  @JoinColumn(name = "RECEPTIONIST_ID", nullable = true)
   private User receptionist;
 
   public void setVeterinarian(User veterinarian) {
