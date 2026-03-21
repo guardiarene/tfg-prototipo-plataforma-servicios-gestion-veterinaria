@@ -16,8 +16,8 @@ public interface VeterinaryClinicRepository extends JpaRepository<VeterinaryClin
   List<VeterinaryClinic> findAllActive();
 
   @Query(
-      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.services s WHERE vc.id = :clinicId AND (s.active IS NULL OR s.active = true)")
-  Optional<VeterinaryClinic> findByIdAndActive(@Param("clinicId") Long clinicId);
+      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.services s LEFT JOIN FETCH vc.veterinarian v WHERE vc.id = :clinicId AND (s.active IS NULL OR s.active = true)")
+  Optional<VeterinaryClinic> findByIdWithDetails(@Param("clinicId") Long clinicId);
 
   List<VeterinaryClinic> findByNameContainingIgnoreCase(String name);
 
