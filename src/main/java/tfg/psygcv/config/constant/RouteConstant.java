@@ -15,7 +15,7 @@ public final class RouteConstant {
   public static final String REDIRECT_MY_PETS_DELETED = "redirect:/pets?deleted";
   public static final String REDIRECT_MY_APPOINTMENTS = "redirect:/appointments";
   public static final String REDIRECT_MY_SERVICES = "redirect:/medical-services";
-  public static final String REDIRECT_MY_CLINIC = "redirect:/veterinarian/clinic";
+  public static final String REDIRECT_MY_CLINIC_UPDATED = "redirect:/veterinarian/clinic?updated";
   public static final String VIEW_USER_REGISTER = "users/register";
   public static final String VIEW_USER_LOGIN = "users/login";
   public static final String VIEW_ADMIN_NEW_USER = "admin/new_user";
