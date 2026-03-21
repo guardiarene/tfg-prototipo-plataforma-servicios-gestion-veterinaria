@@ -15,10 +15,15 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-building', 'Registro de Clínica y Veterinario', null)}"></div>
                     <div class="card-body p-4">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                             th:if="${errorMessage}">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span th:text="${errorMessage}">Error message</span>
+                            <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+                        </div>
                         <form method="POST" th:action="@{/clinics/register}">
                             <div class="row g-4">
-                                <!-- Datos del Veterinario -->
-                                <div class="col-12" th:object="${user}">
+                                <div class="col-12">
                                     <div class="border p-3 rounded bg-white">
                                         <h5 class="mb-3 border-bottom pb-2 text-primary">
                                             <i class="bi bi-person-badge me-2"></i>Datos del Veterinario
@@ -27,51 +32,91 @@
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Nombre</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                                    <input class="form-control" placeholder="Ej. Juan" required
-                                                           th:field="*{firstName}" type="text">
+                                                    <span class="input-group-text bg-light border-end-0"><i
+                                                            class="bi bi-person"></i></span>
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="userFirstName"
+                                                               placeholder="Ej. Juan" required
+                                                               th:value="${userFirstName}" type="text">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Apellido</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                                    <input class="form-control" placeholder="Ej. Pérez" required
-                                                           th:field="*{lastName}" type="text">
+                                                    <span class="input-group-text bg-light border-end-0"><i
+                                                            class="bi bi-person"></i></span>
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="userLastName"
+                                                               placeholder="Ej. Pérez" required
+                                                               th:value="${userLastName}" type="text">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Teléfono</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i
+                                                    <span class="input-group-text bg-light border-end-0"><i
                                                             class="bi bi-telephone"></i></span>
-                                                    <input class="form-control" placeholder="Ej. 123-456-789" required
-                                                           th:field="*{phone}" type="text">
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="userPhone"
+                                                               placeholder="Ej. 123-456-789"
+                                                               required
+                                                               th:value="${userPhone}" type="text">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Email</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i
+                                                    <span class="input-group-text bg-light border-end-0"><i
                                                             class="bi bi-envelope"></i></span>
-                                                    <input class="form-control" placeholder="Ej. juan.perez@mail.com"
-                                                           required th:field="*{email}" type="email">
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="userEmail"
+                                                               placeholder="Ej. juan.perez@mail.com" required
+                                                               th:value="${userEmail}"
+                                                               type="email">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Contraseña</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i
+                                                    <span class="input-group-text bg-light border-end-0"><i
                                                             class="bi bi-lock"></i></span>
-                                                    <input class="form-control" placeholder="Contraseña segura" required
-                                                           th:field="*{password}" type="password">
+                                                    <label for="userPassword"></label><input
+                                                        class="form-control border-start-0" id="userPassword"
+                                                        name="userPassword"
+                                                        placeholder="Mínimo 8 caracteres"
+                                                        required
+                                                        type="password">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">Confirmar Contraseña</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light border-end-0"><i
+                                                            class="bi bi-lock-fill"></i></span>
+                                                    <label for="confirmPassword"></label><input
+                                                        class="form-control border-start-0" id="confirmPassword"
+                                                        name="confirmPassword"
+                                                        placeholder="Repita su contraseña"
+                                                        required
+                                                        type="password">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Datos de la Clínica -->
-                                <div class="col-12 mt-4" th:object="${clinic}">
+                                <div class="col-12" id="passwordError" style="display:none;">
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <span id="passwordErrorMessage"></span>
+                                        <button aria-label="Close" class="btn-close" data-bs-dismiss="alert"
+                                                type="button"></button>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-4">
                                     <div class="border p-3 rounded bg-white">
                                         <h5 class="mb-3 border-bottom pb-2 text-primary">
                                             <i class="bi bi-hospital me-2"></i>Datos de la Clínica
@@ -80,38 +125,51 @@
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Nombre</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i
+                                                    <span class="input-group-text bg-light border-end-0"><i
                                                             class="bi bi-building"></i></span>
-                                                    <input class="form-control"
-                                                           placeholder="Ej. Clínica Veterinaria San Juan" required
-                                                           th:field="*{name}" type="text">
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="clinicName"
+                                                               placeholder="Ej. Clínica Veterinaria San Juan" required
+                                                               th:value="${clinicName}" type="text">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Teléfono</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i
+                                                    <span class="input-group-text bg-light border-end-0"><i
                                                             class="bi bi-telephone"></i></span>
-                                                    <input class="form-control" placeholder="Ej. 987-654-321" required
-                                                           th:field="*{phone}" type="text">
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="clinicPhone"
+                                                               placeholder="Ej. 987-654-321"
+                                                               required
+                                                               th:value="${clinicPhone}" type="text">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Dirección</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i
+                                                    <span class="input-group-text bg-light border-end-0"><i
                                                             class="bi bi-geo-alt"></i></span>
-                                                    <input class="form-control" placeholder="Ej. Calle Ficticia 123"
-                                                           required th:field="*{address}" type="text">
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="clinicAddress"
+                                                               placeholder="Ej. Calle Ficticia 123"
+                                                               required th:value="${clinicAddress}" type="text">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label fw-bold">Email</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i
+                                                    <span class="input-group-text bg-light border-end-0"><i
                                                             class="bi bi-envelope"></i></span>
-                                                    <input class="form-control" placeholder="Ej. info@clinica.com"
-                                                           required th:field="*{email}" type="email">
+                                                    <label>
+                                                        <input class="form-control border-start-0" name="clinicEmail"
+                                                               placeholder="Ej. info@clinica.com" required
+                                                               th:value="${clinicEmail}"
+                                                               type="email">
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -136,5 +194,40 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const password = document.getElementById('userPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const passwordError = document.getElementById('passwordError');
+        const passwordErrorMessage = document.getElementById('passwordErrorMessage');
+
+        form.addEventListener('submit', function (event) {
+            if (password.value !== confirmPassword.value) {
+                event.preventDefault();
+                passwordErrorMessage.textContent = 'Las contraseñas no coinciden';
+                passwordError.style.display = 'block';
+                confirmPassword.focus();
+                return false;
+            }
+            if (password.value.length < 8) {
+                event.preventDefault();
+                passwordErrorMessage.textContent = 'La contraseña debe tener al menos 8 caracteres';
+                passwordError.style.display = 'block';
+                password.focus();
+                return false;
+            }
+            passwordError.style.display = 'none';
+            return true;
+        });
+
+        password.addEventListener('input', function () {
+            passwordError.style.display = 'none';
+        });
+        confirmPassword.addEventListener('input', function () {
+            passwordError.style.display = 'none';
+        });
+    });
+</script>
 </body>
 </html>
