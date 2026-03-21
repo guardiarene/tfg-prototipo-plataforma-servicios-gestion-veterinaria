@@ -20,4 +20,6 @@ public interface VeterinaryClinicServiceInterface {
   VeterinaryClinic update(VeterinaryClinic veterinaryClinic);
 
   void deactivate(Long clinicId);
+
+  void registerClinicWithVeterinarian(java.util.Map<String, String> params);
 }
