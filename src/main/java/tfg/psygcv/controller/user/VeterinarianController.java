@@ -1,13 +1,11 @@
 package tfg.psygcv.controller.user;
 
-import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_CLINIC;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_CLINIC_UPDATED;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,31 +53,34 @@ public class VeterinarianController extends BaseController {
 
   @PostMapping("/profile/update")
   public String updateVeterinarianProfile(
-      @Valid @ModelAttribute("veterinarian") User updatedVeterinarian,
-      BindingResult result,
+      @ModelAttribute("veterinarian") User updatedVeterinarian,
+      Model model,
       Authentication authentication) {
-    if (result.hasErrors()) {
+    User currentVeterinarian = getCurrentUser(authentication, userService);
+    try {
+      userService.updateVeterinarianProfile(currentVeterinarian, updatedVeterinarian);
+      return REDIRECT_MY_CLINIC_UPDATED;
+    } catch (Exception e) {
+      model.addAttribute(
+          "clinic", veterinaryClinicService.findByVeterinarianId(currentVeterinarian.getId()));
+      model.addAttribute("errorMessage", "Error al actualizar el perfil profesional");
       return "veterinarian/edit_clinic";
     }
-    User currentVeterinarian = getCurrentUser(authentication, userService);
-    updatedVeterinarian.setId(currentVeterinarian.getId());
-    userService.update(updatedVeterinarian);
-    return REDIRECT_MY_CLINIC;
   }
 
   @PostMapping("/clinic/update")
   public String updateClinicData(
-      @Valid @ModelAttribute("clinic") VeterinaryClinic updatedClinic,
-      BindingResult result,
+      @ModelAttribute("clinic") VeterinaryClinic updatedClinic,
+      Model model,
       Authentication authentication) {
-    if (result.hasErrors()) {
+    User veterinarian = getCurrentUser(authentication, userService);
+    try {
+      veterinaryClinicService.updateClinicData(veterinarian, updatedClinic);
+      return REDIRECT_MY_CLINIC_UPDATED;
+    } catch (Exception e) {
+      model.addAttribute("veterinarian", veterinarian);
+      model.addAttribute("errorMessage", "Error al actualizar los datos de la clínica");
       return "veterinarian/edit_clinic";
     }
-    User veterinarian = getCurrentUser(authentication, userService);
-    VeterinaryClinic currentClinic =
-        veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
-    updatedClinic.setId(currentClinic.getId());
-    veterinaryClinicService.update(updatedClinic);
-    return REDIRECT_MY_CLINIC;
   }
 }
