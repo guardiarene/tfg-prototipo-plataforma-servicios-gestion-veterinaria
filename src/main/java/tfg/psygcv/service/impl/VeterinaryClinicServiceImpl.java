@@ -115,6 +115,15 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
     save(clinic);
   }
 
+  @Override
+  @Transactional
+  public void updateClinicData(User veterinarian, VeterinaryClinic updatedClinic) {
+    VeterinaryClinic currentClinic = findByVeterinarianId(veterinarian.getId());
+    updatedClinic.setId(currentClinic.getId());
+    updatedClinic.setVeterinarian(veterinarian);
+    update(updatedClinic);
+  }
+
   private void updateClinicFields(VeterinaryClinic existing, VeterinaryClinic updated) {
     existing.setVeterinarian(updated.getVeterinarian());
     existing.setName(updated.getName());

@@ -2,6 +2,7 @@ package tfg.psygcv.service.interfaces;
 
 import java.util.List;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.model.user.User;
 
 public interface VeterinaryClinicServiceInterface {
 
@@ -22,4 +23,6 @@ public interface VeterinaryClinicServiceInterface {
   void deactivate(Long clinicId);
 
   void registerClinicWithVeterinarian(java.util.Map<String, String> params);
+
+  void updateClinicData(User veterinarian, VeterinaryClinic updatedClinic);
 }
