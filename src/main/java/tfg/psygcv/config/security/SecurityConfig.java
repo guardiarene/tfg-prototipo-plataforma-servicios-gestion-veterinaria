@@ -43,7 +43,7 @@ public class SecurityConfig {
                     .requestMatchers("/clinics/register")
                     .permitAll()
                     .requestMatchers("/profile/**", "/pets/**", "/clinics/**")
-                    .hasRole("CUSTOMER")
+                    .hasAnyRole("CUSTOMER", "VETERINARIAN", "RECEPTIONIST")
                     .requestMatchers("/medical-services/**")
                     .hasRole("VETERINARIAN")
                     .requestMatchers("/medical_records/**")

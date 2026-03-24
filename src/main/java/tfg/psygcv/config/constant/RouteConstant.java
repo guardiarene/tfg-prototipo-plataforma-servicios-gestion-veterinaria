@@ -23,6 +23,7 @@ public final class RouteConstant {
   public static final String VIEW_ADMIN_NEW_USER = "admin/new_user";
   public static final String VIEW_ADMIN_EDIT_USER = "admin/edit_user";
   public static final String VIEW_ADMIN_DASHBOARD = "admin/dashboard";
+  public static final String VIEW_ACCESS_DENIED = "error/access_denied";
 
   private RouteConstant() {}
 }
