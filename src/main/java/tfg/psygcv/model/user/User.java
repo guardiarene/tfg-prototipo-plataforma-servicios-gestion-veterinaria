@@ -9,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -16,7 +18,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -81,10 +85,11 @@ public class User extends AuditableEntity {
       fetch = FetchType.LAZY)
   private List<Appointment> appointmentsAsCustomer = new ArrayList<>();
 
-  @OneToMany(mappedBy = "veterinarian", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
   @Fetch(FetchMode.JOIN)
-  private List<VeterinaryClinic> clinicsOwned = new ArrayList<>();
+  private Set<VeterinaryClinic> clinicsOwned = new LinkedHashSet<>();
 
-  @OneToMany(mappedBy = "receptionist", fetch = FetchType.LAZY)
-  private List<VeterinaryClinic> clinicsAsReceptionist = new ArrayList<>();
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "WORK_CLINIC_ID")
+  private VeterinaryClinic workClinic;
 }
