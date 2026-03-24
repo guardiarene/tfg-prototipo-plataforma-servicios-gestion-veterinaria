@@ -16,13 +16,22 @@ public interface VeterinaryClinicRepository extends JpaRepository<VeterinaryClin
   List<VeterinaryClinic> findAllActive();
 
   @Query(
-      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.services s LEFT JOIN FETCH vc.veterinarian v WHERE vc.id = :clinicId AND (s.active IS NULL OR s.active = true)")
+      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.services s LEFT JOIN FETCH vc.owner o WHERE vc.id = :clinicId AND (s.active IS NULL OR s.active = true)")
   Optional<VeterinaryClinic> findByIdWithDetails(@Param("clinicId") Long clinicId);
 
   List<VeterinaryClinic> findByNameContainingIgnoreCase(String name);
 
-  @Query("SELECT vc FROM VeterinaryClinic vc WHERE vc.veterinarian.id = :veterinarianId")
-  VeterinaryClinic findByVeterinarianId(@Param("veterinarianId") Long veterinarianId);
+  @Query("SELECT vc FROM VeterinaryClinic vc WHERE vc.owner.id = :ownerId")
+  VeterinaryClinic findByOwnerId(@Param("ownerId") Long ownerId);
 
-  Optional<VeterinaryClinic> findByReceptionistId(Long receptionistId);
+  @Query(
+      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.veterinarians v LEFT JOIN FETCH vc.receptionists r WHERE vc.owner.id = :ownerId")
+  Optional<VeterinaryClinic> findByOwnerIdOptional(@Param("ownerId") Long ownerId);
+
+  @Query(
+      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.veterinarians v LEFT JOIN FETCH vc.receptionists r JOIN vc.veterinarians v2 WHERE v2.id = :veterinarianId")
+  Optional<VeterinaryClinic> findByVeterinarianId(@Param("veterinarianId") Long veterinarianId);
+
+  @Query("SELECT vc FROM VeterinaryClinic vc JOIN vc.receptionists r WHERE r.id = :receptionistId")
+  Optional<VeterinaryClinic> findByReceptionistId(@Param("receptionistId") Long receptionistId);
 }
