@@ -1,5 +1,6 @@
 package tfg.psygcv.repository.query;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,12 +16,20 @@ public interface AppointmentQueryRepository extends JpaRepository<Appointment, L
 
   @Query(
       "SELECT DISTINCT a.pet FROM Appointment a WHERE a.clinic IN :clinics AND a.pet.active = true")
-  List<Pet> findPetsWithAppointmentsInClinics(@Param("clinics") List<VeterinaryClinic> clinics);
+  List<Pet> findPetsWithAppointmentsInClinics(
+      @Param("clinics") Collection<VeterinaryClinic> clinics);
 
   @Query(
       "SELECT COUNT(a) > 0 FROM Appointment a WHERE a.pet = :pet AND a.clinic IN :clinics AND a.customer = :customer")
   boolean existsAppointmentByPetAndClinicsAndCustomer(
       @Param("pet") Pet pet,
-      @Param("clinics") List<VeterinaryClinic> clinics,
+      @Param("clinics") Collection<VeterinaryClinic> clinics,
+      @Param("customer") User customer);
+
+  @Query(
+      "SELECT COUNT(a) > 0 FROM Appointment a WHERE a.pet = :pet AND a.clinic = :clinic AND a.customer = :customer")
+  boolean existsAppointmentByPetAndClinicAndCustomer(
+      @Param("pet") Pet pet,
+      @Param("clinic") VeterinaryClinic clinic,
       @Param("customer") User customer);
 }
