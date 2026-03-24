@@ -25,13 +25,9 @@ import tfg.psygcv.service.validator.StatisticsValidator;
 public class StatisticsServiceImpl implements StatisticsServiceInterface {
 
   private final DiagnosticStatisticsRepository diagnosticStatisticsRepository;
-
   private final TreatmentStatisticsRepository treatmentStatisticsRepository;
-
   private final VeterinaryClinicRepository veterinaryClinicRepository;
-
   private final AppointmentStatisticsRepository appointmentStatisticsRepository;
-
   private final StatisticsValidator statisticsValidator;
 
   @Override
@@ -93,12 +89,13 @@ public class StatisticsServiceImpl implements StatisticsServiceInterface {
   }
 
   private VeterinaryClinic getClinic(User veterinarian) {
-    VeterinaryClinic clinic = veterinaryClinicRepository.findByVeterinarianId(veterinarian.getId());
-    if (clinic == null) {
-      throw new IllegalArgumentException(
-          "No clinic found for veterinarian with ID: " + veterinarian.getId());
-    }
-    return clinic;
+    return veterinaryClinicRepository
+        .findByVeterinarianId(veterinarian.getId())
+        .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarian.getId()))
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    "No clinic found for veterinarian with ID: " + veterinarian.getId()));
   }
 
   private Map<String, Long> processProblems(List<String> problems) {

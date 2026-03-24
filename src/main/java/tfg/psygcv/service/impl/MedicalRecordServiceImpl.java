@@ -2,6 +2,7 @@ package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,7 +78,17 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   @Transactional(readOnly = true)
   public List<MedicalRecord> findByVeterinarian(User veterinarian) {
     medicalRecordValidator.validateVeterinarian(veterinarian);
-    VeterinaryClinic clinic = veterinaryClinicRepository.findByVeterinarianId(veterinarian.getId());
+
+    VeterinaryClinic clinic =
+        veterinaryClinicRepository
+            .findByVeterinarianId(veterinarian.getId())
+            .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarian.getId()))
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Veterinary clinic not found for veterinarian ID: "
+                            + veterinarian.getId()));
+
     return medicalRecordRepository.findByClinicId(clinic.getId());
   }
 
@@ -163,10 +174,22 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   }
 
   private void validatePetAppointments(Pet pet, User veterinarian) {
-    List<VeterinaryClinic> veterinarianClinics = veterinarian.getClinicsOwned();
-    boolean hasAppointments =
-        appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
-            pet, veterinarianClinics, pet.getOwner());
+    Set<VeterinaryClinic> veterinarianClinics = veterinarian.getClinicsOwned();
+    VeterinaryClinic workClinic = veterinarian.getWorkClinic();
+
+    boolean hasAppointments = false;
+
+    if (veterinarianClinics != null && !veterinarianClinics.isEmpty()) {
+      hasAppointments =
+          appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
+              pet, veterinarianClinics, pet.getOwner());
+    }
+
+    if (!hasAppointments && workClinic != null) {
+      hasAppointments =
+          appointmentQueryRepository.existsAppointmentByPetAndClinicAndCustomer(
+              pet, workClinic, pet.getOwner());
+    }
 
     if (!hasAppointments) {
       throw new IllegalStateException(

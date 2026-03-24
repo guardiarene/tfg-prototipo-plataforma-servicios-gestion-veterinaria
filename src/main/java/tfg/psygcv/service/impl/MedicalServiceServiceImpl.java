@@ -20,9 +20,7 @@ import tfg.psygcv.service.validator.MedicalServiceValidator;
 public class MedicalServiceServiceImpl implements MedicalServiceServiceInterface {
 
   private final MedicalServiceRepository medicalServiceRepository;
-
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
-
   private final MedicalServiceValidator medicalServiceValidator;
 
   @Override

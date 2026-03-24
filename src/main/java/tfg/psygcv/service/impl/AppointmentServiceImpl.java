@@ -28,15 +28,10 @@ import tfg.psygcv.service.validator.AppointmentValidator;
 public class AppointmentServiceImpl implements AppointmentServiceInterface {
 
   private final AppointmentRepository appointmentRepository;
-
   private final AppointmentQueryRepository appointmentQueryRepository;
-
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
-
   private final MedicalServiceServiceInterface medicalServiceService;
-
   private final PetServiceInterface petService;
-
   private final AppointmentValidator appointmentValidator;
 
   @Override
@@ -76,7 +71,7 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     appointmentValidator.validateAppointment(appointment);
     return Optional.ofNullable(appointment.getMedicalService())
         .map(MedicalService::getClinic)
-        .map(VeterinaryClinic::getVeterinarian)
+        .map(VeterinaryClinic::getOwner)
         .map(User::getFirstName)
         .orElse("Veterinarian not assigned");
   }

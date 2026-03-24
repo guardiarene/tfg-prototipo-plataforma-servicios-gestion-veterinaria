@@ -23,9 +23,7 @@ import tfg.psygcv.service.validator.UserValidator;
 public class UserServiceImpl implements UserDetailsService, UserServiceInterface {
 
   private final UserRepository userRepository;
-
   private final PasswordEncoder passwordEncoder;
-
   private final UserValidator userValidator;
 
   @Override
@@ -69,6 +67,9 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
   @Transactional
   public User save(User user) {
     userValidator.validateForCreation(user);
+    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+      throw new IllegalArgumentException("Ya existe un usuario con este email: " + user.getEmail());
+    }
     encodePassword(user);
     return userRepository.save(user);
   }

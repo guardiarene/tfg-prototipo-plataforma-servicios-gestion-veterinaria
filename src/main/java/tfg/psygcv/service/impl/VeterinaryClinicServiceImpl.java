@@ -44,14 +44,25 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
   }
 
   @Override
-  public VeterinaryClinic findByVeterinarianId(Long veterinarianId) {
-    veterinaryClinicValidator.validateId(veterinarianId);
-    VeterinaryClinic clinic = veterinaryClinicRepository.findByVeterinarianId(veterinarianId);
+  public VeterinaryClinic findByOwnerId(Long ownerId) {
+    veterinaryClinicValidator.validateId(ownerId);
+    VeterinaryClinic clinic = veterinaryClinicRepository.findByOwnerId(ownerId);
     if (clinic == null) {
-      throw new EntityNotFoundException(
-          "Veterinary clinic not found for veterinarian ID: " + veterinarianId);
+      throw new EntityNotFoundException("Veterinary clinic not found for owner ID: " + ownerId);
     }
     return clinic;
+  }
+
+  @Override
+  public VeterinaryClinic findByVeterinarianId(Long veterinarianId) {
+    veterinaryClinicValidator.validateId(veterinarianId);
+    return veterinaryClinicRepository
+        .findByVeterinarianId(veterinarianId)
+        .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarianId))
+        .orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "Veterinary clinic not found for veterinarian ID: " + veterinarianId));
   }
 
   @Override
@@ -63,6 +74,14 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
             () ->
                 new EntityNotFoundException(
                     "Veterinary clinic not found for receptionist ID: " + receptionistId));
+  }
+
+  @Override
+  @Transactional
+  public void registerStaff(User owner, User staffUser) {
+    VeterinaryClinic clinic = findByOwnerId(owner.getId());
+    staffUser.setWorkClinic(clinic);
+    userService.saveComplete(staffUser);
   }
 
   @Override
@@ -110,22 +129,22 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
     clinic.setAddress(params.get("clinicAddress"));
     clinic.setEmail(params.get("clinicEmail"));
     clinic.setPhone(params.get("clinicPhone"));
-    clinic.setVeterinarian(user);
+    clinic.setOwner(user);
     clinic.setActive(true);
     save(clinic);
   }
 
   @Override
   @Transactional
-  public void updateClinicData(User veterinarian, VeterinaryClinic updatedClinic) {
-    VeterinaryClinic currentClinic = findByVeterinarianId(veterinarian.getId());
+  public void updateClinicData(User owner, VeterinaryClinic updatedClinic) {
+    VeterinaryClinic currentClinic = findByOwnerId(owner.getId());
     updatedClinic.setId(currentClinic.getId());
-    updatedClinic.setVeterinarian(veterinarian);
+    updatedClinic.setOwner(owner);
     update(updatedClinic);
   }
 
   private void updateClinicFields(VeterinaryClinic existing, VeterinaryClinic updated) {
-    existing.setVeterinarian(updated.getVeterinarian());
+    existing.setOwner(updated.getOwner());
     existing.setName(updated.getName());
     existing.setAddress(updated.getAddress());
     existing.setEmail(updated.getEmail());

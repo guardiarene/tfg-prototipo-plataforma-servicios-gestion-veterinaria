@@ -2,6 +2,7 @@ package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +21,8 @@ import tfg.psygcv.service.validator.PetValidator;
 public class PetServiceImpl implements PetServiceInterface {
 
   private final PetRepository petRepository;
-
   private final UserServiceInterface userService;
-
   private final AppointmentQueryRepository appointmentQueryRepository;
-
   private final PetValidator petValidator;
 
   @Override
@@ -44,7 +42,7 @@ public class PetServiceImpl implements PetServiceInterface {
   @Override
   public List<Pet> findPetsWithAppointmentsInClinics(User veterinarian) {
     petValidator.validateVeterinarian(veterinarian);
-    List<VeterinaryClinic> clinics = veterinarian.getClinicsOwned();
+    Set<VeterinaryClinic> clinics = veterinarian.getClinicsOwned();
     return appointmentQueryRepository.findPetsWithAppointmentsInClinics(clinics);
   }
 
