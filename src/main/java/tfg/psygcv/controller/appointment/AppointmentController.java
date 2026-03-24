@@ -98,7 +98,7 @@ public class AppointmentController extends BaseController {
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
     model.addAttribute("appointment", appointmentService.findById(id));
     model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
-    model.addAttribute("veterinarians", List.of(clinic.getVeterinarian()));
+    model.addAttribute("veterinarians", List.of(clinic.getOwner()));
     return "receptionist/reschedule_appointment";
   }
 

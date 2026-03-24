@@ -51,6 +51,34 @@ public class VeterinarianController extends BaseController {
     return "veterinarian/edit_clinic";
   }
 
+  @GetMapping("/staff")
+  public String listStaff(Model model, Authentication authentication) {
+    User veterinarian = getCurrentUser(authentication, userService);
+    VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
+    model.addAttribute("veterinarians", clinic.getVeterinarians());
+    model.addAttribute("receptionists", clinic.getReceptionists());
+    return "veterinarian/staff";
+  }
+
+  @GetMapping("/staff/new")
+  public String showNewStaffForm(Model model) {
+    model.addAttribute("staffUser", new User());
+    return "veterinarian/new_staff";
+  }
+
+  @PostMapping("/staff/save")
+  public String saveStaff(
+      @ModelAttribute("staffUser") User staffUser, Model model, Authentication authentication) {
+    User owner = getCurrentUser(authentication, userService);
+    try {
+      veterinaryClinicService.registerStaff(owner, staffUser);
+      return "redirect:/veterinarian/staff?created";
+    } catch (Exception e) {
+      model.addAttribute("errorMessage", "Error al registrar el personal: " + e.getMessage());
+      return "veterinarian/new_staff";
+    }
+  }
+
   @PostMapping("/profile/update")
   public String updateVeterinarianProfile(
       @ModelAttribute("veterinarian") User updatedVeterinarian,
@@ -62,7 +90,7 @@ public class VeterinarianController extends BaseController {
       return REDIRECT_MY_CLINIC_UPDATED;
     } catch (Exception e) {
       model.addAttribute(
-          "clinic", veterinaryClinicService.findByVeterinarianId(currentVeterinarian.getId()));
+          "clinic", veterinaryClinicService.findByOwnerId(currentVeterinarian.getId()));
       model.addAttribute("errorMessage", "Error al actualizar el perfil profesional");
       return "veterinarian/edit_clinic";
     }
@@ -73,12 +101,12 @@ public class VeterinarianController extends BaseController {
       @ModelAttribute("clinic") VeterinaryClinic updatedClinic,
       Model model,
       Authentication authentication) {
-    User veterinarian = getCurrentUser(authentication, userService);
+    User owner = getCurrentUser(authentication, userService);
     try {
-      veterinaryClinicService.updateClinicData(veterinarian, updatedClinic);
+      veterinaryClinicService.updateClinicData(owner, updatedClinic);
       return REDIRECT_MY_CLINIC_UPDATED;
     } catch (Exception e) {
-      model.addAttribute("veterinarian", veterinarian);
+      model.addAttribute("veterinarian", owner);
       model.addAttribute("errorMessage", "Error al actualizar los datos de la clínica");
       return "veterinarian/edit_clinic";
     }
