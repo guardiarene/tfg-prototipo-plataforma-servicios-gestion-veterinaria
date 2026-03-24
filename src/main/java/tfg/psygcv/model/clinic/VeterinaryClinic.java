@@ -14,8 +14,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,35 +57,30 @@ public class VeterinaryClinic extends AuditableEntity {
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<MedicalService> services = new ArrayList<>();
+  private Set<MedicalService> services = new LinkedHashSet<>();
 
   @OneToMany(
       mappedBy = "clinic",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<Appointment> appointments = new ArrayList<>();
+  private Set<Appointment> appointments = new LinkedHashSet<>();
 
   @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "VETERINARIAN_ID", nullable = false)
-  private User veterinarian;
+  @JoinColumn(name = "OWNER_ID", nullable = false)
+  private User owner;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "RECEPTIONIST_ID", nullable = true)
-  private User receptionist;
+  @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
+  private Set<User> veterinarians = new LinkedHashSet<>();
 
-  public void setVeterinarian(User veterinarian) {
-    this.veterinarian = veterinarian;
-    if (veterinarian != null && !veterinarian.getClinicsOwned().contains(this)) {
-      veterinarian.getClinicsOwned().add(this);
-    }
-  }
+  @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
+  private Set<User> receptionists = new LinkedHashSet<>();
 
-  public void setReceptionist(User receptionist) {
-    this.receptionist = receptionist;
-    if (receptionist != null && !receptionist.getClinicsAsReceptionist().contains(this)) {
-      receptionist.getClinicsAsReceptionist().add(this);
+  public void setOwner(User owner) {
+    this.owner = owner;
+    if (owner != null) {
+      owner.getClinicsOwned().add(this);
     }
   }
 }
