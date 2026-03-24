@@ -12,6 +12,8 @@ public interface VeterinaryClinicServiceInterface {
 
   List<VeterinaryClinic> searchByName(String query);
 
+  VeterinaryClinic findByOwnerId(Long ownerId);
+
   VeterinaryClinic findByVeterinarianId(Long veterinarianId);
 
   VeterinaryClinic findByReceptionistId(Long receptionistId);
@@ -23,6 +25,8 @@ public interface VeterinaryClinicServiceInterface {
   void deactivate(Long clinicId);
 
   void registerClinicWithVeterinarian(java.util.Map<String, String> params);
+
+  void registerStaff(User owner, User staffUser);
 
   void updateClinicData(User veterinarian, VeterinaryClinic updatedClinic);
 }
