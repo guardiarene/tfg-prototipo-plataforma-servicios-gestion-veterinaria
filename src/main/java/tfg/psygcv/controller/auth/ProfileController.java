@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.model.user.Role;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.UserServiceInterface;
+import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 
 @RequiredArgsConstructor
 @RequestMapping("/profile")
@@ -22,6 +24,7 @@ import tfg.psygcv.service.interfaces.UserServiceInterface;
 public class ProfileController extends BaseController {
 
   private final UserServiceInterface userService;
+  private final VeterinaryClinicServiceInterface veterinaryClinicService;
 
   @GetMapping
   public String showProfile(Model model, Authentication authentication) {
@@ -63,6 +66,10 @@ public class ProfileController extends BaseController {
   @PostMapping("/deactivate")
   public String deactivateAccount(Authentication authentication) {
     User currentUser = getCurrentUser(authentication, userService);
+    if (currentUser.getRole() == Role.VETERINARIAN) {
+      veterinaryClinicService.deactivate(
+          veterinaryClinicService.findByVeterinarianId(currentUser.getId()).getId());
+    }
     userService.deactivate(currentUser.getId());
     return REDIRECT_LOGIN_LOGOUT;
   }
