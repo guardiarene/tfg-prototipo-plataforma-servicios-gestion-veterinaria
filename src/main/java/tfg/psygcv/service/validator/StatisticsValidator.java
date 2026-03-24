@@ -5,24 +5,16 @@ import org.springframework.stereotype.Component;
 import tfg.psygcv.model.user.User;
 
 @Component
-public class StatisticsValidator {
+public class StatisticsValidator extends BaseValidator {
 
   public void validateVeterinarian(User veterinarian) {
-    if (veterinarian == null) {
-      throw new IllegalArgumentException("Veterinarian cannot be null");
-    }
-    if (veterinarian.getId() == null) {
-      throw new IllegalArgumentException("Veterinarian must have a valid ID");
-    }
+    validateNotNull(veterinarian, "Veterinarian cannot be null");
+    validateNotNull(veterinarian.getId(), "Veterinarian must have a valid ID");
   }
 
   public void validateDateRange(LocalDate startDate, LocalDate endDate) {
-    if (startDate == null) {
-      throw new IllegalArgumentException("Start date cannot be null");
-    }
-    if (endDate == null) {
-      throw new IllegalArgumentException("End date cannot be null");
-    }
+    validateNotNull(startDate, "Start date cannot be null");
+    validateNotNull(endDate, "End date cannot be null");
     if (startDate.isAfter(endDate)) {
       throw new IllegalArgumentException("Start date cannot be after end date");
     }

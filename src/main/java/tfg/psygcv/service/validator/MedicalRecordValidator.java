@@ -5,21 +5,11 @@ import tfg.psygcv.model.medical.MedicalRecord;
 import tfg.psygcv.model.user.User;
 
 @Component
-public class MedicalRecordValidator {
-
-  public void validateId(Long id) {
-    if (id == null || id <= 0) {
-      throw new IllegalArgumentException("Invalid ID: must be positive and not null");
-    }
-  }
+public class MedicalRecordValidator extends BaseValidator {
 
   public void validateVeterinarian(User veterinarian) {
-    if (veterinarian == null) {
-      throw new IllegalArgumentException("Veterinarian cannot be null");
-    }
-    if (veterinarian.getId() == null) {
-      throw new IllegalArgumentException("Veterinarian must have a valid ID");
-    }
+    validateNotNull(veterinarian, "Veterinarian cannot be null");
+    validateNotNull(veterinarian.getId(), "Veterinarian must have a valid ID");
   }
 
   public void validateForCreation(MedicalRecord medicalRecord, User veterinarian) {
@@ -35,21 +25,11 @@ public class MedicalRecordValidator {
   }
 
   private void validateMedicalRecord(MedicalRecord medicalRecord) {
-    if (medicalRecord == null) {
-      throw new IllegalArgumentException("Medical record cannot be null");
-    }
-    /*if (medicalRecord.getReasonForVisit() == null
-        || medicalRecord.getReasonForVisit().trim().isEmpty()) {
-      throw new IllegalArgumentException("Reason for visit is required");
-    }*/
+    validateNotNull(medicalRecord, "Medical record cannot be null");
   }
 
   private void validatePetForCreation(MedicalRecord medicalRecord) {
-    if (medicalRecord.getPet() == null) {
-      throw new IllegalArgumentException("Pet is required for medical record creation");
-    }
-    if (medicalRecord.getPet().getId() == null) {
-      throw new IllegalArgumentException("Pet must have a valid ID");
-    }
+    validateNotNull(medicalRecord.getPet(), "Pet is required for medical record creation");
+    validateNotNull(medicalRecord.getPet().getId(), "Pet must have a valid ID");
   }
 }
