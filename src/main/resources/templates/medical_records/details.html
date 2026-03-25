@@ -150,15 +150,15 @@
 
                 <div class="mt-5 d-flex gap-2">
                     <a class="btn btn-secondary px-4" th:href="@{/veterinarian/dashboard}"
-                       th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}">
+                       th:if="${role == 'VETERINARIAN'}">
                         <i class="bi bi-arrow-left me-2"></i>Volver
                     </a>
                     <a class="btn btn-secondary px-4" th:href="@{/pets}"
-                       th:if="${#authentication.principal.role.toString() == 'CUSTOMER'}">
+                       th:if="${role == 'CUSTOMER'}">
                         <i class="bi bi-arrow-left me-2"></i>Volver
                     </a>
                     <a class="btn btn-warning px-4" th:href="@{/medical-records/{id}/edit(id=${medicalRecord.id})}"
-                       th:if="${#authentication.principal.role.toString() == 'VETERINARIAN'}">
+                       th:if="${role == 'VETERINARIAN'}">
                         <i class="bi bi-pencil me-2"></i>Editar Historia
                     </a>
                 </div>
