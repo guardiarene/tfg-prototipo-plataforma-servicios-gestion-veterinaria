@@ -38,11 +38,10 @@ public class ReportController extends BaseController {
       @RequestParam LocalDate endDate,
       Authentication authentication,
       Model model) {
-    User veterinarian = getCurrentUser(authentication, userService);
-    Map<String, Long> diseases =
-        statisticsService.getCommonDiseases(veterinarian, startDate, endDate);
+    User user = getCurrentUser(authentication, userService);
+    Map<String, Long> diseases = statisticsService.getCommonDiseases(user, startDate, endDate);
     Map<String, Long> treatments =
-        statisticsService.getFrequentTreatments(veterinarian, startDate, endDate);
+        statisticsService.getFrequentTreatments(user, startDate, endDate);
     populateReportModel(model, diseases, treatments, startDate, endDate);
     return "reports/diseases_treatments";
   }
@@ -62,9 +61,9 @@ public class ReportController extends BaseController {
       @RequestParam LocalDate endDate,
       Authentication authentication,
       Model model) {
-    User veterinarian = getCurrentUser(authentication, userService);
+    User user = getCurrentUser(authentication, userService);
     Map<LocalDate, Long> appointments =
-        statisticsService.getAppointmentsByDate(veterinarian, startDate, endDate);
+        statisticsService.getAppointmentsByDate(user, startDate, endDate);
     model.addAttribute("appointments", appointments);
     model.addAttribute("appointmentsJson", jsonUtil.toJson(appointments));
     model.addAttribute("startDate", startDate);
