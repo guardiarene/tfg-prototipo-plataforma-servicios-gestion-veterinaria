@@ -109,7 +109,6 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
   }
 
   @Override
-  @Transactional
   public Appointment updateStatus(Long appointmentId, AppointmentStatus status) {
     appointmentValidator.validateId(appointmentId);
     appointmentValidator.validateStatus(status);
@@ -125,7 +124,10 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     Appointment existingAppointment = findWithDetails(appointmentId);
     MedicalService service =
         medicalServiceService.findById(updatedAppointment.getMedicalService().getId());
-    updateAppointmentSchedule(existingAppointment, updatedAppointment, service);
+    existingAppointment.setDate(updatedAppointment.getDate());
+    existingAppointment.setTime(updatedAppointment.getTime());
+    existingAppointment.setMedicalService(service);
+    existingAppointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
     return appointmentRepository.save(existingAppointment);
   }
 
@@ -146,12 +148,5 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     appointment.setPet(pet);
     appointment.setAppointmentStatus(AppointmentStatus.PENDING);
     return appointment;
-  }
-
-  private void updateAppointmentSchedule(
-      Appointment existing, Appointment updated, MedicalService service) {
-    existing.setDate(updated.getDate());
-    existing.setTime(updated.getTime());
-    existing.setMedicalService(service);
   }
 }
