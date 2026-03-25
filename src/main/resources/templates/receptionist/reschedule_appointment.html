@@ -23,49 +23,64 @@
                                     <label class="form-label fw-bold">Cliente</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                        <input class="form-control bg-light" readonly
-                                               th:value="${appointment.customer.firstName + ' ' + appointment.customer.lastName}"
-                                               type="text">
+                                        <label>
+                                            <input class="form-control bg-light" readonly
+                                                   th:value="${appointment.customer.firstName + ' ' + appointment.customer.lastName}"
+                                                   type="text">
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Mascota</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-heart"></i></span>
-                                        <input class="form-control bg-light" readonly th:value="${appointment.pet.name}"
-                                               type="text">
+                                        <label>
+                                            <input class="form-control bg-light" readonly
+                                                   th:value="${appointment.pet.name}"
+                                                   type="text">
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Nueva Fecha</label>
-                                    <div class="input-group">
+                                    <div class="input-group has-validation">
                                         <span class="input-group-text bg-light"><i class="bi bi-calendar3"></i></span>
-                                        <input class="form-control" id="date" name="date" required
-                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
-                                               th:value="${appointment.date != null} ? ${#temporals.format(appointment.date, 'yyyy-MM-dd')} : ''"
-                                               type="date">
+                                        <label for="date"></label><input class="form-control" id="date" required
+                                                                         th:classappend="${#fields.hasErrors('date')} ? 'is-invalid'"
+                                                                         th:field="*{date}"
+                                                                         th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                                                         type="date">
+                                        <div class="invalid-feedback" th:errors="*{date}"
+                                             th:if="${#fields.hasErrors('date')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Nueva Hora</label>
-                                    <div class="input-group">
+                                    <div class="input-group has-validation">
                                         <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
-                                        <input class="form-control" id="time" name="time" required
-                                               th:value="${appointment.time != null} ? ${appointment.time} : ''"
-                                               type="time">
+                                        <label for="time"></label><input class="form-control" id="time" required
+                                                                         th:classappend="${#fields.hasErrors('time')} ? 'is-invalid'"
+                                                                         th:field="*{time}"
+                                                                         type="time">
+                                        <div class="invalid-feedback" th:errors="*{time}"
+                                             th:if="${#fields.hasErrors('time')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Servicio</label>
-                                    <div class="input-group">
+                                    <div class="input-group has-validation">
                                         <span class="input-group-text bg-light"><i
                                                 class="bi bi-clipboard2-pulse"></i></span>
-                                        <select class="form-select" required th:field="*{medicalService}">
-                                            <option th:each="service : ${services}"
-                                                    th:selected="${appointment.medicalService.id == service.id}"
-                                                    th:text="${service.name}"
-                                                    th:value="${service.id}"></option>
-                                        </select>
+                                        <label for="medicalService"></label><select class="form-select"
+                                                                                    id="medicalService" required
+                                                                                    th:classappend="${#fields.hasErrors('medicalService')} ? 'is-invalid'"
+                                                                                    th:field="*{medicalService.id}">
+                                        <option th:each="service : ${services}"
+                                                th:text="${service.name}"
+                                                th:value="${service.id}"></option>
+                                    </select>
+                                        <div class="invalid-feedback" th:errors="*{medicalService}"
+                                             th:if="${#fields.hasErrors('medicalService')}"></div>
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +88,8 @@
                                 <a class="btn btn-secondary px-4" th:href="@{/receptionist/dashboard}">
                                     <i class="bi bi-arrow-left-circle me-2"></i> Volver
                                 </a>
-                                <button class="btn btn-primary px-4" type="submit">
+                                <button class="btn btn-primary px-4" onclick="return confirm('¿Está seguro de que desea confirmar los cambios en la programación de este turno?');"
+                                        type="submit">
                                     <i class="bi bi-check-circle me-2"></i> Confirmar Cambios
                                 </button>
                             </div>
