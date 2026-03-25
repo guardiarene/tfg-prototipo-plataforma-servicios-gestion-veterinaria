@@ -18,6 +18,7 @@ import java.time.LocalTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.clinic.MedicalService;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
@@ -38,10 +39,12 @@ public class Appointment extends AuditableEntity {
   private Long id;
 
   @NotNull
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   @Column(name = "DATE", nullable = false)
   private LocalDate date;
 
   @NotNull
+  @DateTimeFormat(pattern = "HH:mm")
   @Column(name = "TIME", nullable = false)
   private LocalTime time;
 
