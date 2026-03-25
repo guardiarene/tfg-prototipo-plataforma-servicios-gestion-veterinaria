@@ -71,10 +71,13 @@ public class AppointmentController extends BaseController {
   }
 
   @GetMapping("/{id}")
-  public String showAppointmentDetails(@PathVariable Long id, Model model) {
+  public String showAppointmentDetails(
+      @PathVariable Long id, Model model, Authentication authentication) {
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
     Appointment appointment = appointmentService.findWithDetails(id);
     model.addAttribute("appointment", appointment);
     model.addAttribute("veterinarianName", appointmentService.findVeterinarianName(appointment));
+    model.addAttribute("role", currentUser.getRole().name());
     return "appointments/details";
   }
 
