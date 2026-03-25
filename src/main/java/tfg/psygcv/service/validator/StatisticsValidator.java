@@ -7,9 +7,9 @@ import tfg.psygcv.model.user.User;
 @Component
 public class StatisticsValidator extends BaseValidator {
 
-  public void validateVeterinarian(User veterinarian) {
-    validateNotNull(veterinarian, "Veterinarian cannot be null");
-    validateNotNull(veterinarian.getId(), "Veterinarian must have a valid ID");
+  public void validateUser(User user) {
+    validateNotNull(user, "User cannot be null");
+    validateNotNull(user.getId(), "User must have a valid ID");
   }
 
   public void validateDateRange(LocalDate startDate, LocalDate endDate) {
