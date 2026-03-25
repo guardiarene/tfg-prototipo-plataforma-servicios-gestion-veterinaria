@@ -54,7 +54,7 @@ public class MedicalService extends AuditableEntity {
 
   public void setClinic(VeterinaryClinic veterinaryClinic) {
     this.clinic = veterinaryClinic;
-    if (veterinaryClinic != null && !veterinaryClinic.getServices().contains(this)) {
+    if (veterinaryClinic != null) {
       veterinaryClinic.getServices().add(this);
     }
   }
