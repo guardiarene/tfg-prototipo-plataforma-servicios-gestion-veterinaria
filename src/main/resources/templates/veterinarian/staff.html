@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Personal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layouts/layout :: layout('Mi Personal', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
+    <div class="container mt-4" th:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div th:replace="~{fragments/card-header :: cardHeader('bi-people-fill', 'Gestión de Personal', null)}"></div>
+                    <div class="card-body p-4">
+                        <div class="mb-3" th:if="${param.created}">
+                            <div th:replace="~{fragments/alert :: successAlert('Personal registrado correctamente.')}"></div>
+                        </div>
+
+                        <ul class="nav nav-tabs mb-4" id="staffTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" data-bs-target="#vets" data-bs-toggle="tab"
+                                        id="vets-tab" role="tab" type="button">
+                                    Veterinarios (<span th:text="${#lists.size(veterinarians)}">0</span>)
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" data-bs-target="#recep" data-bs-toggle="tab" id="recep-tab"
+                                        role="tab" type="button">
+                                    Recepcionistas (<span th:text="${#lists.size(receptionists)}">0</span>)
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="staffTabsContent">
+                            <div class="tab-pane fade show active" id="vets" role="tabpanel">
+                                <div class="row g-3">
+                                    <div class="col-12" th:each="vet : ${veterinarians}">
+                                        <div class="card shadow-sm border-primary h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                                    <div>
+                                                        <h5 class="mb-1 text-primary">
+                                                            <i class="bi bi-person-badge me-2"></i>
+                                                            <span th:text="${vet.firstName + ' ' + vet.lastName}"></span>
+                                                            <span class="badge bg-primary ms-2">VETERINARIAN</span>
+                                                        </h5>
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="bi bi-envelope me-2"></i><span
+                                                                th:text="${vet.email}"></span>
+                                                        </p>
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="bi bi-telephone me-2"></i><span
+                                                                th:text="${vet.phone} ?: 'Sin teléfono'"></span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-center py-4" th:if="${#lists.isEmpty(veterinarians)}">
+                                        <p class="text-muted italic">No hay otros veterinarios registrados en esta
+                                            clínica.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="recep" role="tabpanel">
+                                <div class="row g-3">
+                                    <div class="col-12" th:each="recep : ${receptionists}">
+                                        <div class="card shadow-sm border-info h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                                    <div>
+                                                        <h5 class="mb-1 text-info">
+                                                            <i class="bi bi-person-workspace me-2"></i>
+                                                            <span th:text="${recep.firstName + ' ' + recep.lastName}"></span>
+                                                            <span class="badge bg-info text-dark ms-2">RECEPTIONIST</span>
+                                                        </h5>
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="bi bi-envelope me-2"></i><span
+                                                                th:text="${recep.email}"></span>
+                                                        </p>
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="bi bi-telephone me-2"></i><span
+                                                                th:text="${recep.phone} ?: 'Sin teléfono'"></span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-center py-4" th:if="${#lists.isEmpty(receptionists)}">
+                                        <p class="text-muted italic">No hay recepcionistas registrados en esta
+                                            clínica.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-5 border-top pt-4">
+                            <a class="btn btn-secondary px-4" th:href="@{/veterinarian/dashboard}">
+                                <i class="bi bi-arrow-left-circle me-2"></i> Volver
+                            </a>
+                            <a class="btn btn-success px-4" th:href="@{/veterinarian/staff/new}">
+                                <i class="bi bi-person-plus me-2"></i> Registrar Personal
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
