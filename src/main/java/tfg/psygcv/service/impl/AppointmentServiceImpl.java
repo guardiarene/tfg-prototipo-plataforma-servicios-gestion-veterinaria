@@ -45,7 +45,11 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
 
   @Override
   public Appointment findWithDetails(Long appointmentId) {
-    return findById(appointmentId);
+    appointmentValidator.validateId(appointmentId);
+    return appointmentRepository
+        .findByIdWithDetails(appointmentId)
+        .orElseThrow(
+            () -> new EntityNotFoundException("Appointment not found with ID: " + appointmentId));
   }
 
   @Override
