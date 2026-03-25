@@ -113,7 +113,7 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
   public Appointment updateStatus(Long appointmentId, AppointmentStatus status) {
     appointmentValidator.validateId(appointmentId);
     appointmentValidator.validateStatus(status);
-    Appointment appointment = findById(appointmentId);
+    Appointment appointment = findWithDetails(appointmentId);
     appointment.setAppointmentStatus(status);
     return appointmentRepository.save(appointment);
   }
@@ -122,7 +122,7 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
   @Transactional
   public Appointment reschedule(Long appointmentId, Appointment updatedAppointment) {
     appointmentValidator.validateReschedule(appointmentId, updatedAppointment);
-    Appointment existingAppointment = findById(appointmentId);
+    Appointment existingAppointment = findWithDetails(appointmentId);
     MedicalService service =
         medicalServiceService.findById(updatedAppointment.getMedicalService().getId());
     updateAppointmentSchedule(existingAppointment, updatedAppointment, service);
