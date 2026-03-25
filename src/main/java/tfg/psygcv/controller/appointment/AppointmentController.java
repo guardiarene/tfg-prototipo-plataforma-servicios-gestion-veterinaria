@@ -103,11 +103,7 @@ public class AppointmentController extends BaseController {
   public String showRescheduleForm(
       @PathVariable Long id, Model model, Authentication authentication) {
     AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
-    VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
-    model.addAttribute("appointment", appointmentService.findWithDetails(id));
-    model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
-    model.addAttribute("veterinarians", List.of(clinic.getOwner()));
-    model.addAttribute("role", receptionist.getRole().name());
+    populateRescheduleModel(id, model, receptionist);
     return "receptionist/reschedule_appointment";
   }
 
@@ -120,15 +116,19 @@ public class AppointmentController extends BaseController {
       Authentication authentication) {
     if (result.hasErrors()) {
       AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
-      VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
-      model.addAttribute("appointment", appointmentService.findWithDetails(id));
-      model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
-      model.addAttribute("veterinarians", List.of(clinic.getOwner()));
-      model.addAttribute("role", receptionist.getRole().name());
+      populateRescheduleModel(id, model, receptionist);
       return "receptionist/reschedule_appointment";
     }
     appointmentService.reschedule(id, appointment);
     return REDIRECT_RECEPTIONIST_DASHBOARD;
+  }
+
+  private void populateRescheduleModel(Long id, Model model, AuthenticatedUser receptionist) {
+    VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
+    model.addAttribute("appointment", appointmentService.findWithDetails(id));
+    model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
+    model.addAttribute("veterinarians", List.of(clinic.getOwner()));
+    model.addAttribute("role", receptionist.getRole().name());
   }
 
   @GetMapping("/schedule")
