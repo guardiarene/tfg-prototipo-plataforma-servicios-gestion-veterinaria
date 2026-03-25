@@ -13,7 +13,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
   @Query(
       "SELECT a FROM Appointment a "
-          + "JOIN FETCH a.clinic "
+          + "JOIN FETCH a.clinic c "
+          + "JOIN FETCH c.owner "
           + "JOIN FETCH a.pet "
           + "LEFT JOIN FETCH a.medicalService "
           + "WHERE a.customer.id = :customerId")
@@ -21,7 +22,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
   @Query(
       "SELECT a FROM Appointment a "
-          + "JOIN FETCH a.clinic "
+          + "JOIN FETCH a.clinic c "
+          + "JOIN FETCH c.owner "
           + "JOIN FETCH a.pet "
           + "LEFT JOIN FETCH a.medicalService "
           + "WHERE a.clinic.id = :clinicId")
@@ -29,7 +31,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
   @Query(
       "SELECT a FROM Appointment a "
-          + "JOIN FETCH a.clinic "
+          + "JOIN FETCH a.clinic c "
+          + "JOIN FETCH c.owner "
           + "JOIN FETCH a.pet "
           + "LEFT JOIN FETCH a.medicalService "
           + "WHERE a.id = :id")
