@@ -27,6 +27,7 @@ public class ReceptionistController extends BaseController {
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
     model.addAttribute("appointmentStatuses", AppointmentStatus.values());
     model.addAttribute("appointments", appointmentService.findByClinicId(clinic.getId()));
+    model.addAttribute("role", receptionist.getRole().name());
     return "receptionist/dashboard";
   }
 }
