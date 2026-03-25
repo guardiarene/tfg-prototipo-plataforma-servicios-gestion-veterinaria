@@ -16,6 +16,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
           + "JOIN FETCH a.clinic c "
           + "JOIN FETCH c.owner "
           + "JOIN FETCH a.pet "
+          + "JOIN FETCH a.customer "
           + "LEFT JOIN FETCH a.medicalService "
           + "WHERE a.customer.id = :customerId")
   List<Appointment> findByCustomerId(@Param("customerId") Long customerId);
@@ -25,6 +26,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
           + "JOIN FETCH a.clinic c "
           + "JOIN FETCH c.owner "
           + "JOIN FETCH a.pet "
+          + "JOIN FETCH a.customer "
           + "LEFT JOIN FETCH a.medicalService "
           + "WHERE a.clinic.id = :clinicId")
   List<Appointment> findByClinicId(@Param("clinicId") Long clinicId);
@@ -34,6 +36,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
           + "JOIN FETCH a.clinic c "
           + "JOIN FETCH c.owner "
           + "JOIN FETCH a.pet "
+          + "JOIN FETCH a.customer "
           + "LEFT JOIN FETCH a.medicalService "
           + "WHERE a.id = :id")
   Optional<Appointment> findByIdWithDetails(@Param("id") Long id);
