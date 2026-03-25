@@ -15,6 +15,12 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto gap-2">
                     <li class="nav-item" th:if="${role == 'SYSTEM_ADMINISTRATOR'}">
+                        <a class="nav-link text-dark" th:href="@{/admin/dashboard}">Gestionar Usuarios</a>
+                    </li>
+                    <li class="nav-item" th:if="${role == 'SYSTEM_ADMINISTRATOR'}">
+                        <a class="nav-link text-dark" th:href="@{/users/new}">Nuevo Usuario</a>
+                    </li>
+                    <li class="nav-item" th:if="${role == 'SYSTEM_ADMINISTRATOR'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
                             <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
                             <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
@@ -22,14 +28,15 @@
                             </button>
                         </form>
                     </li>
+
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
-                        <a class="nav-link" th:href="@{/profile}">Mi Perfil</a>
+                        <a class="nav-link text-dark" th:href="@{/profile}">Mi Perfil</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
-                        <a class="nav-link" th:href="@{/pets}">Mis Mascotas</a>
+                        <a class="nav-link text-dark" th:href="@{/pets}">Mis Mascotas</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
-                        <a class="nav-link" th:href="@{/appointments}">Mis Turnos</a>
+                        <a class="nav-link text-dark" th:href="@{/appointments}">Mis Turnos</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
@@ -39,11 +46,15 @@
                             </button>
                         </form>
                     </li>
+
                     <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
-                        <a class="nav-link" th:href="@{/reports/diseases-treatments}">Consultar Turnos Atendidos</a>
+                        <a class="nav-link text-dark" th:href="@{/receptionist/dashboard}">Agenda</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
-                        <a class="nav-link" th:href="@{/appointments/schedule}">Agendar Turno</a>
+                        <a class="nav-link text-dark" th:href="@{/appointments/schedule}">Agendar Turno</a>
+                    </li>
+                    <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
+                        <a class="nav-link text-dark" th:href="@{/reports/appointments}">Consultar Turnos Atendidos</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
@@ -52,20 +63,23 @@
                                 Sesión
                             </button>
                         </form>
+                    </li>
+
+                    <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
+                        <a class="nav-link text-dark" th:href="@{/veterinarian/dashboard}">Mis Historias</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
                         <a class="nav-link text-dark" th:href="@{/veterinarian/clinic}">Mi Clínica</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
+                        <a class="nav-link text-dark" th:href="@{/veterinarian/staff}">Mi Personal</a>
+                    </li>
+                    <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
                         <a class="nav-link text-dark" th:href="@{/medical-services}">Mis Servicios</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
-                        <a class="nav-link text-dark" th:href="@{/reports/diseases-treatments}">Consultar Enfermedades y
-                            Tratamientos Comunes</a>
-                    </li>
-                    <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
-                        <a class="nav-link text-dark" th:href="@{/reports/appointments}">Consultar Actividad de
-                            Servicios</a>
+                        <a class="nav-link text-dark" th:href="@{/reports/diseases-treatments}">Consultar
+                            Enfermedades</a>
                     </li>
                     <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
@@ -75,6 +89,7 @@
                             </button>
                         </form>
                     </li>
+
                     <li class="nav-item" th:unless="${role}">
                         <a class="nav-link text-dark border-start ps-3" th:href="@{/users/login}">Iniciar Sesión</a>
                     </li>
