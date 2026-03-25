@@ -2,6 +2,7 @@ package tfg.psygcv.controller.appointment;
 
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_APPOINTMENTS;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_RECEPTIONIST_DASHBOARD;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_RECEPTIONIST_RESCHEDULED;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.appointment.Appointment;
@@ -110,17 +112,24 @@ public class AppointmentController extends BaseController {
   @PostMapping("/{id}/reschedule")
   public String rescheduleAppointment(
       @PathVariable Long id,
-      @Valid @ModelAttribute("appointment") Appointment appointment,
+      @ModelAttribute("appointment") Appointment appointment,
       BindingResult result,
       Model model,
-      Authentication authentication) {
+      Authentication authentication,
+      RedirectAttributes redirectAttributes) {
     if (result.hasErrors()) {
       AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
       populateRescheduleModel(id, model, receptionist);
       return "receptionist/reschedule_appointment";
     }
-    appointmentService.reschedule(id, appointment);
-    return REDIRECT_RECEPTIONIST_DASHBOARD;
+    try {
+      appointmentService.reschedule(id, appointment);
+      return REDIRECT_RECEPTIONIST_RESCHEDULED;
+    } catch (Exception e) {
+      redirectAttributes.addFlashAttribute(
+          "error", "Error al reprogramar el turno: " + e.getMessage());
+      return REDIRECT_RECEPTIONIST_DASHBOARD;
+    }
   }
 
   private void populateRescheduleModel(Long id, Model model, AuthenticatedUser receptionist) {
