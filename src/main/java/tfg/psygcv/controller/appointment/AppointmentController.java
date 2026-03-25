@@ -21,6 +21,7 @@ import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.appointment.AppointmentStatus;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.model.user.Role;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
 import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
@@ -82,8 +83,12 @@ public class AppointmentController extends BaseController {
   }
 
   @PostMapping("/{id}/cancel")
-  public String cancelAppointment(@PathVariable Long id) {
+  public String cancelAppointment(@PathVariable Long id, Authentication authentication) {
     appointmentService.cancel(id);
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
+    if (currentUser.getRole() == Role.RECEPTIONIST) {
+      return REDIRECT_RECEPTIONIST_DASHBOARD;
+    }
     return REDIRECT_MY_APPOINTMENTS;
   }
 
@@ -99,9 +104,10 @@ public class AppointmentController extends BaseController {
       @PathVariable Long id, Model model, Authentication authentication) {
     AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
-    model.addAttribute("appointment", appointmentService.findById(id));
+    model.addAttribute("appointment", appointmentService.findWithDetails(id));
     model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
     model.addAttribute("veterinarians", List.of(clinic.getOwner()));
+    model.addAttribute("role", receptionist.getRole().name());
     return "receptionist/reschedule_appointment";
   }
 
@@ -109,8 +115,16 @@ public class AppointmentController extends BaseController {
   public String rescheduleAppointment(
       @PathVariable Long id,
       @Valid @ModelAttribute("appointment") Appointment appointment,
-      BindingResult result) {
+      BindingResult result,
+      Model model,
+      Authentication authentication) {
     if (result.hasErrors()) {
+      AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
+      VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
+      model.addAttribute("appointment", appointmentService.findWithDetails(id));
+      model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
+      model.addAttribute("veterinarians", List.of(clinic.getOwner()));
+      model.addAttribute("role", receptionist.getRole().name());
       return "receptionist/reschedule_appointment";
     }
     appointmentService.reschedule(id, appointment);
