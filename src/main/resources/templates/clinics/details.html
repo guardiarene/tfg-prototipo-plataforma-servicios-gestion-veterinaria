@@ -57,16 +57,16 @@
                             <div class="col-12">
                                 <div class="border p-3 rounded bg-white mt-4">
                                     <h5 class="mb-3 border-bottom pb-2 text-primary">
-                                        <i class="bi bi-person-badge me-2"></i>Veterinario Responsable
+                                        <i class="bi bi-person-badge me-2"></i>Veterinario Responsable (Propietario)
                                     </h5>
-                                    <div th:if="${clinic.veterinarian != null}">
+                                    <div th:if="${clinic.owner != null}">
                                         <span class="badge bg-primary fs-6">
                                             <i class="bi bi-person me-2"></i>
-                                            <span th:text="${clinic.veterinarian.firstName + ' ' + clinic.veterinarian.lastName}"></span>
+                                            <span th:text="${clinic.owner.firstName + ' ' + clinic.owner.lastName}"></span>
                                         </span>
                                     </div>
-                                    <div class="alert alert-info mb-0" th:if="${clinic.veterinarian == null}">
-                                        <i class="bi bi-info-circle me-2"></i>No hay veterinario asignado
+                                    <div class="alert alert-info mb-0" th:if="${clinic.owner == null}">
+                                        <i class="bi bi-info-circle me-2"></i>No hay veterinario responsable asignado
                                     </div>
                                 </div>
                             </div>
