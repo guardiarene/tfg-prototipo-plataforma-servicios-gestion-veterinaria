@@ -9,6 +9,8 @@ public final class RouteConstant {
   public static final String REDIRECT_ADMIN_DASHBOARD = "redirect:/admin/dashboard";
   public static final String REDIRECT_VETERINARIAN_DASHBOARD = "redirect:/veterinarian/dashboard";
   public static final String REDIRECT_RECEPTIONIST_DASHBOARD = "redirect:/receptionist/dashboard";
+  public static final String REDIRECT_RECEPTIONIST_RESCHEDULED =
+      "redirect:/receptionist/dashboard?rescheduled";
   public static final String REDIRECT_MY_PROFILE = "redirect:/profile";
   public static final String REDIRECT_MY_PETS_CREATED = "redirect:/pets?created";
   public static final String REDIRECT_MY_PETS_UPDATED = "redirect:/pets?updated";
