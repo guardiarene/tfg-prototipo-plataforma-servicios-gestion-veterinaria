@@ -21,9 +21,12 @@ public interface MedicalRecordQueryRepository extends JpaRepository<MedicalRecor
 
   @Query(
       "SELECT DISTINCT mr FROM MedicalRecord mr "
-          + "LEFT JOIN FETCH mr.pet "
+          + "LEFT JOIN FETCH mr.pet p "
+          + "LEFT JOIN FETCH p.owner "
           + "LEFT JOIN FETCH mr.visits v "
           + "LEFT JOIN FETCH v.veterinarian "
+          + "LEFT JOIN FETCH v.clinicalExam "
+          + "LEFT JOIN FETCH v.anamnesis "
           + "WHERE mr.id = :id")
   Optional<MedicalRecord> findCompleteForViewing(@Param("id") Long id);
 

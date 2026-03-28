@@ -20,6 +20,23 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
       @Param("medicalRecordId") Long medicalRecordId);
 
   @Query(
+      "SELECT DISTINCT v FROM Visit v "
+          + "LEFT JOIN FETCH v.clinicalExam "
+          + "LEFT JOIN FETCH v.anamnesis a "
+          + "LEFT JOIN FETCH v.veterinarian "
+          + "WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
+  List<Visit> findCompleteByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
+
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.diagnostics WHERE v.id IN :ids")
+  List<Visit> findWithDiagnosticsByIds(@Param("ids") List<Long> ids);
+
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.treatments WHERE v.id IN :ids")
+  List<Visit> findWithTreatmentsByIds(@Param("ids") List<Long> ids);
+
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.vaccines WHERE v.id IN :ids")
+  List<Visit> findWithVaccinesByIds(@Param("ids") List<Long> ids);
+
+  @Query(
       "SELECT v FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
   Page<Visit> findByMedicalRecordIdAndActiveOrderByDateDesc(
       @Param("medicalRecordId") Long medicalRecordId, Pageable pageable);
@@ -36,14 +53,20 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
   Optional<Visit> findLatestByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
 
   @Query(
-      "SELECT DISTINCT v FROM Visit v "
+      "SELECT v FROM Visit v "
           + "LEFT JOIN FETCH v.clinicalExam "
           + "LEFT JOIN FETCH v.anamnesis a "
-          + "LEFT JOIN FETCH v.diagnostics "
-          + "LEFT JOIN FETCH v.treatments "
-          + "LEFT JOIN FETCH v.vaccines "
           + "WHERE v.id = :id AND v.active = true")
   Optional<Visit> findCompleteById(@Param("id") Long id);
+
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.diagnostics WHERE v.id = :id")
+  Optional<Visit> findWithDiagnostics(@Param("id") Long id);
+
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.treatments WHERE v.id = :id")
+  Optional<Visit> findWithTreatments(@Param("id") Long id);
+
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.vaccines WHERE v.id = :id")
+  Optional<Visit> findWithVaccines(@Param("id") Long id);
 
   @Query(
       "SELECT v FROM Visit v "
