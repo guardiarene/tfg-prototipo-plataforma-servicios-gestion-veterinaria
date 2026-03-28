@@ -31,7 +31,6 @@ public class Vaccine extends AuditableEntity {
   private Long id;
 
   @NotNull
-  @PastOrPresent
   @Column(name = "APPLICATION_DATE", nullable = false)
   private LocalDate applicationDate;
 

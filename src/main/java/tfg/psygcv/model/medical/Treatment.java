@@ -43,11 +43,9 @@ public class Treatment extends AuditableEntity {
   private String frequency;
 
   @NotNull
-  @PastOrPresent
   @Column(name = "START_DATE", nullable = false)
   private LocalDate startDate;
 
-  @PastOrPresent
   @Column(name = "END_DATE")
   private LocalDate endDate;
 
