@@ -15,7 +15,7 @@ import tfg.psygcv.model.user.User;
 public interface AppointmentQueryRepository extends JpaRepository<Appointment, Long> {
 
   @Query(
-      "SELECT DISTINCT a.pet FROM Appointment a WHERE a.clinic IN :clinics AND a.pet.active = true")
+      "SELECT DISTINCT a.pet FROM Appointment a JOIN FETCH a.pet.owner WHERE a.clinic IN :clinics AND a.pet.active = true AND a.pet.medicalRecord IS NULL")
   List<Pet> findPetsWithAppointmentsInClinics(
       @Param("clinics") Collection<VeterinaryClinic> clinics);
 
