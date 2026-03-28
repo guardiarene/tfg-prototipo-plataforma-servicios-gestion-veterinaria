@@ -41,6 +41,11 @@
                                    step="0.1" th:field="*{visits[0].clinicalExam.temperature}" type="number">
                         </div>
                         <div class="col-md-3">
+                            <label class="form-label fw-bold">Peso (kg)</label>
+                            <input class="form-control" placeholder="Ej: 10.5" required
+                                   step="0.1" th:field="*{visits[0].clinicalExam.weight}" type="number">
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label fw-bold">Frec. Cardíaca (lpm)</label>
                             <input class="form-control" placeholder="Ej: 90"
                                    required
