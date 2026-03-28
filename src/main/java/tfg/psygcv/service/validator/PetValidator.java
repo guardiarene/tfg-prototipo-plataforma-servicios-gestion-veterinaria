@@ -9,7 +9,9 @@ public class PetValidator extends BaseValidator {
 
   public void validateVeterinarian(User veterinarian) {
     validateNotNull(veterinarian, "Veterinarian cannot be null");
-    if (veterinarian.getClinicsOwned() == null || veterinarian.getClinicsOwned().isEmpty()) {
+    boolean hasClinicsOwned = veterinarian.getClinicsOwned() != null && !veterinarian.getClinicsOwned().isEmpty();
+    boolean hasWorkClinic = veterinarian.getWorkClinic() != null;
+    if (!hasClinicsOwned && !hasWorkClinic) {
       throw new IllegalArgumentException("Veterinarian must have associated clinics");
     }
   }
