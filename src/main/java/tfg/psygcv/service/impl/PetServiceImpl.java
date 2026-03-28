@@ -1,6 +1,7 @@
 package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,10 @@ public class PetServiceImpl implements PetServiceInterface {
   @Override
   public List<Pet> findPetsWithAppointmentsInClinics(User veterinarian) {
     petValidator.validateVeterinarian(veterinarian);
-    Set<VeterinaryClinic> clinics = veterinarian.getClinicsOwned();
+    Set<VeterinaryClinic> clinics = new LinkedHashSet<>(veterinarian.getClinicsOwned());
+    if (veterinarian.getWorkClinic() != null) {
+      clinics.add(veterinarian.getWorkClinic());
+    }
     return appointmentQueryRepository.findPetsWithAppointmentsInClinics(clinics);
   }
 
