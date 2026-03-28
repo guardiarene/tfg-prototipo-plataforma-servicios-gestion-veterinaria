@@ -87,7 +87,11 @@ public class Visit extends AuditableEntity {
       fetch = FetchType.LAZY)
   private List<Treatment> treatments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "visit", fetch = FetchType.LAZY)
+  @OneToMany(
+      mappedBy = "visit",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
   private List<Vaccine> vaccines = new ArrayList<>();
 
   @OneToOne(mappedBy = "visit")
