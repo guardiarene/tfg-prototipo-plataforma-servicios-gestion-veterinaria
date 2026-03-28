@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.model.medical.Anamnesis;
+import tfg.psygcv.model.medical.ClinicalExam;
 import tfg.psygcv.model.medical.MedicalRecord;
 import tfg.psygcv.model.medical.Visit;
 import tfg.psygcv.model.medical.VisitType;
@@ -103,8 +104,8 @@ public class MedicalRecordController extends BaseController {
     firstVisit.setDiagnostics(new ArrayList<>());
     firstVisit.setTreatments(new ArrayList<>());
     firstVisit.setVaccines(new ArrayList<>());
-    Anamnesis anamnesis = new Anamnesis();
-    firstVisit.setAnamnesis(anamnesis);
+    firstVisit.setAnamnesis(new Anamnesis());
+    firstVisit.setClinicalExam(new ClinicalExam());
     medicalRecord.getVisits().add(firstVisit);
     return medicalRecord;
   }
