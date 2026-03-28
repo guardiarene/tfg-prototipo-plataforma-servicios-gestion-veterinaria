@@ -128,6 +128,16 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
       existingRecord.setGeneralObservations(updatedRecord.getGeneralObservations());
     }
 
+    if (updatedRecord.getVisits() != null && !updatedRecord.getVisits().isEmpty()) {
+      for (Visit updatedVisit : updatedRecord.getVisits()) {
+        if (updatedVisit.getId() != null) {
+          visitService.updateVisit(updatedVisit.getId(), updatedVisit, veterinarian);
+        } else {
+          visitService.createVisit(existingRecord.getId(), updatedVisit, veterinarian);
+        }
+      }
+    }
+
     return medicalRecordRepository.save(existingRecord);
   }
 
