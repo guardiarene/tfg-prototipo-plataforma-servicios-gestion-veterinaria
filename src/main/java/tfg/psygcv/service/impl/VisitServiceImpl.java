@@ -63,7 +63,6 @@ public class VisitServiceImpl implements VisitServiceInterface {
 
     setupVisitRelationships(visit, medicalRecord, veterinarian);
     Visit savedVisit = visitRepository.save(visit);
-    saveRelatedEntities(savedVisit);
 
     return savedVisit;
   }
@@ -154,72 +153,47 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (visit.getDate() == null) {
       visit.setDate(LocalDate.now());
     }
+
+    // Set clinical exam visit back reference
+    if (visit.getClinicalExam() != null) {
+      visit.getClinicalExam().setVisit(visit);
+      visit.getClinicalExam().setActive(true);
+    }
+
+    // Set anamnesis visit back reference
+    if (visit.getAnamnesis() != null) {
+      visit.getAnamnesis().setVisit(visit);
+      visit.getAnamnesis().setActive(true);
+    }
+
+    // Set diagnostics visit back reference
+    if (visit.getDiagnostics() != null) {
+      visit.getDiagnostics().forEach(d -> {
+        d.setVisit(visit);
+        d.setActive(true);
+      });
+    }
+
+    // Set treatments visit back reference
+    if (visit.getTreatments() != null) {
+      visit.getTreatments().forEach(t -> {
+        t.setVisit(visit);
+        t.setActive(true);
+      });
+    }
+
+    // Set vaccines visit back reference
+    if (visit.getVaccines() != null) {
+      visit.getVaccines().forEach(v -> {
+        v.setVisit(visit);
+        v.setMedicalRecord(medicalRecord);
+        v.setActive(true);
+      });
+    }
   }
 
   private void saveRelatedEntities(Visit visit) {
-    saveClinicalExam(visit);
-    saveAnamnesis(visit);
-    saveDiagnostics(visit);
-    saveTreatments(visit);
-    saveVaccines(visit);
-  }
-
-  private void saveClinicalExam(Visit visit) {
-    if (visit.getClinicalExam() != null) {
-      ClinicalExam exam = visit.getClinicalExam();
-      exam.setVisit(visit);
-      exam.setActive(true);
-      clinicalExamRepository.save(exam);
-    }
-  }
-
-  private void saveAnamnesis(Visit visit) {
-    if (visit.getAnamnesis() != null) {
-      Anamnesis anamnesis = visit.getAnamnesis();
-      anamnesis.setVisit(visit);
-      anamnesis.setActive(true);
-      anamnesisRepository.save(anamnesis);
-    }
-  }
-
-  private void saveDiagnostics(Visit visit) {
-    if (visit.getDiagnostics() != null && !visit.getDiagnostics().isEmpty()) {
-      visit
-          .getDiagnostics()
-          .forEach(
-              d -> {
-                d.setVisit(visit);
-                d.setActive(true);
-              });
-      diagnosticRepository.saveAll(visit.getDiagnostics());
-    }
-  }
-
-  private void saveTreatments(Visit visit) {
-    if (visit.getTreatments() != null && !visit.getTreatments().isEmpty()) {
-      visit
-          .getTreatments()
-          .forEach(
-              t -> {
-                t.setVisit(visit);
-                t.setActive(true);
-              });
-      treatmentRepository.saveAll(visit.getTreatments());
-    }
-  }
-
-  private void saveVaccines(Visit visit) {
-    if (visit.getVaccines() != null && !visit.getVaccines().isEmpty()) {
-      visit
-          .getVaccines()
-          .forEach(
-              v -> {
-                v.setVisit(visit);
-                v.setMedicalRecord(visit.getMedicalRecord());
-                v.setActive(true);
-              });
-      vaccineRepository.saveAll(visit.getVaccines());
-    }
+    // Relationships are now set up in setupVisitRelationships and saved by cascade
   }
 
   private void updateVisitFields(Visit existing, Visit updated) {
