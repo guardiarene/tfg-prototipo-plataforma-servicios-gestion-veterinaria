@@ -72,10 +72,7 @@ public class VisitServiceImpl implements VisitServiceInterface {
   public Visit updateVisit(Long visitId, Visit updatedVisit, User veterinarian) {
     visitValidator.validateForUpdate(visitId, updatedVisit, veterinarian);
 
-    Visit existingVisit =
-        visitRepository
-            .findCompleteById(visitId)
-            .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
+    Visit existingVisit = findCompleteById(visitId);
 
     updateVisitFields(existingVisit, updatedVisit);
     updateRelatedEntities(existingVisit, updatedVisit);
@@ -84,11 +81,20 @@ public class VisitServiceImpl implements VisitServiceInterface {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Visit findCompleteById(Long visitId) {
     visitValidator.validateId(visitId);
-    return visitRepository
-        .findCompleteById(visitId)
-        .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
+    Visit visit =
+        visitRepository
+            .findCompleteById(visitId)
+            .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
+
+    // Fetch collections separately to avoid MultipleBagFetchException
+    visitRepository.findWithDiagnostics(visitId);
+    visitRepository.findWithTreatments(visitId);
+    visitRepository.findWithVaccines(visitId);
+
+    return visit;
   }
 
   @Override
@@ -96,7 +102,14 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (medicalRecordId == null || medicalRecordId <= 0) {
       throw new IllegalArgumentException("Medical record ID must be a positive number");
     }
-    return visitRepository.findByMedicalRecordIdAndActiveOrderByDateDesc(medicalRecordId);
+    List<Visit> visits = visitRepository.findCompleteByMedicalRecordId(medicalRecordId);
+    if (!visits.isEmpty()) {
+      List<Long> visitIds = visits.stream().map(Visit::getId).toList();
+      visitRepository.findWithDiagnosticsByIds(visitIds);
+      visitRepository.findWithTreatmentsByIds(visitIds);
+      visitRepository.findWithVaccinesByIds(visitIds);
+    }
+    return visits;
   }
 
   @Override
@@ -158,6 +171,11 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (visit.getClinicalExam() != null) {
       visit.getClinicalExam().setVisit(visit);
       visit.getClinicalExam().setActive(true);
+
+      // Update pet's weight with clinical exam weight if present
+      if (visit.getClinicalExam().getWeight() != null && medicalRecord.getPet() != null) {
+        medicalRecord.getPet().setWeight(visit.getClinicalExam().getWeight());
+      }
     }
 
     // Set anamnesis visit back reference
@@ -223,6 +241,12 @@ public class VisitServiceImpl implements VisitServiceInterface {
         existing.setClinicalExam(existingExam);
       }
       BeanUtils.copyProperties(updatedExam, existingExam, "id", "version", "createdAt", "visit");
+
+      // Update pet's weight if modified in clinical exam
+      if (existingExam.getWeight() != null && existing.getMedicalRecord() != null
+          && existing.getMedicalRecord().getPet() != null) {
+        existing.getMedicalRecord().getPet().setWeight(existingExam.getWeight());
+      }
     }
   }
 
