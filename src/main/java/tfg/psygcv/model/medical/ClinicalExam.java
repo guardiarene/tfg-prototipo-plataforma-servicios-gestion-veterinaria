@@ -41,8 +41,14 @@ public class ClinicalExam extends AuditableEntity {
   private Integer heartRate;
 
   @NotNull
+  @PositiveOrZero
   @Column(name = "TEMPERATURE", nullable = false)
   private Float temperature;
+
+  @NotNull
+  @PositiveOrZero
+  @Column(name = "WEIGHT", nullable = false)
+  private Float weight;
 
   @NotNull
   @PositiveOrZero
