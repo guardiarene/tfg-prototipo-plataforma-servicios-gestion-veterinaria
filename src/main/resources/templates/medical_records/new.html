@@ -17,17 +17,21 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Mascota:</label>
-                            <select class="form-select" required th:field="*{pet}">
-                                <option value="">Seleccionar mascota...</option>
-                                <option th:each="pet : ${pets}"
-                                        th:text="${pet.name + ' (' + pet.owner.firstName + ' ' + pet.owner.lastName + ')'}"
-                                        th:value="${pet.id}"></option>
-                            </select>
+                            <label>
+                                <select class="form-select" required th:field="*{pet}">
+                                    <option value="">Seleccionar mascota...</option>
+                                    <option th:each="pet : ${pets}"
+                                            th:text="${pet.name + ' (' + pet.owner.firstName + ' ' + pet.owner.lastName + ')'}"
+                                            th:value="${pet.id}"></option>
+                                </select>
+                            </label>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Motivo de Consulta</label>
-                            <textarea class="form-control" placeholder="Ingrese el motivo de la consulta..." required
-                                      rows="3" th:field="*{visits[0].reasonForVisit}"></textarea>
+                            <label>
+<textarea class="form-control" placeholder="Ingrese el motivo de la consulta..." required
+          rows="3" th:field="*{visits[0].reasonForVisit}"></textarea>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -37,43 +41,57 @@
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Temperatura (°C)</label>
-                            <input class="form-control" placeholder="Ej: 38.5" required
-                                   step="0.1" th:field="*{visits[0].clinicalExam.temperature}" type="number">
+                            <label>
+                                <input class="form-control" placeholder="Ej: 38.5" required
+                                       step="0.1" th:field="*{visits[0].clinicalExam.temperature}" type="number">
+                            </label>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Frec. Cardíaca (lpm)</label>
-                            <input class="form-control" placeholder="Ej: 90"
-                                   required
-                                   th:field="*{visits[0].clinicalExam.heartRate}" type="number">
+                            <label>
+                                <input class="form-control" placeholder="Ej: 90"
+                                       required
+                                       th:field="*{visits[0].clinicalExam.heartRate}" type="number">
+                            </label>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Frec. Respiratoria (rpm)</label>
-                            <input class="form-control" placeholder="Ej: 25"
-                                   required
-                                   th:field="*{visits[0].clinicalExam.respiratoryRate}" type="number">
+                            <label>
+                                <input class="form-control" placeholder="Ej: 25"
+                                       required
+                                       th:field="*{visits[0].clinicalExam.respiratoryRate}" type="number">
+                            </label>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Pulso (lpm)</label>
-                            <input class="form-control" placeholder="Ej: 100" required
-                                   th:field="*{visits[0].clinicalExam.pulse}" type="number">
+                            <label>
+                                <input class="form-control" placeholder="Ej: 100" required
+                                       th:field="*{visits[0].clinicalExam.pulse}" type="number">
+                            </label>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Mucosas</label>
-                            <input class="form-control" placeholder="Ej: Rosadas, húmedas"
-                                   required th:field="*{visits[0].clinicalExam.mucosalMembranes}" type="text">
+                            <label>
+                                <input class="form-control" placeholder="Ej: Rosadas, húmedas"
+                                       required th:field="*{visits[0].clinicalExam.mucosalMembranes}" type="text">
+                            </label>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Temperamento</label>
-                            <select class="form-select" required th:field="*{visits[0].clinicalExam.temperament}">
-                                <option disabled selected value="">Seleccionar temperamento...</option>
-                                <option th:each="temp : ${T(tfg.psygcv.model.pet.Temperament).values()}"
-                                        th:text="${temp.description}" th:value="${temp}"></option>
-                            </select>
+                            <label>
+                                <select class="form-select" required th:field="*{visits[0].clinicalExam.temperament}">
+                                    <option disabled selected value="">Seleccionar temperamento...</option>
+                                    <option th:each="temp : ${T(tfg.psygcv.model.pet.Temperament).values()}"
+                                            th:text="${temp.description}" th:value="${temp}"></option>
+                                </select>
+                            </label>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold">Descripción del Examen</label>
-                            <textarea class="form-control" placeholder="Detalles del examen realizado" rows="2"
-                                      th:field="*{visits[0].clinicalExam.description}"></textarea>
+                            <label>
+<textarea class="form-control" placeholder="Detalles del examen realizado" rows="2"
+          th:field="*{visits[0].clinicalExam.description}"></textarea>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -81,23 +99,105 @@
                 <div class="mb-4">
                     <h4 class="mb-3 border-bottom pb-2 text-primary">Anamnesis</h4>
                     <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Alergias</label>
+                            <label>
+                                <input class="form-control" placeholder="Ej: Penicilina, polen"
+                                       th:field="*{visits[0].anamnesis.allergies}" type="text">
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Enfermedades Previas</label>
+                            <label>
+                                <input class="form-control" placeholder="Ej: Parvovirus a los 6 meses"
+                                       th:field="*{visits[0].anamnesis.previousDiseases}" type="text">
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Cirugías</label>
+                            <label>
+                                <input class="form-control" placeholder="Ej: Ortopédica de cadera"
+                                       th:field="*{visits[0].anamnesis.surgeries}" type="text">
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Medicación Actual</label>
+                            <label>
+                                <input class="form-control" placeholder="Ej: Vitaminas, antibióticos"
+                                       th:field="*{visits[0].anamnesis.currentMedications}" type="text">
+                            </label>
+                        </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Alimentación</label>
-                            <input class="form-control" placeholder="Ej: Alimento Balanceado X, 2 veces al día"
-                                   th:field="*{visits[0].anamnesis.diet}" type="text">
+                            <label>
+                                <input class="form-control" placeholder="Ej: Alimento Balanceado X, 2 veces al día"
+                                       th:field="*{visits[0].anamnesis.diet}" type="text">
+                            </label>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Estado Reproductivo</label>
-                            <select class="form-select" th:field="*{visits[0].anamnesis.reproductiveStatus}">
-                                <option disabled selected value="">Seleccionar estado...</option>
-                                <option th:each="status : ${T(tfg.psygcv.model.pet.ReproductiveStatus).values()}"
-                                        th:text="${status.description}" th:value="${status}"></option>
-                            </select>
+                            <label>
+                                <select class="form-select" th:field="*{visits[0].anamnesis.reproductiveStatus}">
+                                    <option disabled selected value="">Seleccionar estado...</option>
+                                    <option th:each="status : ${T(tfg.psygcv.model.pet.ReproductiveStatus).values()}"
+                                            th:text="${status.description}" th:value="${status}"></option>
+                                </select>
+                            </label>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Última Desparasitación</label>
-                            <input class="form-control" th:field="*{visits[0].anamnesis.lastDewormingDate}" type="date">
+                            <label>
+                                <input class="form-control" th:field="*{visits[0].anamnesis.lastDewormingDate}" type="date">
+                            </label>
                         </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Último Celo (si aplica)</label>
+                            <label>
+                                <input class="form-control" th:field="*{visits[0].anamnesis.lastHeatDate}" type="date">
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Último Parto (si aplica)</label>
+                            <label>
+                                <input class="form-control" th:field="*{visits[0].anamnesis.lastBirthDate}" type="date">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Vacunas Aplicadas</h4>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="addVaccine()">
+                            <i class="bi bi-plus-circle me-1"></i>Añadir Vacuna
+                        </button>
+                    </div>
+                    <div id="vaccines-container">
+                        <!-- Aquí se añadirán las vacunas dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Diagnóstico</h4>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="addDiagnostic()">
+                            <i class="bi bi-plus-circle me-1"></i>Añadir Diagnóstico
+                        </button>
+                    </div>
+                    <div id="diagnostics-container">
+                        <!-- Aquí se añadirán los diagnósticos dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Tratamiento</h4>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="addTreatment()">
+                            <i class="bi bi-plus-circle me-1"></i>Añadir Tratamiento
+                        </button>
+                    </div>
+                    <div id="treatments-container">
+                        <!-- Aquí se añadirán los tratamientos dinámicamente -->
                     </div>
                 </div>
 
@@ -125,11 +225,25 @@
         const index = container.children.length;
         const template = `
                 <div class="vaccine-template row g-3 mb-3">
-                    <div class="col-md-3"><input type="date" class="form-control" name="anamnesis.vaccines[${index}].applicationDate" required></div>
-                    <div class="col-md-3"><input type="text" class="form-control" name="anamnesis.vaccines[${index}].brand" placeholder="Marca" required></div>
-                    <div class="col-md-3"><input type="text" class="form-control" name="anamnesis.vaccines[${index}].batch" placeholder="Lote" required></div>
-                    <div class="col-md-2"><input type="text" class="form-control" name="anamnesis.vaccines[${index}].dose" placeholder="Dosis" required></div>
-                    <div class="col-md-1"><button type="button" class="btn btn-danger w-100" onclick="removeVaccine(this)"><i class="bi bi-trash"></i></button></div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Fecha Aplicación</label>
+                        <input type="date" class="form-control" name="visits[0].vaccines[${index}].applicationDate" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Marca</label>
+                        <input type="text" class="form-control" name="visits[0].vaccines[${index}].brand" placeholder="Marca" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Lote</label>
+                        <input type="text" class="form-control" name="visits[0].vaccines[${index}].batch" placeholder="Lote" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">Dosis</label>
+                        <input type="text" class="form-control" name="visits[0].vaccines[${index}].dose" placeholder="Dosis" required>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger w-100" onclick="removeVaccine(this)"><i class="bi bi-trash"></i></button>
+                    </div>
                 </div>`;
         container.insertAdjacentHTML("beforeend", template);
     }
@@ -145,8 +259,13 @@
                 <div class="diagnostic-template card mb-3 shadow-sm">
                     <div class="card-body">
                         <div class="row g-3 align-items-center">
-                            <div class="col-md-11"><input type="text" class="form-control" name="diagnostics[${index}].problems" placeholder="Descripción detallada del problema" required></div>
-                            <div class="col-md-1"><button type="button" class="btn btn-danger w-100" onclick="removeDiagnostic(this)"><i class="bi bi-trash"></i></button></div>
+                            <div class="col-md-11">
+                                <label class="form-label small fw-bold">Problemas / Hallazgos</label>
+                                <input type="text" class="form-control" name="visits[0].diagnostics[${index}].problems[0]" placeholder="Descripción detallada del problema" required>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger w-100" onclick="removeDiagnostic(this)"><i class="bi bi-trash"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -164,12 +283,29 @@
                 <div class="treatment-template card mb-3 shadow-sm">
                     <div class="card-body">
                         <div class="row g-3 align-items-center">
-                            <div class="col-md-3"><input type="text" class="form-control" name="treatments[${index}].product" placeholder="Producto" required></div>
-                            <div class="col-md-2"><input type="text" class="form-control" name="treatments[${index}].route" placeholder="Vía" required></div>
-                            <div class="col-md-2"><input type="text" class="form-control" name="treatments[${index}].frequency" placeholder="Frecuencia" required></div>
-                            <div class="col-md-2"><input type="date" class="form-control" name="treatments[${index}].startDate" required></div>
-                            <div class="col-md-2"><input type="date" class="form-control" name="treatments[${index}].endDate"></div>
-                            <div class="col-md-1"><button type="button" class="btn btn-danger w-100" onclick="removeTreatment(this)"><i class="bi bi-trash"></i></button></div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Producto</label>
+                                <input type="text" class="form-control" name="visits[0].treatments[${index}].product" placeholder="Producto" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Vía</label>
+                                <input type="text" class="form-control" name="visits[0].treatments[${index}].route" placeholder="Vía" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Frecuencia</label>
+                                <input type="text" class="form-control" name="visits[0].treatments[${index}].frequency" placeholder="Frecuencia" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Inicio</label>
+                                <input type="date" class="form-control" name="visits[0].treatments[${index}].startDate" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Fin</label>
+                                <input type="date" class="form-control" name="visits[0].treatments[${index}].endDate">
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger w-100" onclick="removeTreatment(this)"><i class="bi bi-trash"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>`;

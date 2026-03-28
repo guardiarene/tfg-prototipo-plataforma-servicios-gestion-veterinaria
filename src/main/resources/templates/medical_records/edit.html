@@ -80,6 +80,26 @@
                 <div class="mb-4">
                     <h4 class="mb-3 border-bottom pb-2 text-primary">Anamnesis</h4>
                     <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Alergias</label>
+                            <input class="form-control" placeholder="Ej: Penicilina, polen"
+                                   th:field="*{visits[0].anamnesis.allergies}" type="text">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Enfermedades Previas</label>
+                            <input class="form-control" placeholder="Ej: Parvovirus a los 6 meses"
+                                   th:field="*{visits[0].anamnesis.previousDiseases}" type="text">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Cirugías</label>
+                            <input class="form-control" placeholder="Ej: Ortopédica de cadera"
+                                   th:field="*{visits[0].anamnesis.surgeries}" type="text">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Medicación Actual</label>
+                            <input class="form-control" placeholder="Ej: Vitaminas, antibióticos"
+                                   th:field="*{visits[0].anamnesis.currentMedications}" type="text">
+                        </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Alimentación</label>
                             <input class="form-control" placeholder="Ej: Alimento balanceado X, 2 veces al día"
@@ -95,6 +115,116 @@
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Última Desparasitación</label>
                             <input class="form-control" th:field="*{visits[0].anamnesis.lastDewormingDate}" type="date">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Último Celo (si aplica)</label>
+                            <input class="form-control" th:field="*{visits[0].anamnesis.lastHeatDate}" type="date">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Último Parto (si aplica)</label>
+                            <input class="form-control" th:field="*{visits[0].anamnesis.lastBirthDate}" type="date">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vacunas Aplicadas -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Vacunas Aplicadas</h4>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="addVaccine()">
+                            <i class="bi bi-plus-circle me-1"></i>Añadir Vacuna
+                        </button>
+                    </div>
+                    <div id="vaccines-container">
+                        <div th:each="vaccine, iter : ${medicalRecord.visits[0].vaccines}" class="vaccine-template row g-3 mb-3">
+                            <input th:field="*{visits[0].vaccines[__${iter.index}__].id}" type="hidden"/>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Fecha Aplicación</label>
+                                <input class="form-control" required th:field="*{visits[0].vaccines[__${iter.index}__].applicationDate}" type="date">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Marca</label>
+                                <input class="form-control" placeholder="Marca" required th:field="*{visits[0].vaccines[__${iter.index}__].brand}" type="text">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Lote</label>
+                                <input class="form-control" placeholder="Lote" required th:field="*{visits[0].vaccines[__${iter.index}__].batch}" type="text">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Dosis</label>
+                                <input class="form-control" placeholder="Dosis" required th:field="*{visits[0].vaccines[__${iter.index}__].dose}" type="text">
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger w-100" onclick="removeVaccine(this)"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Diagnóstico</h4>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="addDiagnostic()">
+                            <i class="bi bi-plus-circle me-1"></i>Añadir Diagnóstico
+                        </button>
+                    </div>
+                    <div id="diagnostics-container">
+                        <div th:each="diag, iter : ${medicalRecord.visits[0].diagnostics}" class="diagnostic-template card mb-3 shadow-sm">
+                            <input th:field="*{visits[0].diagnostics[__${iter.index}__].id}" type="hidden"/>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-11">
+                                        <label class="form-label small fw-bold">Problemas / Hallazgos</label>
+                                        <input class="form-control" placeholder="Descripción detallada" required th:field="*{visits[0].diagnostics[__${iter.index}__].problems[0]}" type="text">
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button type="button" class="btn btn-danger w-100" onclick="removeDiagnostic(this)"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tratamiento -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Tratamiento</h4>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="addTreatment()">
+                            <i class="bi bi-plus-circle me-1"></i>Añadir Tratamiento
+                        </button>
+                    </div>
+                    <div id="treatments-container">
+                        <div th:each="treatment, iter : ${medicalRecord.visits[0].treatments}" class="treatment-template card mb-3 shadow-sm">
+                            <input th:field="*{visits[0].treatments[__${iter.index}__].id}" type="hidden"/>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold">Producto</label>
+                                        <input class="form-control" placeholder="Producto" required th:field="*{visits[0].treatments[__${iter.index}__].product}" type="text">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Vía</label>
+                                        <input class="form-control" placeholder="Vía" required th:field="*{visits[0].treatments[__${iter.index}__].route}" type="text">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Frecuencia</label>
+                                        <input class="form-control" placeholder="Frecuencia" required th:field="*{visits[0].treatments[__${iter.index}__].frequency}" type="text">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Inicio</label>
+                                        <input class="form-control" required th:field="*{visits[0].treatments[__${iter.index}__].startDate}" type="date">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Fin</label>
+                                        <input class="form-control" th:field="*{visits[0].treatments[__${iter.index}__].endDate}" type="date">
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button type="button" class="btn btn-danger w-100" onclick="removeTreatment(this)"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -124,11 +254,25 @@
         const index = container.children.length;
         const template = `
                 <div class="vaccine-template row g-3 mb-3">
-                    <div class="col-md-3"><input type="date" class="form-control" name="anamnesis.vaccines[${index}].applicationDate" required></div>
-                    <div class="col-md-3"><input type="text" class="form-control" name="anamnesis.vaccines[${index}].brand" placeholder="Marca" required></div>
-                    <div class="col-md-3"><input type="text" class="form-control" name="anamnesis.vaccines[${index}].batch" placeholder="Número de lote" required></div>
-                    <div class="col-md-2"><input type="text" class="form-control" name="anamnesis.vaccines[${index}].dose" placeholder="Dosis" required></div>
-                    <div class="col-md-1"><button type="button" class="btn btn-danger w-100" onclick="removeVaccine(this)"><i class="bi bi-trash"></i></button></div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Fecha Aplicación</label>
+                        <input type="date" class="form-control" name="visits[0].vaccines[${index}].applicationDate" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Marca</label>
+                        <input type="text" class="form-control" name="visits[0].vaccines[${index}].brand" placeholder="Marca" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Lote</label>
+                        <input type="text" class="form-control" name="visits[0].vaccines[${index}].batch" placeholder="Lote" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">Dosis</label>
+                        <input type="text" class="form-control" name="visits[0].vaccines[${index}].dose" placeholder="Dosis" required>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger w-100" onclick="removeVaccine(this)"><i class="bi bi-trash"></i></button>
+                    </div>
                 </div>`;
         container.insertAdjacentHTML("beforeend", template);
     }
@@ -144,8 +288,13 @@
                 <div class="diagnostic-template card mb-3 shadow-sm">
                     <div class="card-body">
                         <div class="row g-3 align-items-center">
-                            <div class="col-md-11"><input type="text" class="form-control" name="diagnostics[${index}].problems" placeholder="Descripción del problema" required></div>
-                            <div class="col-md-1"><button type="button" class="btn btn-danger w-100" onclick="removeDiagnostic(this)"><i class="bi bi-trash"></i></button></div>
+                            <div class="col-md-11">
+                                <label class="form-label small fw-bold">Problemas / Hallazgos</label>
+                                <input type="text" class="form-control" name="visits[0].diagnostics[${index}].problems[0]" placeholder="Descripción detallada del problema" required>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger w-100" onclick="removeDiagnostic(this)"><i class="bi bi-trash"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -163,12 +312,29 @@
                 <div class="treatment-template card mb-3 shadow-sm">
                     <div class="card-body">
                         <div class="row g-3 align-items-center">
-                            <div class="col-md-3"><input type="text" class="form-control" name="treatments[${index}].product" placeholder="Producto" required></div>
-                            <div class="col-md-2"><input type="text" class="form-control" name="treatments[${index}].route" placeholder="Vía" required></div>
-                            <div class="col-md-2"><input type="text" class="form-control" name="treatments[${index}].frequency" placeholder="Frecuencia" required></div>
-                            <div class="col-md-2"><input type="date" class="form-control" name="treatments[${index}].startDate" required></div>
-                            <div class="col-md-2"><input type="date" class="form-control" name="treatments[${index}].endDate"></div>
-                            <div class="col-md-1"><button type="button" class="btn btn-danger w-100" onclick="removeTreatment(this)"><i class="bi bi-trash"></i></button></div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Producto</label>
+                                <input type="text" class="form-control" name="visits[0].treatments[${index}].product" placeholder="Producto" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Vía</label>
+                                <input type="text" class="form-control" name="visits[0].treatments[${index}].route" placeholder="Vía" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Frecuencia</label>
+                                <input type="text" class="form-control" name="visits[0].treatments[${index}].frequency" placeholder="Frecuencia" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Inicio</label>
+                                <input type="date" class="form-control" name="visits[0].treatments[${index}].startDate" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Fin</label>
+                                <input type="date" class="form-control" name="visits[0].treatments[${index}].endDate">
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger w-100" onclick="removeTreatment(this)"><i class="bi bi-trash"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>`;
