@@ -1,14 +1,21 @@
 package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.model.medical.Anamnesis;
+import tfg.psygcv.model.medical.ClinicalExam;
+import tfg.psygcv.model.medical.Diagnostic;
 import tfg.psygcv.model.medical.MedicalRecord;
+import tfg.psygcv.model.medical.Treatment;
 import tfg.psygcv.model.medical.Visit;
+import tfg.psygcv.model.medical.VisitType;
 import tfg.psygcv.model.pet.Pet;
 import tfg.psygcv.model.user.User;
 import tfg.psygcv.repository.base.MedicalRecordRepository;
@@ -45,13 +52,55 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
                 () -> new EntityNotFoundException("Medical record not found with ID: " + id));
 
     Visit latestVisit = visitService.findLatestVisit(id);
+    Visit newVisit = new Visit();
+    newVisit.setDate(java.time.LocalDate.now());
+    newVisit.setVisitType(VisitType.CONSULTATION);
+
     if (latestVisit != null) {
       Visit completeVisit = visitService.findCompleteById(latestVisit.getId());
-      medicalRecord.getVisits().clear();
-      medicalRecord.getVisits().add(completeVisit);
+
+      // Pre-cargar datos de la última visita en la nueva (copia para seguimiento)
+      newVisit.setReasonForVisit(completeVisit.getReasonForVisit());
+      newVisit.setObservations(completeVisit.getObservations());
+
+      if (completeVisit.getClinicalExam() != null) {
+        ClinicalExam newExam = new ClinicalExam();
+        BeanUtils.copyProperties(completeVisit.getClinicalExam(), newExam, "id", "visit");
+        newVisit.setClinicalExam(newExam);
+      }
+
+      if (completeVisit.getAnamnesis() != null) {
+        Anamnesis newAnamnesis = new Anamnesis();
+        BeanUtils.copyProperties(completeVisit.getAnamnesis(), newAnamnesis, "id", "visit");
+        newVisit.setAnamnesis(newAnamnesis);
+      }
+
+      if (completeVisit.getDiagnostics() != null) {
+        for (Diagnostic d : completeVisit.getDiagnostics()) {
+          Diagnostic newD = new Diagnostic();
+          newD.setProblems(new ArrayList<>(d.getProblems()));
+          newD.setVisit(newVisit);
+          newVisit.getDiagnostics().add(newD);
+        }
+      }
+
+      if (completeVisit.getTreatments() != null) {
+        for (Treatment t : completeVisit.getTreatments()) {
+          Treatment newT = new Treatment();
+          BeanUtils.copyProperties(t, newT, "id", "visit");
+          newT.setVisit(newVisit);
+          newVisit.getTreatments().add(newT);
+        }
+      }
     }
 
-    return medicalRecord;
+    // Devolvemos un objeto "fantasma" solo para el binding del formulario
+    MedicalRecord recordForForm = new MedicalRecord();
+    BeanUtils.copyProperties(medicalRecord, recordForForm, "visits");
+    recordForForm.getVisits().add(newVisit);
+    // OJO: NO hacemos newVisit.setMedicalRecord(recordForForm) para evitar ciclos Detached
+
+    return recordForForm;
   }
 
   @Override
@@ -130,6 +179,25 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
 
     if (updatedRecord.getVisits() != null && !updatedRecord.getVisits().isEmpty()) {
       for (Visit updatedVisit : updatedRecord.getVisits()) {
+        updatedVisit.setMedicalRecord(null); // Desvincular de la entidad desconectada
+
+        // Limpiar referencias circulares de hijos para evitar propagación de entidades detached
+        if (updatedVisit.getClinicalExam() != null) {
+          updatedVisit.getClinicalExam().setVisit(updatedVisit);
+        }
+        if (updatedVisit.getAnamnesis() != null) {
+          updatedVisit.getAnamnesis().setVisit(updatedVisit);
+        }
+        if (updatedVisit.getDiagnostics() != null) {
+          updatedVisit.getDiagnostics().forEach(d -> d.setVisit(updatedVisit));
+        }
+        if (updatedVisit.getTreatments() != null) {
+          updatedVisit.getTreatments().forEach(t -> t.setVisit(updatedVisit));
+        }
+        if (updatedVisit.getVaccines() != null) {
+          updatedVisit.getVaccines().forEach(vax -> vax.setVisit(updatedVisit));
+        }
+
         if (updatedVisit.getId() != null) {
           visitService.updateVisit(updatedVisit.getId(), updatedVisit, veterinarian);
         } else {
