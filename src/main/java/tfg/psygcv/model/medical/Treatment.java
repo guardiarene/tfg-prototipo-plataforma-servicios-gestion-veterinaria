@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.model.audit.AuditableEntity;
 
 @Getter
@@ -31,21 +32,24 @@ public class Treatment extends AuditableEntity {
   private Long id;
 
   @NotBlank
-  @Column(name = "PRODUCT", nullable = false)
+  @Column(name = "PRODUCT", nullable = false, length = 100)
   private String product;
 
   @NotBlank
-  @Column(name = "ROUTE", nullable = false)
+  @Column(name = "ROUTE", nullable = false, length = 50)
   private String route;
 
   @NotBlank
-  @Column(name = "FREQUENCY", nullable = false)
+  @Column(name = "FREQUENCY", nullable = false, length = 50)
   private String frequency;
 
   @NotNull
+  @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "START_DATE", nullable = false)
   private LocalDate startDate;
 
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "END_DATE")
   private LocalDate endDate;
 

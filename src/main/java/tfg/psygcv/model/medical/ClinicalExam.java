@@ -56,12 +56,12 @@ public class ClinicalExam extends AuditableEntity {
   private Integer pulse;
 
   @NotBlank
-  @Column(name = "MUCOSAL_MEMBRANES", nullable = false)
+  @Column(name = "MUCOSAL_MEMBRANES", nullable = false, length = 100)
   private String mucosalMembranes;
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "TEMPERAMENT", nullable = false)
+  @Column(name = "TEMPERAMENT", nullable = false, length = 15)
   private Temperament temperament;
 
   @Column(name = "DESCRIPTION", columnDefinition = "TEXT")

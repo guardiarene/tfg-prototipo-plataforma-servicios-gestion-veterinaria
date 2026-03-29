@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,8 +23,6 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.clinic.VeterinaryClinic;
@@ -35,9 +32,7 @@ import tfg.psygcv.model.pet.Pet;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(
-    name = "USER",
-    uniqueConstraints = {@UniqueConstraint(columnNames = "EMAIL")})
+@Table(name = "APP_USER")
 public class User extends AuditableEntity {
 
   @Id
@@ -46,47 +41,44 @@ public class User extends AuditableEntity {
   private Long id;
 
   @NotBlank
-  @Column(name = "FIRST_NAME", nullable = false)
+  @Column(name = "FIRST_NAME", nullable = false, length = 50)
   private String firstName;
 
   @NotBlank
-  @Column(name = "LAST_NAME", nullable = false)
+  @Column(name = "LAST_NAME", nullable = false, length = 50)
   private String lastName;
 
   @NotBlank
-  @Column(name = "PHONE", nullable = false)
+  @Column(name = "PHONE", nullable = false, length = 20)
   private String phone;
 
   @NotBlank
   @Email
-  @Column(name = "EMAIL", nullable = false, unique = true)
+  @Column(name = "EMAIL", nullable = false, unique = true, length = 254)
   private String email;
 
   @NotBlank
-  @Column(name = "PASSWORD", nullable = false)
+  @Column(name = "PASSWORD", nullable = false, length = 72)
   private String password;
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "ROLE", length = 20, nullable = false)
+  @Column(name = "ROLE", length = 25, nullable = false)
   private Role role;
 
   @OneToMany(
       mappedBy = "owner",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
       fetch = FetchType.LAZY)
   private List<Pet> pets = new ArrayList<>();
 
   @OneToMany(
       mappedBy = "customer",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
       fetch = FetchType.LAZY)
   private List<Appointment> appointmentsAsCustomer = new ArrayList<>();
 
   @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-  @Fetch(FetchMode.JOIN)
   private Set<VeterinaryClinic> clinicsOwned = new LinkedHashSet<>();
 
   @ManyToOne(fetch = FetchType.LAZY)

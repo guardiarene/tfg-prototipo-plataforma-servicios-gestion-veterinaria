@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.model.audit.AuditableEntity;
 
 @Getter
@@ -31,19 +32,21 @@ public class Vaccine extends AuditableEntity {
   private Long id;
 
   @NotNull
+  @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "APPLICATION_DATE", nullable = false)
   private LocalDate applicationDate;
 
   @NotBlank
-  @Column(name = "BRAND", nullable = false)
+  @Column(name = "BRAND", nullable = false, length = 100)
   private String brand;
 
   @NotBlank
-  @Column(name = "DOSE", nullable = false)
+  @Column(name = "DOSE", nullable = false, length = 50)
   private String dose;
 
   @NotBlank
-  @Column(name = "BATCH", nullable = false)
+  @Column(name = "BATCH", nullable = false, length = 50)
   private String batch;
 
   @NotNull

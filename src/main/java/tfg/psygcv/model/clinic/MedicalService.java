@@ -34,10 +34,10 @@ public class MedicalService extends AuditableEntity {
   private Long id;
 
   @NotBlank
-  @Column(name = "NAME", nullable = false)
+  @Column(name = "NAME", nullable = false, length = 100)
   private String name;
 
-  @Column(name = "DESCRIPTION")
+  @Column(name = "DESCRIPTION", columnDefinition = "TEXT")
   private String description;
 
   @NotNull
@@ -47,8 +47,7 @@ public class MedicalService extends AuditableEntity {
 
   @OneToMany(
       mappedBy = "medicalService",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
       fetch = FetchType.LAZY)
   private List<Appointment> appointments = new ArrayList<>();
 

@@ -16,7 +16,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,26 +43,26 @@ public class Pet extends AuditableEntity {
   private Long id;
 
   @NotBlank
-  @Column(name = "NAME", nullable = false)
+  @Column(name = "NAME", nullable = false, length = 50)
   private String name;
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "SEX", nullable = false)
+  @Column(name = "SEX", nullable = false, length = 10)
   private Sex sex;
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "BREED", nullable = false)
+  @Column(name = "BREED", nullable = false, length = 30)
   private Breed breed;
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "SPECIES", nullable = false)
+  @Column(name = "SPECIES", nullable = false, length = 15)
   private Species species;
 
   @NotNull
-  @Past
+  @PastOrPresent
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "BIRTH_DATE", nullable = false)
   private LocalDate birthDate;
@@ -72,6 +72,7 @@ public class Pet extends AuditableEntity {
   @Column(name = "WEIGHT", nullable = false)
   private Float weight;
 
+  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "OWNER_ID", nullable = false)
   private User owner;
@@ -81,8 +82,7 @@ public class Pet extends AuditableEntity {
 
   @OneToMany(
       mappedBy = "pet",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
       fetch = FetchType.LAZY)
   private List<Appointment> appointments = new ArrayList<>();
 

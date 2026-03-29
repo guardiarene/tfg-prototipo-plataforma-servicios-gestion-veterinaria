@@ -23,6 +23,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.user.User;
@@ -41,11 +42,12 @@ public class Visit extends AuditableEntity {
 
   @NotNull
   @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "DATE", nullable = false)
   private LocalDate date;
 
   @NotBlank
-  @Column(name = "REASON_FOR_VISIT", nullable = false)
+  @Column(name = "REASON_FOR_VISIT", nullable = false, length = 255)
   private String reasonForVisit;
 
   @NotNull
@@ -70,7 +72,8 @@ public class Visit extends AuditableEntity {
   @JoinColumn(name = "CLINICAL_EXAM_ID", unique = true)
   private ClinicalExam clinicalExam;
 
-  @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @JoinColumn(name = "ANAMNESIS_ID", unique = true)
   private Anamnesis anamnesis;
 
   @OneToMany(

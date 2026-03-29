@@ -4,11 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.PastOrPresent;
@@ -16,6 +14,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.pet.ReproductiveStatus;
 
@@ -51,19 +50,21 @@ public class Anamnesis extends AuditableEntity {
   private ReproductiveStatus reproductiveStatus;
 
   @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "LAST_DEWORMING_DATE")
   private LocalDate lastDewormingDate;
 
   @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "LAST_HEAT_DATE")
   private LocalDate lastHeatDate;
 
   @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "LAST_BIRTH_DATE")
   private LocalDate lastBirthDate;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "VISIT_ID", unique = true)
+  @OneToOne(mappedBy = "anamnesis")
   private Visit visit;
 
   public void setVisit(Visit visit) {

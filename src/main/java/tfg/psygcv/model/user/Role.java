@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum Role {
-  CUSTOMER("Customer user"),
-  VETERINARIAN("Veterinarian user"),
-  RECEPTIONIST("Receptionist user"),
-  SYSTEM_ADMINISTRATOR("System administrator");
+  CUSTOMER("Cliente"),
+  VETERINARIAN("Veterinario"),
+  RECEPTIONIST("Recepcionista"),
+  SYSTEM_ADMINISTRATOR("Administrador del sistema");
 
   private final String description;
 

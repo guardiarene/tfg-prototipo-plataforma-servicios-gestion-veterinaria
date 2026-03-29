@@ -19,6 +19,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 import tfg.psygcv.model.appointment.Appointment;
 import tfg.psygcv.model.audit.AuditableEntity;
 import tfg.psygcv.model.user.User;
@@ -36,33 +37,31 @@ public class VeterinaryClinic extends AuditableEntity {
   private Long id;
 
   @NotBlank
-  @Column(name = "NAME", nullable = false)
+  @Column(name = "NAME", nullable = false, length = 100)
   private String name;
 
   @NotBlank
-  @Column(name = "ADDRESS", nullable = false)
+  @Column(name = "ADDRESS", nullable = false, length = 255)
   private String address;
 
   @NotBlank
-  @Column(name = "PHONE", nullable = false)
+  @Column(name = "PHONE", nullable = false, length = 20)
   private String phone;
 
   @NotBlank
   @Email
-  @Column(name = "EMAIL", nullable = false)
+  @Column(name = "EMAIL", nullable = false, unique = true, length = 254)
   private String email;
 
   @OneToMany(
       mappedBy = "clinic",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
       fetch = FetchType.LAZY)
   private Set<MedicalService> services = new LinkedHashSet<>();
 
   @OneToMany(
       mappedBy = "clinic",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
       fetch = FetchType.LAZY)
   private Set<Appointment> appointments = new LinkedHashSet<>();
 
@@ -72,9 +71,11 @@ public class VeterinaryClinic extends AuditableEntity {
   private User owner;
 
   @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
+  @SQLRestriction("ROLE = 'VETERINARIAN'")
   private Set<User> veterinarians = new LinkedHashSet<>();
 
   @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
+  @SQLRestriction("ROLE = 'RECEPTIONIST'")
   private Set<User> receptionists = new LinkedHashSet<>();
 
   public void setOwner(User owner) {

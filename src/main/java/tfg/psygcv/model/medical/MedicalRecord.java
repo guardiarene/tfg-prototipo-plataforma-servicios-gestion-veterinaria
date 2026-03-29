@@ -68,49 +68,38 @@ public class MedicalRecord extends AuditableEntity {
   @Transient
   public Anamnesis getCurrentAnamnesis() {
     Anamnesis current = new Anamnesis();
-
     for (Visit visit : visits) {
       if (visit.getAnamnesis() != null) {
         Anamnesis a = visit.getAnamnesis();
-
         if (current.getAllergies() == null && a.getAllergies() != null) {
           current.setAllergies(a.getAllergies());
         }
-
         if (current.getPreviousDiseases() == null && a.getPreviousDiseases() != null) {
           current.setPreviousDiseases(a.getPreviousDiseases());
         }
-
         if (current.getSurgeries() == null && a.getSurgeries() != null) {
           current.setSurgeries(a.getSurgeries());
         }
-
         if (current.getCurrentMedications() == null && a.getCurrentMedications() != null) {
           current.setCurrentMedications(a.getCurrentMedications());
         }
-
         if (current.getDiet() == null && a.getDiet() != null) {
           current.setDiet(a.getDiet());
         }
-
         if (current.getReproductiveStatus() == null && a.getReproductiveStatus() != null) {
           current.setReproductiveStatus(a.getReproductiveStatus());
         }
-
         if (current.getLastDewormingDate() == null && a.getLastDewormingDate() != null) {
           current.setLastDewormingDate(a.getLastDewormingDate());
         }
-
         if (current.getLastHeatDate() == null && a.getLastHeatDate() != null) {
           current.setLastHeatDate(a.getLastHeatDate());
         }
-
         if (current.getLastBirthDate() == null && a.getLastBirthDate() != null) {
           current.setLastBirthDate(a.getLastBirthDate());
         }
       }
     }
-
     return current;
   }
 }

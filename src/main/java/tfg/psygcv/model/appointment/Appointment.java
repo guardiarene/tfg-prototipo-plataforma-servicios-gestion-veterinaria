@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -39,12 +40,13 @@ public class Appointment extends AuditableEntity {
   private Long id;
 
   @NotNull
-  @DateTimeFormat(pattern = "yyyy-MM-dd")
+  @FutureOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "DATE", nullable = false)
   private LocalDate date;
 
   @NotNull
-  @DateTimeFormat(pattern = "HH:mm")
+  @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
   @Column(name = "TIME", nullable = false)
   private LocalTime time;
 
@@ -65,7 +67,7 @@ public class Appointment extends AuditableEntity {
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "STATUS", nullable = false)
+  @Column(name = "APPOINTMENT_STATUS", nullable = false, length = 15)
   private AppointmentStatus appointmentStatus;
 
   @NotNull
