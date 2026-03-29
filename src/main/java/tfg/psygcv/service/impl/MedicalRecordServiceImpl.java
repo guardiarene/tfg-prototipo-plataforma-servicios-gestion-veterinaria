@@ -8,17 +8,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.medical.Anamnesis;
-import tfg.psygcv.model.medical.ClinicalExam;
-import tfg.psygcv.model.medical.Diagnostic;
-import tfg.psygcv.model.medical.MedicalRecord;
-import tfg.psygcv.model.medical.Treatment;
-import tfg.psygcv.model.medical.Vaccine;
-import tfg.psygcv.model.medical.Visit;
-import tfg.psygcv.model.medical.VisitType;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.medical.Anamnesis;
+import tfg.psygcv.entity.medical.ClinicalExam;
+import tfg.psygcv.entity.medical.Diagnostic;
+import tfg.psygcv.entity.medical.MedicalRecord;
+import tfg.psygcv.entity.medical.Treatment;
+import tfg.psygcv.entity.medical.Vaccine;
+import tfg.psygcv.entity.medical.Visit;
+import tfg.psygcv.entity.medical.VisitType;
+import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.base.MedicalRecordRepository;
 import tfg.psygcv.repository.base.PetRepository;
 import tfg.psygcv.repository.base.VeterinaryClinicRepository;
@@ -201,7 +201,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
         medicalRecord.getGeneralObservations() != null
             ? medicalRecord.getGeneralObservations()
             : "Primera visita");
-    visit.setVisitType(tfg.psygcv.model.medical.VisitType.CONSULTATION);
+    visit.setVisitType(tfg.psygcv.entity.medical.VisitType.CONSULTATION);
     visit.setDate(java.time.LocalDate.now());
     if (medicalRecord.getVisits() != null && !medicalRecord.getVisits().isEmpty()) {
       Visit sourceVisit = medicalRecord.getVisits().getFirst();

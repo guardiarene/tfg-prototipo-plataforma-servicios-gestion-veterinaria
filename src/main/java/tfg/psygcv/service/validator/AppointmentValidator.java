@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.appointment.AppointmentStatus;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.entity.appointment.AppointmentStatus;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.user.User;
 
 @Component
 public class AppointmentValidator extends BaseValidator {

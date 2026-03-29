@@ -1,8 +1,8 @@
 package tfg.psygcv.service.validator;
 
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.clinic.MedicalService;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.clinic.MedicalService;
+import tfg.psygcv.entity.user.User;
 
 @Component
 public class MedicalServiceValidator extends BaseValidator {

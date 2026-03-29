@@ -1,7 +1,7 @@
 package tfg.psygcv.service.validator;
 
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
 
 @Component
 public class VeterinaryClinicValidator extends BaseValidator {

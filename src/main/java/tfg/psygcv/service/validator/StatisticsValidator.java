@@ -2,7 +2,7 @@ package tfg.psygcv.service.validator;
 
 import java.time.LocalDate;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.user.User;
 
 @Component
 public class StatisticsValidator extends BaseValidator {

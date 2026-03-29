@@ -3,11 +3,11 @@ package tfg.psygcv.service.validator;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.medical.Visit;
-import tfg.psygcv.model.medical.VisitType;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.medical.Visit;
+import tfg.psygcv.entity.medical.VisitType;
+import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.query.AppointmentQueryRepository;
 
 @Component
