@@ -112,8 +112,6 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
   @Transactional
   public void registerClinicWithVeterinarian(Map<String, String> params) {
     String password = params.get("userPassword");
-    String confirmPassword = params.get("confirmPassword");
-
     User user = new User();
     user.setFirstName(params.get("userFirstName"));
     user.setLastName(params.get("userLastName"));
@@ -123,7 +121,6 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
     user.setRole(Role.VETERINARIAN);
     user.setActive(true);
     userService.saveComplete(user);
-
     VeterinaryClinic clinic = new VeterinaryClinic();
     clinic.setName(params.get("clinicName"));
     clinic.setAddress(params.get("clinicAddress"));

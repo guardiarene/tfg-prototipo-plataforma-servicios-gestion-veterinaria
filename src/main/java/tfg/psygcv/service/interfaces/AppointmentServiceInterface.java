@@ -21,15 +21,14 @@ public interface AppointmentServiceInterface {
 
   String findVeterinarianName(Appointment appointment);
 
-  Appointment createClientAppointment(
+  void createClientAppointment(
       String dateStr, Long petId, Long serviceId, Long clinicId, User client);
 
-  Appointment createReceptionistAppointment(
-      Appointment appointment, Long serviceId, Long receptionistId);
+  void createReceptionistAppointment(Appointment appointment, Long serviceId, Long receptionistId);
 
-  Appointment updateStatus(Long appointmentId, AppointmentStatus status);
+  void updateStatus(Long appointmentId, AppointmentStatus status);
 
-  Appointment reschedule(Long appointmentId, Appointment updatedAppointment);
+  void reschedule(Long appointmentId, Appointment updatedAppointment);
 
-  Appointment cancel(Long appointmentId);
+  void cancel(Long appointmentId);
 }

@@ -33,9 +33,9 @@ import tfg.psygcv.repository.base.VisitRepository;
 import tfg.psygcv.service.interfaces.VisitServiceInterface;
 import tfg.psygcv.service.validator.VisitValidator;
 
-@Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Service
 public class VisitServiceImpl implements VisitServiceInterface {
 
   private final VisitRepository visitRepository;
@@ -57,26 +57,19 @@ public class VisitServiceImpl implements VisitServiceInterface {
                 () ->
                     new EntityNotFoundException(
                         "Medical record not found with ID: " + medicalRecordId));
-
     Pet pet = medicalRecord.getPet();
     visitValidator.validateForCreation(visit, veterinarian, pet);
-
     setupVisitRelationships(visit, medicalRecord, veterinarian);
-    Visit savedVisit = visitRepository.save(visit);
-
-    return savedVisit;
+    return visitRepository.save(visit);
   }
 
   @Override
   @Transactional
   public Visit updateVisit(Long visitId, Visit updatedVisit, User veterinarian) {
     visitValidator.validateForUpdate(visitId, updatedVisit, veterinarian);
-
     Visit existingVisit = findCompleteById(visitId);
-
     updateVisitFields(existingVisit, updatedVisit);
     updateRelatedEntities(existingVisit, updatedVisit);
-
     return visitRepository.save(existingVisit);
   }
 
@@ -88,12 +81,16 @@ public class VisitServiceImpl implements VisitServiceInterface {
         visitRepository
             .findCompleteById(visitId)
             .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
-
-    // Fetch collections separately to avoid MultipleBagFetchException
     visitRepository.findWithDiagnostics(visitId);
     visitRepository.findWithTreatments(visitId);
     visitRepository.findWithVaccines(visitId);
-
+    if (!visit.getDiagnostics().isEmpty()) {
+      List<Long> diagnosticIds =
+          visit.getDiagnostics().stream().map(Diagnostic::getId).filter(Objects::nonNull).toList();
+      if (!diagnosticIds.isEmpty()) {
+        diagnosticRepository.findWithProblemsByIds(diagnosticIds);
+      }
+    }
     return visit;
   }
 
@@ -108,6 +105,11 @@ public class VisitServiceImpl implements VisitServiceInterface {
       visitRepository.findWithDiagnosticsByIds(visitIds);
       visitRepository.findWithTreatmentsByIds(visitIds);
       visitRepository.findWithVaccinesByIds(visitIds);
+      List<Long> diagnosticIds =
+          visits.stream().flatMap(v -> v.getDiagnostics().stream()).map(Diagnostic::getId).toList();
+      if (!diagnosticIds.isEmpty()) {
+        diagnosticRepository.findWithProblemsByIds(diagnosticIds);
+      }
     }
     return visits;
   }
@@ -147,12 +149,10 @@ public class VisitServiceImpl implements VisitServiceInterface {
   @Transactional
   public void deleteVisit(Long visitId, User veterinarian) {
     visitValidator.validateId(visitId);
-
     Visit visit =
         visitRepository
             .findById(visitId)
             .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
-
     visit.setActive(false);
     visitRepository.save(visit);
   }
@@ -162,63 +162,54 @@ public class VisitServiceImpl implements VisitServiceInterface {
     visit.setMedicalRecord(medicalRecord);
     visit.setVeterinarian(veterinarian);
     visit.setActive(true);
-
     if (visit.getDate() == null) {
       visit.setDate(LocalDate.now());
     }
-
-    // Set clinical exam visit back reference
     if (visit.getClinicalExam() != null) {
       visit.getClinicalExam().setVisit(visit);
       visit.getClinicalExam().setActive(true);
-
-      // Update pet's weight with clinical exam weight if present
       if (visit.getClinicalExam().getWeight() != null && medicalRecord.getPet() != null) {
         medicalRecord.getPet().setWeight(visit.getClinicalExam().getWeight());
       }
     }
-
-    // Set anamnesis visit back reference
     if (visit.getAnamnesis() != null) {
       visit.getAnamnesis().setVisit(visit);
       visit.getAnamnesis().setActive(true);
     }
-
-    // Set diagnostics visit back reference
     if (visit.getDiagnostics() != null) {
-      visit.getDiagnostics().forEach(d -> {
-        d.setVisit(visit);
-        d.setActive(true);
-      });
+      visit
+          .getDiagnostics()
+          .forEach(
+              d -> {
+                d.setVisit(visit);
+                d.setActive(true);
+              });
     }
-
-    // Set treatments visit back reference
     if (visit.getTreatments() != null) {
-      visit.getTreatments().forEach(t -> {
-        t.setVisit(visit);
-        t.setActive(true);
-      });
+      visit
+          .getTreatments()
+          .forEach(
+              t -> {
+                t.setVisit(visit);
+                t.setActive(true);
+              });
     }
-
-    // Set vaccines visit back reference
     if (visit.getVaccines() != null) {
-      visit.getVaccines().forEach(v -> {
-        v.setVisit(visit);
-        v.setMedicalRecord(medicalRecord);
-        v.setActive(true);
-      });
+      visit
+          .getVaccines()
+          .forEach(
+              v -> {
+                v.setVisit(visit);
+                v.setMedicalRecord(medicalRecord);
+                v.setActive(true);
+              });
     }
-  }
-
-  private void saveRelatedEntities(Visit visit) {
-    // Relationships are now set up in setupVisitRelationships and saved by cascade
   }
 
   private void updateVisitFields(Visit existing, Visit updated) {
     existing.setReasonForVisit(updated.getReasonForVisit());
     existing.setVisitType(updated.getVisitType());
     existing.setObservations(updated.getObservations());
-
     if (updated.getDate() != null) {
       existing.setDate(updated.getDate());
     }
@@ -241,9 +232,8 @@ public class VisitServiceImpl implements VisitServiceInterface {
         existing.setClinicalExam(existingExam);
       }
       BeanUtils.copyProperties(updatedExam, existingExam, "id", "version", "createdAt", "visit");
-
-      // Update pet's weight if modified in clinical exam
-      if (existingExam.getWeight() != null && existing.getMedicalRecord() != null
+      if (existingExam.getWeight() != null
+          && existing.getMedicalRecord() != null
           && existing.getMedicalRecord().getPet() != null) {
         existing.getMedicalRecord().getPet().setWeight(existingExam.getWeight());
       }
@@ -267,14 +257,11 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (newDiagnostics == null) {
       return;
     }
-
     List<Long> newDiagnosticIds =
         newDiagnostics.stream().map(Diagnostic::getId).filter(Objects::nonNull).toList();
-
     existing
         .getDiagnostics()
         .removeIf(d -> d.getId() != null && !newDiagnosticIds.contains(d.getId()));
-
     newDiagnostics.forEach(
         newDiagnostic -> {
           if (newDiagnostic.getId() == null) {
@@ -299,14 +286,11 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (newTreatments == null) {
       return;
     }
-
     List<Long> newTreatmentIds =
         newTreatments.stream().map(Treatment::getId).filter(Objects::nonNull).toList();
-
     existing
         .getTreatments()
         .removeIf(t -> t.getId() != null && !newTreatmentIds.contains(t.getId()));
-
     newTreatments.forEach(
         newTreatment -> {
           if (newTreatment.getId() == null) {
@@ -331,23 +315,19 @@ public class VisitServiceImpl implements VisitServiceInterface {
     if (newVaccines == null) {
       return;
     }
-
     List<Vaccine> allVaccines = existing.getMedicalRecord().getVaccines();
     Map<Long, Vaccine> existingVaccinesMap =
         allVaccines.stream()
             .filter(v -> v.getVisit() != null && v.getVisit().getId().equals(existing.getId()))
             .collect(Collectors.toMap(Vaccine::getId, Function.identity()));
-
     List<Long> newVaccineIds =
         newVaccines.stream().map(Vaccine::getId).filter(Objects::nonNull).toList();
-
     allVaccines.removeIf(
         v ->
             v.getVisit() != null
                 && v.getVisit().getId().equals(existing.getId())
                 && v.getId() != null
                 && !newVaccineIds.contains(v.getId()));
-
     newVaccines.forEach(
         newVaccine -> {
           if (newVaccine.getId() == null) {

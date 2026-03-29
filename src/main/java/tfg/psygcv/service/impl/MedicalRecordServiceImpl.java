@@ -14,6 +14,7 @@ import tfg.psygcv.model.medical.ClinicalExam;
 import tfg.psygcv.model.medical.Diagnostic;
 import tfg.psygcv.model.medical.MedicalRecord;
 import tfg.psygcv.model.medical.Treatment;
+import tfg.psygcv.model.medical.Vaccine;
 import tfg.psygcv.model.medical.Visit;
 import tfg.psygcv.model.medical.VisitType;
 import tfg.psygcv.model.pet.Pet;
@@ -44,62 +45,54 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   @Transactional(readOnly = true)
   public MedicalRecord findCompleteForEditing(Long id) {
     medicalRecordValidator.validateId(id);
-
     MedicalRecord medicalRecord =
         medicalRecordQueryRepository
             .findCompleteForViewing(id)
             .orElseThrow(
                 () -> new EntityNotFoundException("Medical record not found with ID: " + id));
-
     Visit latestVisit = visitService.findLatestVisit(id);
     Visit newVisit = new Visit();
     newVisit.setDate(java.time.LocalDate.now());
     newVisit.setVisitType(VisitType.CONSULTATION);
-
     if (latestVisit != null) {
       Visit completeVisit = visitService.findCompleteById(latestVisit.getId());
-
-      // Pre-cargar datos de la última visita en la nueva (copia para seguimiento)
       newVisit.setReasonForVisit(completeVisit.getReasonForVisit());
       newVisit.setObservations(completeVisit.getObservations());
-
       if (completeVisit.getClinicalExam() != null) {
         ClinicalExam newExam = new ClinicalExam();
         BeanUtils.copyProperties(completeVisit.getClinicalExam(), newExam, "id", "visit");
         newVisit.setClinicalExam(newExam);
       }
-
       if (completeVisit.getAnamnesis() != null) {
         Anamnesis newAnamnesis = new Anamnesis();
         BeanUtils.copyProperties(completeVisit.getAnamnesis(), newAnamnesis, "id", "visit");
         newVisit.setAnamnesis(newAnamnesis);
       }
-
       if (completeVisit.getDiagnostics() != null) {
         for (Diagnostic d : completeVisit.getDiagnostics()) {
           Diagnostic newD = new Diagnostic();
           newD.setProblems(new ArrayList<>(d.getProblems()));
-          newD.setVisit(newVisit);
           newVisit.getDiagnostics().add(newD);
         }
       }
-
       if (completeVisit.getTreatments() != null) {
         for (Treatment t : completeVisit.getTreatments()) {
           Treatment newT = new Treatment();
           BeanUtils.copyProperties(t, newT, "id", "visit");
-          newT.setVisit(newVisit);
           newVisit.getTreatments().add(newT);
         }
       }
+      if (completeVisit.getVaccines() != null) {
+        for (Vaccine v : completeVisit.getVaccines()) {
+          Vaccine newV = new Vaccine();
+          BeanUtils.copyProperties(v, newV, "id", "visit", "medicalRecord");
+          newVisit.getVaccines().add(newV);
+        }
+      }
     }
-
-    // Devolvemos un objeto "fantasma" solo para el binding del formulario
     MedicalRecord recordForForm = new MedicalRecord();
     BeanUtils.copyProperties(medicalRecord, recordForForm, "visits");
     recordForForm.getVisits().add(newVisit);
-    // OJO: NO hacemos newVisit.setMedicalRecord(recordForForm) para evitar ciclos Detached
-
     return recordForForm;
   }
 
@@ -107,7 +100,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   @Transactional(readOnly = true)
   public MedicalRecord findCompleteById(Long medicalRecordId) {
     medicalRecordValidator.validateId(medicalRecordId);
-
     MedicalRecord medicalRecord =
         medicalRecordQueryRepository
             .findCompleteForViewing(medicalRecordId)
@@ -115,11 +107,10 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
                 () ->
                     new EntityNotFoundException(
                         "Medical record not found with ID: " + medicalRecordId));
-
     List<Visit> visits = visitService.findByMedicalRecord(medicalRecordId);
     medicalRecord.getVisits().clear();
     medicalRecord.getVisits().addAll(visits);
-
+    medicalRecordQueryRepository.findWithVaccines(medicalRecordId);
     return medicalRecord;
   }
 
@@ -127,7 +118,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   @Transactional(readOnly = true)
   public List<MedicalRecord> findByVeterinarian(User veterinarian) {
     medicalRecordValidator.validateVeterinarian(veterinarian);
-
     VeterinaryClinic clinic =
         veterinaryClinicRepository
             .findByVeterinarianId(veterinarian.getId())
@@ -145,21 +135,16 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   @Transactional
   public MedicalRecord save(MedicalRecord medicalRecord, User veterinarian) {
     medicalRecordValidator.validateForCreation(medicalRecord, veterinarian);
-
     Pet pet =
         petRepository
             .findByIdAndActive(medicalRecord.getPet().getId())
             .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
-
     validatePetAppointments(pet, veterinarian);
     validateExistingMedicalRecord(pet);
-
     MedicalRecord newMedicalRecord = createMedicalRecord(pet);
     MedicalRecord savedRecord = medicalRecordRepository.save(newMedicalRecord);
-
     Visit firstVisit = createFirstVisitFromMedicalRecord(medicalRecord);
     visitService.createVisit(savedRecord.getId(), firstVisit, veterinarian);
-
     return savedRecord;
   }
 
@@ -167,21 +152,16 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   @Transactional
   public MedicalRecord update(Long id, MedicalRecord updatedRecord, User veterinarian) {
     medicalRecordValidator.validateForUpdate(id, updatedRecord, veterinarian);
-
     MedicalRecord existingRecord =
         medicalRecordRepository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Medical record not found"));
-
     if (updatedRecord.getGeneralObservations() != null) {
       existingRecord.setGeneralObservations(updatedRecord.getGeneralObservations());
     }
-
     if (updatedRecord.getVisits() != null && !updatedRecord.getVisits().isEmpty()) {
       for (Visit updatedVisit : updatedRecord.getVisits()) {
-        updatedVisit.setMedicalRecord(null); // Desvincular de la entidad desconectada
-
-        // Limpiar referencias circulares de hijos para evitar propagación de entidades detached
+        updatedVisit.setMedicalRecord(null);
         if (updatedVisit.getClinicalExam() != null) {
           updatedVisit.getClinicalExam().setVisit(updatedVisit);
         }
@@ -197,7 +177,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
         if (updatedVisit.getVaccines() != null) {
           updatedVisit.getVaccines().forEach(vax -> vax.setVisit(updatedVisit));
         }
-
         if (updatedVisit.getId() != null) {
           visitService.updateVisit(updatedVisit.getId(), updatedVisit, veterinarian);
         } else {
@@ -205,7 +184,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
         }
       }
     }
-
     return medicalRecordRepository.save(existingRecord);
   }
 
@@ -219,15 +197,12 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
 
   private Visit createFirstVisitFromMedicalRecord(MedicalRecord medicalRecord) {
     Visit visit = new Visit();
-
     visit.setReasonForVisit(
         medicalRecord.getGeneralObservations() != null
             ? medicalRecord.getGeneralObservations()
             : "Primera visita");
-    visit.setVisitType(
-        tfg.psygcv.model.medical.VisitType.CONSULTATION); // Default type for backward compatibility
+    visit.setVisitType(tfg.psygcv.model.medical.VisitType.CONSULTATION);
     visit.setDate(java.time.LocalDate.now());
-
     if (medicalRecord.getVisits() != null && !medicalRecord.getVisits().isEmpty()) {
       Visit sourceVisit = medicalRecord.getVisits().getFirst();
       visit.setClinicalExam(sourceVisit.getClinicalExam());
@@ -236,7 +211,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
       visit.setTreatments(sourceVisit.getTreatments());
       visit.setVaccines(sourceVisit.getVaccines());
       visit.setObservations(sourceVisit.getObservations());
-
       if (sourceVisit.getReasonForVisit() != null) {
         visit.setReasonForVisit(sourceVisit.getReasonForVisit());
       }
@@ -247,28 +221,23 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
         visit.setDate(sourceVisit.getDate());
       }
     }
-
     return visit;
   }
 
   private void validatePetAppointments(Pet pet, User veterinarian) {
     Set<VeterinaryClinic> veterinarianClinics = veterinarian.getClinicsOwned();
     VeterinaryClinic workClinic = veterinarian.getWorkClinic();
-
     boolean hasAppointments = false;
-
     if (veterinarianClinics != null && !veterinarianClinics.isEmpty()) {
       hasAppointments =
           appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
               pet, veterinarianClinics, pet.getOwner());
     }
-
     if (!hasAppointments && workClinic != null) {
       hasAppointments =
           appointmentQueryRepository.existsAppointmentByPetAndClinicAndCustomer(
               pet, workClinic, pet.getOwner());
     }
-
     if (!hasAppointments) {
       throw new IllegalStateException(
           "Pet has no registered appointments in veterinarian's clinics");

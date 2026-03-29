@@ -15,11 +15,11 @@ public interface UserServiceInterface {
 
   User save(User user);
 
-  User saveComplete(User user);
+  void saveComplete(User user);
 
   User update(User user);
 
-  User updateComplete(Long userId, User updatedUser);
+  void updateComplete(Long userId, User updatedUser);
 
   void updateVeterinarianProfile(User currentVeterinarian, User updatedVeterinarian);
 

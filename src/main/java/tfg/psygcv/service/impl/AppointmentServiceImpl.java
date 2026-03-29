@@ -82,7 +82,7 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
 
   @Override
   @Transactional
-  public Appointment createClientAppointment(
+  public void createClientAppointment(
       String dateStr, Long petId, Long serviceId, Long clinicId, User client) {
     appointmentValidator.validateClientAppointmentCreation(
         dateStr, petId, serviceId, clinicId, client);
@@ -91,12 +91,12 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     MedicalService service = medicalServiceService.findById(serviceId);
     VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
     Appointment appointment = buildClientAppointment(date, pet, service, clinic, client);
-    return appointmentRepository.save(appointment);
+    appointmentRepository.save(appointment);
   }
 
   @Override
   @Transactional
-  public Appointment createReceptionistAppointment(
+  public void createReceptionistAppointment(
       Appointment appointment, Long serviceId, Long receptionistId) {
     appointmentValidator.validateReceptionistAppointmentCreation(
         appointment, serviceId, receptionistId);
@@ -105,21 +105,21 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     appointment.setClinic(clinic);
     appointment.setMedicalService(service);
     appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
-    return appointmentRepository.save(appointment);
+    appointmentRepository.save(appointment);
   }
 
   @Override
-  public Appointment updateStatus(Long appointmentId, AppointmentStatus status) {
+  public void updateStatus(Long appointmentId, AppointmentStatus status) {
     appointmentValidator.validateId(appointmentId);
     appointmentValidator.validateStatus(status);
     Appointment appointment = findWithDetails(appointmentId);
     appointment.setAppointmentStatus(status);
-    return appointmentRepository.save(appointment);
+    appointmentRepository.save(appointment);
   }
 
   @Override
   @Transactional
-  public Appointment reschedule(Long appointmentId, Appointment updatedAppointment) {
+  public void reschedule(Long appointmentId, Appointment updatedAppointment) {
     appointmentValidator.validateReschedule(appointmentId, updatedAppointment);
     Appointment existingAppointment = findWithDetails(appointmentId);
     MedicalService service =
@@ -128,13 +128,13 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     existingAppointment.setTime(updatedAppointment.getTime());
     existingAppointment.setMedicalService(service);
     existingAppointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
-    return appointmentRepository.save(existingAppointment);
+    appointmentRepository.save(existingAppointment);
   }
 
   @Override
   @Transactional
-  public Appointment cancel(Long appointmentId) {
-    return updateStatus(appointmentId, AppointmentStatus.CANCELLED);
+  public void cancel(Long appointmentId) {
+    updateStatus(appointmentId, AppointmentStatus.CANCELLED);
   }
 
   private Appointment buildClientAppointment(
