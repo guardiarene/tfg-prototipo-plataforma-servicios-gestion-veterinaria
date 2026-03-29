@@ -1,4 +1,4 @@
-package tfg.psygcv.model.medical;
+package tfg.psygcv.entity.medical;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -12,13 +12,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.model.audit.AuditableEntity;
+import tfg.psygcv.entity.audit.AuditableEntity;
 
 @Getter
 @Setter
@@ -37,7 +36,6 @@ public class Diagnostic extends AuditableEntity {
   @Column(name = "PROBLEM")
   private List<@NotBlank String> problems = new ArrayList<>();
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "VISIT_ID", nullable = false)
   private Visit visit;

@@ -1,4 +1,4 @@
-package tfg.psygcv.model.medical;
+package tfg.psygcv.entity.medical;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,14 +13,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.model.audit.AuditableEntity;
-import tfg.psygcv.model.pet.Pet;
+import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.entity.pet.Pet;
 
 @Getter
 @Setter
@@ -37,7 +36,6 @@ public class MedicalRecord extends AuditableEntity {
   @Column(name = "GENERAL_OBSERVATIONS", columnDefinition = "TEXT")
   private String generalObservations;
 
-  @NotNull
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "PET_ID", nullable = false, unique = true)
   private Pet pet;

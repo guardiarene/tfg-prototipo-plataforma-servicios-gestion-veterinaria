@@ -1,4 +1,4 @@
-package tfg.psygcv.model.pet;
+package tfg.psygcv.entity.pet;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,10 +25,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.audit.AuditableEntity;
-import tfg.psygcv.model.medical.MedicalRecord;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.entity.medical.MedicalRecord;
+import tfg.psygcv.entity.user.User;
 
 @Getter
 @Setter
@@ -72,7 +72,6 @@ public class Pet extends AuditableEntity {
   @Column(name = "WEIGHT", nullable = false)
   private Float weight;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "OWNER_ID", nullable = false)
   private User owner;

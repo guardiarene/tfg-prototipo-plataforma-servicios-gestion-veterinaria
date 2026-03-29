@@ -1,8 +1,10 @@
-package tfg.psygcv.model.clinic;
+package tfg.psygcv.entity.user;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,22 +16,24 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.audit.AuditableEntity;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.pet.Pet;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "VETERINARY_CLINIC")
-public class VeterinaryClinic extends AuditableEntity {
+@Table(name = "APP_USER")
+public class User extends AuditableEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,12 +41,12 @@ public class VeterinaryClinic extends AuditableEntity {
   private Long id;
 
   @NotBlank
-  @Column(name = "NAME", nullable = false, length = 100)
-  private String name;
+  @Column(name = "FIRST_NAME", nullable = false, length = 50)
+  private String firstName;
 
   @NotBlank
-  @Column(name = "ADDRESS", nullable = false, length = 255)
-  private String address;
+  @Column(name = "LAST_NAME", nullable = false, length = 50)
+  private String lastName;
 
   @NotBlank
   @Column(name = "PHONE", nullable = false, length = 20)
@@ -53,35 +57,31 @@ public class VeterinaryClinic extends AuditableEntity {
   @Column(name = "EMAIL", nullable = false, unique = true, length = 254)
   private String email;
 
-  @OneToMany(
-      mappedBy = "clinic",
-      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-      fetch = FetchType.LAZY)
-  private Set<MedicalService> services = new LinkedHashSet<>();
-
-  @OneToMany(
-      mappedBy = "clinic",
-      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-      fetch = FetchType.LAZY)
-  private Set<Appointment> appointments = new LinkedHashSet<>();
+  @NotBlank
+  @Column(name = "PASSWORD", nullable = false, length = 72)
+  private String password;
 
   @NotNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "ROLE", length = 25, nullable = false)
+  private Role role;
+
+  @OneToMany(
+      mappedBy = "owner",
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+      fetch = FetchType.LAZY)
+  private List<Pet> pets = new ArrayList<>();
+
+  @OneToMany(
+      mappedBy = "customer",
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+      fetch = FetchType.LAZY)
+  private List<Appointment> appointmentsAsCustomer = new ArrayList<>();
+
+  @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+  private Set<VeterinaryClinic> clinicsOwned = new LinkedHashSet<>();
+
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "OWNER_ID", nullable = false)
-  private User owner;
-
-  @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
-  @SQLRestriction("ROLE = 'VETERINARIAN'")
-  private Set<User> veterinarians = new LinkedHashSet<>();
-
-  @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
-  @SQLRestriction("ROLE = 'RECEPTIONIST'")
-  private Set<User> receptionists = new LinkedHashSet<>();
-
-  public void setOwner(User owner) {
-    this.owner = owner;
-    if (owner != null) {
-      owner.getClinicsOwned().add(this);
-    }
-  }
+  @JoinColumn(name = "WORK_CLINIC_ID")
+  private VeterinaryClinic workClinic;
 }

@@ -1,4 +1,4 @@
-package tfg.psygcv.model.medical;
+package tfg.psygcv.entity.medical;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,8 +15,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.model.audit.AuditableEntity;
-import tfg.psygcv.model.pet.Temperament;
+import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.entity.pet.Temperament;
 
 @Getter
 @Setter

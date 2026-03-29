@@ -1,4 +1,4 @@
-package tfg.psygcv.model.medical;
+package tfg.psygcv.entity.medical;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,9 +24,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.audit.AuditableEntity;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.entity.user.User;
 
 @Getter
 @Setter
@@ -58,12 +58,10 @@ public class Visit extends AuditableEntity {
   @Column(name = "OBSERVATIONS", columnDefinition = "TEXT")
   private String observations;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false)
   private MedicalRecord medicalRecord;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "VETERINARIAN_ID", nullable = false)
   private User veterinarian;

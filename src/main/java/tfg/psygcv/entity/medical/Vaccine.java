@@ -1,4 +1,4 @@
-package tfg.psygcv.model.medical;
+package tfg.psygcv.entity.medical;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import tfg.psygcv.model.audit.AuditableEntity;
+import tfg.psygcv.entity.audit.AuditableEntity;
 
 @Getter
 @Setter
@@ -49,7 +49,6 @@ public class Vaccine extends AuditableEntity {
   @Column(name = "BATCH", nullable = false, length = 50)
   private String batch;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "MEDICAL_RECORD_ID", nullable = false)
   private MedicalRecord medicalRecord;

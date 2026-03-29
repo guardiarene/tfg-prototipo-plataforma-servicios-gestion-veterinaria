@@ -1,4 +1,4 @@
-package tfg.psygcv.model.appointment;
+package tfg.psygcv.entity.appointment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,12 +20,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import tfg.psygcv.model.audit.AuditableEntity;
-import tfg.psygcv.model.clinic.MedicalService;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.medical.Visit;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.entity.clinic.MedicalService;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.medical.Visit;
+import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.entity.user.User;
 
 @Getter
 @Setter
@@ -50,22 +50,18 @@ public class Appointment extends AuditableEntity {
   @Column(name = "TIME", nullable = false)
   private LocalTime time;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "VETERINARY_CLINIC_ID", nullable = false)
   private VeterinaryClinic clinic;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "MEDICAL_SERVICE_ID", nullable = false)
   private MedicalService medicalService;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "CUSTOMER_ID", nullable = false)
   private User customer;
 
-  @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "APPOINTMENT_STATUS", nullable = false, length = 15)
   private AppointmentStatus appointmentStatus;

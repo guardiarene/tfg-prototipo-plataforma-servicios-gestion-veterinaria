@@ -1,4 +1,4 @@
-package tfg.psygcv.model.clinic;
+package tfg.psygcv.entity.clinic;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,8 +18,8 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.audit.AuditableEntity;
+import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.entity.audit.AuditableEntity;
 
 @Getter
 @Setter
