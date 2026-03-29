@@ -4,11 +4,11 @@
 <div th:fragment="formButtons(backUrl, backText, submitText, showSubmit)">
     <div class="d-flex justify-content-end gap-3 mt-5">
         <a class="btn btn-secondary px-4" th:href="@{${backUrl}}">
-            <i class="bi bi-arrow-left-circle me-2"></i>
+            <i aria-hidden="true" class="bi bi-arrow-left-circle me-2"></i>
             <span th:text="${backText} ?: 'Volver'"></span>
         </a>
         <button class="btn btn-primary px-4" th:if="${showSubmit}" type="submit">
-            <i class="bi bi-save2 me-2"></i>
+            <i aria-hidden="true" class="bi bi-save2 me-2"></i>
             <span th:text="${submitText} ?: 'Guardar'"></span>
         </button>
     </div>
@@ -16,34 +16,29 @@
 <div th:fragment="backButton(backUrl, backText)">
     <div class="d-flex justify-content-start mt-5">
         <a class="btn btn-secondary" th:href="@{${backUrl}}">
-            <i class="bi bi-arrow-left-circle me-2"></i>
+            <i aria-hidden="true" class="bi bi-arrow-left-circle me-2"></i>
             <span th:text="${backText} ?: 'Volver'"></span>
         </a>
     </div>
 </div>
 <div th:fragment="submitButton(submitText, submitClass)">
     <button th:class="'btn px-4 ' + (${submitClass} ?: 'btn-primary')" type="submit">
-        <i class="bi bi-save2 me-2"></i>
+        <i aria-hidden="true" class="bi bi-save2 me-2"></i>
         <span th:text="${submitText} ?: 'Guardar'"></span>
     </button>
 </div>
 <div th:fragment="actionButtons(editUrl, deleteUrl, editText, deleteText, showEdit, showDelete)">
     <div class="d-flex gap-2 align-items-center">
         <a class="btn btn-warning btn-sm" th:href="@{${editUrl}}" th:if="${showEdit}">
-            <i class="bi bi-pencil me-2"></i>
+            <i aria-hidden="true" class="bi bi-pencil me-2"></i>
             <span th:text="${editText} ?: 'Editar'"></span>
         </a>
         <form class="d-inline" method="POST" th:action="@{${deleteUrl}}" th:if="${showDelete}">
             <button class="btn btn-danger btn-sm" type="submit">
-                <i class="bi bi-trash me-2"></i>
+                <i aria-hidden="true" class="bi bi-trash me-2"></i>
                 <span th:text="${deleteText} ?: 'Eliminar'"></span>
             </button>
         </form>
-    </div>
-</div>
-<div th:fragment="buttonContainer(justify, gap)">
-    <div th:class="'d-flex ' + (${justify} ?: 'justify-content-end') + ' gap-' + (${gap} ?: '3')">
-        <div th:insert="~{content}"></div>
     </div>
 </div>
 </body>

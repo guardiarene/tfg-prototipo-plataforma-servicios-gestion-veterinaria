@@ -5,11 +5,12 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand text-dark fw-bold"
-               th:href="${role == 'SYSTEM_ADMINISTRATOR'} ? @{/admin/dashboard} :
-                        (${role == 'VETERINARIAN'} ? @{/veterinarian/dashboard} :
-                        (${role == 'RECEPTIONIST'} ? @{/receptionist/dashboard} :
-                        (${role == 'CUSTOMER'} ? @{/customer/dashboard} : @{/})))">Prototipo TFG</a>
-            <button class="navbar-toggler border-0" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+               th:href="${role == 'SYSTEM_ADMINISTRATOR' ? '/admin/dashboard' :
+                        role == 'VETERINARIAN' ? '/veterinarian/dashboard' :
+                        role == 'RECEPTIONIST' ? '/receptionist/dashboard' :
+                        role == 'CUSTOMER' ? '/customer/dashboard' : '/'}">Prototipo TFG</a>
+            <button aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegación"
+                    class="navbar-toggler border-0" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -20,15 +21,6 @@
                     <li class="nav-item" th:if="${role == 'SYSTEM_ADMINISTRATOR'}">
                         <a class="nav-link text-dark" th:href="@{/users/new}">Nuevo Usuario</a>
                     </li>
-                    <li class="nav-item" th:if="${role == 'SYSTEM_ADMINISTRATOR'}">
-                        <form class="d-inline" method="post" th:action="@{/logout}">
-                            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
-                                Sesión
-                            </button>
-                        </form>
-                    </li>
-
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
                         <a class="nav-link text-dark" th:href="@{/profile}">Mi Perfil</a>
                     </li>
@@ -38,15 +30,6 @@
                     <li class="nav-item" th:if="${role == 'CUSTOMER'}">
                         <a class="nav-link text-dark" th:href="@{/appointments}">Mis Turnos</a>
                     </li>
-                    <li class="nav-item" th:if="${role == 'CUSTOMER'}">
-                        <form class="d-inline" method="post" th:action="@{/logout}">
-                            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
-                                Sesión
-                            </button>
-                        </form>
-                    </li>
-
                     <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
                         <a class="nav-link text-dark" th:href="@{/receptionist/dashboard}">Agenda</a>
                     </li>
@@ -56,15 +39,6 @@
                     <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
                         <a class="nav-link text-dark" th:href="@{/reports/appointments}">Consultar Turnos Atendidos</a>
                     </li>
-                    <li class="nav-item" th:if="${role == 'RECEPTIONIST'}">
-                        <form class="d-inline" method="post" th:action="@{/logout}">
-                            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                            <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
-                                Sesión
-                            </button>
-                        </form>
-                    </li>
-
                     <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
                         <a class="nav-link text-dark" th:href="@{/veterinarian/dashboard}">Mis Historias</a>
                     </li>
@@ -81,7 +55,7 @@
                         <a class="nav-link text-dark" th:href="@{/reports/diseases-treatments}">Consultar
                             Enfermedades</a>
                     </li>
-                    <li class="nav-item" th:if="${role == 'VETERINARIAN'}">
+                    <li class="nav-item" th:if="${role}">
                         <form class="d-inline" method="post" th:action="@{/logout}">
                             <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
                             <button class="nav-link btn btn-link text-dark border-start ps-3" type="submit">Cerrar
@@ -89,7 +63,6 @@
                             </button>
                         </form>
                     </li>
-
                     <li class="nav-item" th:unless="${role}">
                         <a class="nav-link text-dark border-start ps-3" th:href="@{/users/login}">Iniciar Sesión</a>
                     </li>

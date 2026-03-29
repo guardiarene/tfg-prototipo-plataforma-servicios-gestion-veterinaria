@@ -3,33 +3,33 @@
 <body>
 <div th:fragment="alert(type, icon, message, dismissible)">
     <div role="alert" th:class="'alert alert-' + ${type} + (${dismissible} ? ' alert-dismissible fade show' : '')">
-        <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+        <i aria-hidden="true" th:class="'bi ' + ${icon} + ' me-2'"></i>
         <span th:text="${message}"></span>
         <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" th:if="${dismissible}"
                 type="button"></button>
     </div>
 </div>
 <div th:fragment="errorAlert(message)">
-    <div class="alert alert-danger mt-4 mb-0">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <div class="alert alert-danger mt-4 mb-0" role="alert">
+        <i aria-hidden="true" class="bi bi-exclamation-triangle-fill me-2"></i>
         <span th:text="${message}"></span>
     </div>
 </div>
 <div th:fragment="successAlert(message)">
-    <div class="alert alert-success">
-        <i class="bi bi-check-circle-fill me-2"></i>
+    <div class="alert alert-success" role="alert">
+        <i aria-hidden="true" class="bi bi-check-circle-fill me-2"></i>
         <span th:text="${message}"></span>
     </div>
 </div>
 <div th:fragment="infoAlert(message)">
-    <div class="alert alert-info">
-        <i class="bi bi-info-circle me-2"></i>
+    <div class="alert alert-info" role="alert">
+        <i aria-hidden="true" class="bi bi-info-circle me-2"></i>
         <span th:text="${message}"></span>
     </div>
 </div>
 <div th:fragment="emptyState(message)">
-    <div class="alert alert-info mb-0">
-        <i class="bi bi-info-circle me-2"></i>
+    <div class="alert alert-info mb-0" role="status">
+        <i aria-hidden="true" class="bi bi-info-circle me-2"></i>
         <span th:text="${message}"></span>
     </div>
 </div>
