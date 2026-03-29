@@ -2,7 +2,7 @@ package tfg.psygcv.service.interfaces;
 
 import java.time.LocalDate;
 import java.util.Map;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.user.User;
 
 public interface StatisticsServiceInterface {
 

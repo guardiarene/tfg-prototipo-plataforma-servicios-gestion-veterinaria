@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import tfg.psygcv.model.user.Role;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.user.Role;
+import tfg.psygcv.entity.user.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

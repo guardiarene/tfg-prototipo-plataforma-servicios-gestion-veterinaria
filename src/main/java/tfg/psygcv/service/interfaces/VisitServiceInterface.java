@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import tfg.psygcv.model.medical.Visit;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.medical.Visit;
+import tfg.psygcv.entity.user.User;
 
 public interface VisitServiceInterface {
 
