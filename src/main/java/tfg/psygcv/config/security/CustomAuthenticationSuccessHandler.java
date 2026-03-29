@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     String role =
         authentication.getAuthorities().stream()
             .findFirst()
-            .map(authority -> authority.getAuthority())
+            .map(GrantedAuthority::getAuthority)
             .orElseThrow(() -> new IllegalStateException("Authenticated user has no authorities"));
     String redirectUrl =
         switch (role) {
