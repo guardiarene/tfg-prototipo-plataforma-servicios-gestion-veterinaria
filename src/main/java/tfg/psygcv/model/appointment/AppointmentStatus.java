@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum AppointmentStatus {
-  PENDING("Pending confirmation"),
-  CONFIRMED("Confirmed"),
-  CANCELLED("Cancelled"),
-  COMPLETED("Completed"),
-  NO_SHOW("Customer did not show up");
+  PENDING("Pendiente de confirmación"),
+  CONFIRMED("Confirmada"),
+  CANCELLED("Cancelada"),
+  COMPLETED("Completada"),
+  NO_SHOW("No se presentó");
 
   private final String description;
 
