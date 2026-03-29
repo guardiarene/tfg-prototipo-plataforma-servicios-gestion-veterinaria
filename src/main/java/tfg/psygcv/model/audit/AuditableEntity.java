@@ -67,7 +67,6 @@ public abstract class AuditableEntity {
         deletedBy = !isBlank(updatedBy) ? updatedBy : createdBy;
       }
     }
-
     if (Boolean.TRUE.equals(active) && deletedAt != null) {
       deletedAt = null;
       deletedBy = null;
