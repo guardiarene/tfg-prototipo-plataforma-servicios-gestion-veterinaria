@@ -76,11 +76,11 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
 
   @Override
   @Transactional
-  public User saveComplete(User user) {
+  public void saveComplete(User user) {
     if (user.getActive() == null) {
       user.setActive(true);
     }
-    return save(user);
+    save(user);
   }
 
   @Override
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
 
   @Override
   @Transactional
-  public User updateComplete(Long userId, User updatedUser) {
+  public void updateComplete(Long userId, User updatedUser) {
     userValidator.validateId(userId);
     userValidator.validateForCompleteUpdate(updatedUser);
     User existingUser = findById(userId);
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
     if (shouldUpdatePassword(updatedUser)) {
       encodePassword(existingUser, updatedUser.getPassword());
     }
-    return userRepository.save(existingUser);
+    userRepository.save(existingUser);
   }
 
   @Override
