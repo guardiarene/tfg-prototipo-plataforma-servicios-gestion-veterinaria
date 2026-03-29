@@ -17,7 +17,7 @@ public interface MedicalRecordQueryRepository extends JpaRepository<MedicalRecor
   Optional<MedicalRecord> findWithVisits(@Param("id") Long id);
 
   @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.vaccines WHERE mr.id = :id")
-  Optional<MedicalRecord> findWithVaccines(@Param("id") Long id);
+  void findWithVaccines(@Param("id") Long id);
 
   @Query(
       "SELECT DISTINCT mr FROM MedicalRecord mr "
