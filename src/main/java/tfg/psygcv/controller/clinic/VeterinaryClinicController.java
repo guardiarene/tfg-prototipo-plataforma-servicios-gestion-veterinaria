@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 
 @RequiredArgsConstructor

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.appointment.AppointmentStatus;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.appointment.AppointmentStatus;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 

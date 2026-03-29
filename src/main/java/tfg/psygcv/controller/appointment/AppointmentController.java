@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.appointment.AppointmentStatus;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.user.Role;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.entity.appointment.AppointmentStatus;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.user.Role;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
 import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
@@ -142,12 +142,13 @@ public class AppointmentController extends BaseController {
 
   @GetMapping("/schedule")
   public String showScheduleForm(
-      @RequestParam(required = false) Long clientId, Model model, Authentication authentication) {
+      @RequestParam(required = false) Long customerId, Model model, Authentication authentication) {
     AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
-    model.addAttribute("clientId", clientId);
-    model.addAttribute("clients", userService.findActiveCustomers());
-    model.addAttribute("pets", clientId != null ? petService.findByOwnerId(clientId) : List.of());
+    model.addAttribute("customerId", customerId);
+    model.addAttribute("customers", userService.findActiveCustomers());
+    model.addAttribute(
+        "pets", customerId != null ? petService.findByOwnerId(customerId) : List.of());
     model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
     model.addAttribute("appointment", new Appointment());
     return "receptionist/schedule_appointment";
@@ -157,13 +158,15 @@ public class AppointmentController extends BaseController {
   public String scheduleAppointment(
       @Valid @ModelAttribute("appointment") Appointment appointment,
       BindingResult result,
+      @RequestParam("customerId") Long customerId,
       @RequestParam("serviceId") Long serviceId,
       Authentication authentication) {
     if (result.hasErrors()) {
       return "receptionist/schedule_appointment";
     }
     AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
-    appointmentService.createReceptionistAppointment(appointment, serviceId, receptionist.getId());
+    appointmentService.createReceptionistAppointment(
+        appointment, customerId, serviceId, receptionist.getId());
     return REDIRECT_RECEPTIONIST_DASHBOARD;
   }
 }

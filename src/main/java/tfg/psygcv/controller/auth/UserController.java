@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.user.Role;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.user.Role;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.service.interfaces.UserServiceInterface;
 
 @RequiredArgsConstructor

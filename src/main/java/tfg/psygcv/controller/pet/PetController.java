@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.pet.Pet;
+import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
 
 @RequiredArgsConstructor

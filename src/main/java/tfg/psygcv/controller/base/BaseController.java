@@ -2,7 +2,7 @@ package tfg.psygcv.controller.base;
 
 import org.springframework.security.core.Authentication;
 import tfg.psygcv.config.security.AuthenticatedUser;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.service.interfaces.UserServiceInterface;
 
 public abstract class BaseController {
