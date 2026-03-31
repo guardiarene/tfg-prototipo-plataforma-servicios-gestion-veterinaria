@@ -89,9 +89,8 @@ public class VeterinarianController extends BaseController {
       userService.updateVeterinarianProfile(currentVeterinarian, updatedVeterinarian);
       return REDIRECT_MY_CLINIC_UPDATED;
     } catch (Exception e) {
-      model.addAttribute(
-          "clinic", veterinaryClinicService.findByOwnerId(currentVeterinarian.getId()));
-      model.addAttribute("errorMessage", "Error al actualizar el perfil profesional");
+      model.addAttribute("veterinarian", updatedVeterinarian);
+      model.addAttribute("errorMessage", "Error al actualizar el perfil profesional: " + e.getMessage());
       return "veterinarian/edit_clinic";
     }
   }
@@ -107,7 +106,8 @@ public class VeterinarianController extends BaseController {
       return REDIRECT_MY_CLINIC_UPDATED;
     } catch (Exception e) {
       model.addAttribute("veterinarian", owner);
-      model.addAttribute("errorMessage", "Error al actualizar los datos de la clínica");
+      model.addAttribute("clinic", updatedClinic);
+      model.addAttribute("errorMessage", "Error al actualizar los datos de la clínica: " + e.getMessage());
       return "veterinarian/edit_clinic";
     }
   }

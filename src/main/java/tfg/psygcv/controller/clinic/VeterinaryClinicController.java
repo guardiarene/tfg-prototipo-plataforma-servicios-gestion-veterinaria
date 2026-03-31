@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
@@ -30,15 +31,17 @@ public class VeterinaryClinicController extends BaseController {
 
   @PostMapping("/register")
   public String registerVeterinarianAndClinic(
-      @RequestParam Map<String, String> params, Model model) {
+      @RequestParam Map<String, String> params, Model model,
+      RedirectAttributes redirectAttributes) {
     try {
       veterinaryClinicService.registerClinicWithVeterinarian(params);
+      redirectAttributes.addAttribute("success", true);
+      return REDIRECT_LOGIN;
     } catch (Exception e) {
       model.addAttribute("errorMessage", "Error al registrar: " + e.getMessage());
       model.addAllAttributes(params);
       return "clinics/register";
     }
-    return REDIRECT_LOGIN;
   }
 
   @GetMapping("/search")
