@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="alert(type, icon, message, dismissible)">
+<div th:fragment="alert(type, icon, message, dismissible)" th:if="${message != null and message != ''}">
     <div role="alert" th:class="'alert alert-' + ${type} + (${dismissible} ? ' alert-dismissible fade show' : '')">
         <i aria-hidden="true" th:class="'bi ' + ${icon} + ' me-2'"></i>
         <span th:text="${message}"></span>

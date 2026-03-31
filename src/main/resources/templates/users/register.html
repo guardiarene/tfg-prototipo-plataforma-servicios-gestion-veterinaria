@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Registro de Usuario</title>
+    <title>Registrarse</title>
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/layout :: layout('Registro de Usuario', ~{layouts/navbar :: navbar(null)}, ~{::content}, ~{::pageScripts})}">
+<div th:replace="~{layouts/layout :: layout('Registrarse', ~{layouts/navbar :: navbar(null)}, ~{::content}, ~{::pageScripts})}">
     <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
-                    <div th:replace="~{fragments/card-header :: cardHeader('bi-person-plus', 'Registro de Usuario', null)}"></div>
+                    <div th:replace="~{fragments/card-header :: cardHeader('bi-person-plus', 'Registrarse', null)}"></div>
                     <div class="card-body p-4">
                         <form method="POST" th:action="@{/users/register}" th:object="${registrationUser}">
                             <input name="role" type="hidden" value="CUSTOMER">
@@ -19,26 +19,26 @@
                                 <div class="col-md-6"
                                      th:replace="~{fragments/input-group :: inputGroup('Nombre', 'firstName', 'bi-person', 'text', 'Juan', true)}"></div>
                                 <div class="col-md-6"
-                                     th:replace="~{fragments/input-group :: inputGroup('Apellido', 'lastName', 'bi-person', 'text', 'P\u00e9rez', true)}"></div>
+                                     th:replace="~{fragments/input-group :: inputGroup('Apellido', 'lastName', 'bi-person', 'text', 'Pérez', true)}"></div>
                             </div>
                             <div class="row g-4 mb-4">
                                 <div class="col-md-6"
-                                     th:replace="~{fragments/input-group :: inputGroup('Tel\u00e9fono', 'phone', 'bi-telephone', 'tel', '+54 9 11 2345-6789', true)}"></div>
+                                     th:replace="~{fragments/input-group :: inputGroup('Teléfono', 'phone', 'bi-telephone', 'tel', '+54 9 11 2345-6789', true)}"></div>
                                 <div class="col-md-6"
                                      th:replace="~{fragments/input-group :: inputGroup('Email', 'email', 'bi-envelope', 'email', 'juan@ejemplo.com', true)}"></div>
                             </div>
                             <div class="row g-4 mb-4">
                                 <div class="col-md-6"
-                                     th:replace="~{fragments/input-group :: inputGroup('Contrase\u00f1a', 'password', 'bi-key', 'password', 'M\u00ednimo 8 caracteres', true)}"></div>
+                                     th:replace="~{fragments/input-group :: inputGroup('Contraseña', 'password', 'bi-key', 'password', 'Mínimo 8 caracteres', true)}"></div>
                                 <div class="col-md-6"
-                                     th:replace="~{fragments/input-group :: inputGroupBasic('Confirmar Contrase\u00f1a', 'confirmPassword', 'bi-key-fill', 'password', 'Repita su contrase\u00f1a', null, true)}"></div>
+                                     th:replace="~{fragments/input-group :: inputGroupBasic('Confirmar contraseña', 'confirmPassword', 'bi-key-fill', 'password', 'Repita su contraseña', null, true)}"></div>
                             </div>
                             <div class="d-grid gap-3">
                                 <button class="btn btn-primary py-3 fw-bold" type="submit">
-                                    <i aria-hidden="true" class="bi bi-person-check me-2"></i>Registrar Cuenta
+                                    <i aria-hidden="true" class="bi bi-person-check me-2"></i>Registrarse
                                 </button>
                                 <a class="btn btn-link text-center mt-2" th:href="@{/users/login}">
-                                    ¿Ya tienes cuenta? <u>Inicia Sesión</u>
+                                    ¿Ya tenés cuenta? <u>Iniciá sesión</u>
                                 </a>
                             </div>
                             <div class="mt-3" id="passwordError" style="display:none;">
