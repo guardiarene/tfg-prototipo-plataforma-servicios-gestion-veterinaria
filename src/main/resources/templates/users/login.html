@@ -48,6 +48,9 @@
                             <div class="mt-3" th:if="${param.registered}">
                                 <div th:replace="~{fragments/alert :: successAlert('Usuario registrado con éxito.')}"></div>
                             </div>
+                            <div class="mt-3" th:if="${param.success}">
+                                <div th:replace="~{fragments/alert :: successAlert('Tu clínica se ha registrado con éxito. Por favor iniciá sesión.')}"></div>
+                            </div>
                             <div class="mt-4" th:if="${param.logout}">
                                 <div th:replace="~{fragments/alert :: successAlert('Sesión cerrada correctamente.')}"></div>
                             </div>
