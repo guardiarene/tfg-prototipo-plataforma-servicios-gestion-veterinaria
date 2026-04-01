@@ -77,11 +77,4 @@ public class VeterinaryClinic extends AuditableEntity {
   @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
   @SQLRestriction("ROLE = 'RECEPTIONIST'")
   private Set<User> receptionists = new LinkedHashSet<>();
-
-  public void setOwner(User owner) {
-    this.owner = owner;
-    if (owner != null) {
-      owner.getClinicsOwned().add(this);
-    }
-  }
 }
