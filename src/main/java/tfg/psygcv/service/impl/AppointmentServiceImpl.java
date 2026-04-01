@@ -113,6 +113,7 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
   }
 
   @Override
+  @Transactional
   public void updateStatus(Long appointmentId, AppointmentStatus status) {
     appointmentValidator.validateId(appointmentId);
     appointmentValidator.validateStatus(status);
