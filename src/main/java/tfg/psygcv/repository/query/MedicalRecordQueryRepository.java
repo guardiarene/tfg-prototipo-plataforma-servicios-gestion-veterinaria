@@ -11,12 +11,6 @@ import tfg.psygcv.entity.medical.MedicalRecord;
 @Repository
 public interface MedicalRecordQueryRepository extends JpaRepository<MedicalRecord, Long> {
 
-  @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.pet WHERE mr.id = :id")
-  Optional<MedicalRecord> findWithPet(@Param("id") Long id);
-
-  @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.visits WHERE mr.id = :id")
-  Optional<MedicalRecord> findWithVisits(@Param("id") Long id);
-
   @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.vaccines WHERE mr.id = :id")
   List<MedicalRecord> findWithVaccines(@Param("id") Long id);
 
@@ -30,14 +24,4 @@ public interface MedicalRecordQueryRepository extends JpaRepository<MedicalRecor
           + "LEFT JOIN FETCH v.anamnesis "
           + "WHERE mr.id = :id")
   Optional<MedicalRecord> findCompleteForViewing(@Param("id") Long id);
-
-  @Query(
-      "SELECT DISTINCT mr FROM MedicalRecord mr "
-          + "LEFT JOIN FETCH mr.pet "
-          + "LEFT JOIN FETCH mr.vaccines "
-          + "WHERE mr.id = :id")
-  Optional<MedicalRecord> findWithAllVaccines(@Param("id") Long id);
-
-  @Query("SELECT mr FROM MedicalRecord mr WHERE mr.pet.id = :petId")
-  Optional<MedicalRecord> findByPetId(@Param("petId") Long petId);
 }
