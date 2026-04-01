@@ -67,37 +67,53 @@ public class MedicalRecord extends AuditableEntity {
   public Anamnesis getCurrentAnamnesis() {
     Anamnesis current = new Anamnesis();
     for (Visit visit : visits) {
-      if (visit.getAnamnesis() != null) {
-        Anamnesis a = visit.getAnamnesis();
-        if (current.getAllergies() == null && a.getAllergies() != null) {
-          current.setAllergies(a.getAllergies());
-        }
-        if (current.getPreviousDiseases() == null && a.getPreviousDiseases() != null) {
-          current.setPreviousDiseases(a.getPreviousDiseases());
-        }
-        if (current.getSurgeries() == null && a.getSurgeries() != null) {
-          current.setSurgeries(a.getSurgeries());
-        }
-        if (current.getCurrentMedications() == null && a.getCurrentMedications() != null) {
-          current.setCurrentMedications(a.getCurrentMedications());
-        }
-        if (current.getDiet() == null && a.getDiet() != null) {
-          current.setDiet(a.getDiet());
-        }
-        if (current.getReproductiveStatus() == null && a.getReproductiveStatus() != null) {
-          current.setReproductiveStatus(a.getReproductiveStatus());
-        }
-        if (current.getLastDewormingDate() == null && a.getLastDewormingDate() != null) {
-          current.setLastDewormingDate(a.getLastDewormingDate());
-        }
-        if (current.getLastHeatDate() == null && a.getLastHeatDate() != null) {
-          current.setLastHeatDate(a.getLastHeatDate());
-        }
-        if (current.getLastBirthDate() == null && a.getLastBirthDate() != null) {
-          current.setLastBirthDate(a.getLastBirthDate());
-        }
+      Anamnesis source = visit.getAnamnesis();
+      if (source != null) {
+        mergeAnamnesis(current, source);
       }
     }
     return current;
+  }
+
+  private void mergeAnamnesis(Anamnesis current, Anamnesis source) {
+    mergeTextFields(current, source);
+    mergeReproductiveField(current, source);
+    mergeDateFields(current, source);
+  }
+
+  private void mergeTextFields(Anamnesis current, Anamnesis source) {
+    if (current.getAllergies() == null && source.getAllergies() != null) {
+      current.setAllergies(source.getAllergies());
+    }
+    if (current.getPreviousDiseases() == null && source.getPreviousDiseases() != null) {
+      current.setPreviousDiseases(source.getPreviousDiseases());
+    }
+    if (current.getSurgeries() == null && source.getSurgeries() != null) {
+      current.setSurgeries(source.getSurgeries());
+    }
+    if (current.getCurrentMedications() == null && source.getCurrentMedications() != null) {
+      current.setCurrentMedications(source.getCurrentMedications());
+    }
+    if (current.getDiet() == null && source.getDiet() != null) {
+      current.setDiet(source.getDiet());
+    }
+  }
+
+  private void mergeReproductiveField(Anamnesis current, Anamnesis source) {
+    if (current.getReproductiveStatus() == null && source.getReproductiveStatus() != null) {
+      current.setReproductiveStatus(source.getReproductiveStatus());
+    }
+  }
+
+  private void mergeDateFields(Anamnesis current, Anamnesis source) {
+    if (current.getLastDewormingDate() == null && source.getLastDewormingDate() != null) {
+      current.setLastDewormingDate(source.getLastDewormingDate());
+    }
+    if (current.getLastHeatDate() == null && source.getLastHeatDate() != null) {
+      current.setLastHeatDate(source.getLastHeatDate());
+    }
+    if (current.getLastBirthDate() == null && source.getLastBirthDate() != null) {
+      current.setLastBirthDate(source.getLastBirthDate());
+    }
   }
 }
