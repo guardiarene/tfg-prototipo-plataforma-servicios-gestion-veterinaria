@@ -65,7 +65,8 @@
                                                         <i aria-hidden="true" class="bi bi-info-circle me-2"></i>Detalles
                                                     </a>
                                                     <a class="btn btn-success btn-sm"
-                                                       th:href="@{/medical-records/{id}(id=${pet.id})}">
+                                                       th:href="@{/medical-records/{id}(id=${pet.medicalRecord.id})}"
+                                                       th:if="${pet.medicalRecord != null}">
                                                         <i aria-hidden="true" class="bi bi-file-medical me-2"></i>Historia
                                                     </a>
                                                     <a class="btn btn-warning btn-sm"
