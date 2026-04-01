@@ -11,5 +11,5 @@ import tfg.psygcv.entity.medical.Diagnostic;
 public interface DiagnosticRepository extends JpaRepository<Diagnostic, Long> {
 
   @Query("SELECT DISTINCT d FROM Diagnostic d LEFT JOIN FETCH d.problems WHERE d.id IN :ids")
-  void findWithProblemsByIds(@Param("ids") List<Long> ids);
+  List<Diagnostic> findWithProblemsByIds(@Param("ids") List<Long> ids);
 }

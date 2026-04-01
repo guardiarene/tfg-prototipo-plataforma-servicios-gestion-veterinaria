@@ -1,5 +1,6 @@
 package tfg.psygcv.repository.query;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +18,7 @@ public interface MedicalRecordQueryRepository extends JpaRepository<MedicalRecor
   Optional<MedicalRecord> findWithVisits(@Param("id") Long id);
 
   @Query("SELECT mr FROM MedicalRecord mr LEFT JOIN FETCH mr.vaccines WHERE mr.id = :id")
-  void findWithVaccines(@Param("id") Long id);
+  List<MedicalRecord> findWithVaccines(@Param("id") Long id);
 
   @Query(
       "SELECT DISTINCT mr FROM MedicalRecord mr "

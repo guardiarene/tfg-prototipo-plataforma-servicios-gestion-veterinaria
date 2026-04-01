@@ -28,13 +28,13 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
   List<Visit> findCompleteByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
 
   @Query("SELECT DISTINCT v FROM Visit v LEFT JOIN FETCH v.diagnostics WHERE v.id IN :ids")
-  void findWithDiagnosticsByIds(@Param("ids") List<Long> ids);
+  List<Visit> findWithDiagnosticsByIds(@Param("ids") List<Long> ids);
 
   @Query("SELECT DISTINCT v FROM Visit v LEFT JOIN FETCH v.treatments WHERE v.id IN :ids")
-  void findWithTreatmentsByIds(@Param("ids") List<Long> ids);
+  List<Visit> findWithTreatmentsByIds(@Param("ids") List<Long> ids);
 
   @Query("SELECT DISTINCT v FROM Visit v LEFT JOIN FETCH v.vaccines WHERE v.id IN :ids")
-  void findWithVaccinesByIds(@Param("ids") List<Long> ids);
+  List<Visit> findWithVaccinesByIds(@Param("ids") List<Long> ids);
 
   @Query(
       "SELECT v FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
@@ -60,13 +60,13 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
   Optional<Visit> findCompleteById(@Param("id") Long id);
 
   @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.diagnostics WHERE v.id = :id")
-  void findWithDiagnostics(@Param("id") Long id);
+  List<Visit> findWithDiagnostics(@Param("id") Long id);
 
   @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.treatments WHERE v.id = :id")
-  void findWithTreatments(@Param("id") Long id);
+  List<Visit> findWithTreatments(@Param("id") Long id);
 
   @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.vaccines WHERE v.id = :id")
-  void findWithVaccines(@Param("id") Long id);
+  List<Visit> findWithVaccines(@Param("id") Long id);
 
   @Query(
       "SELECT v FROM Visit v "
