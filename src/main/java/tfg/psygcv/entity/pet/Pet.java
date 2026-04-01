@@ -85,10 +85,10 @@ public class Pet extends AuditableEntity {
       fetch = FetchType.LAZY)
   private List<Appointment> appointments = new ArrayList<>();
 
-  public void setMedicalRecord(MedicalRecord record) {
-    this.medicalRecord = record;
-    if (record != null && record.getPet() != this) {
-      record.setPet(this);
+  public void setMedicalRecord(MedicalRecord medicalRecord) {
+    this.medicalRecord = medicalRecord;
+    if (medicalRecord != null && medicalRecord.getPet() != this) {
+      medicalRecord.setPet(this);
     }
   }
 }
