@@ -104,8 +104,10 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     appointment.setCustomer(customer);
     appointmentValidator.validateReceptionistAppointmentCreation(
         appointment, serviceId, receptionistId);
+    Pet pet = petService.findById(appointment.getPet().getId());
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionistId);
     MedicalService service = medicalServiceService.findById(serviceId);
+    appointment.setPet(pet);
     appointment.setClinic(clinic);
     appointment.setMedicalService(service);
     appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
