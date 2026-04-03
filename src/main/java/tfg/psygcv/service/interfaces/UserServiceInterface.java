@@ -11,6 +11,8 @@ public interface UserServiceInterface {
 
   User findById(Long userId);
 
+  User findByIdWithClinicContext(Long userId);
+
   User findByEmail(String email);
 
   User save(User user);
