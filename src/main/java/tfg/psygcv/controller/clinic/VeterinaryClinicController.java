@@ -31,7 +31,8 @@ public class VeterinaryClinicController extends BaseController {
 
   @PostMapping("/register")
   public String registerVeterinarianAndClinic(
-      @RequestParam Map<String, String> params, Model model,
+      @RequestParam Map<String, String> params,
+      Model model,
       RedirectAttributes redirectAttributes) {
     try {
       veterinaryClinicService.registerClinicWithVeterinarian(params);
