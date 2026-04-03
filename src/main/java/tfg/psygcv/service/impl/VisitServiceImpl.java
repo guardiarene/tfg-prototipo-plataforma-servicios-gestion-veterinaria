@@ -30,6 +30,7 @@ import tfg.psygcv.repository.base.MedicalRecordRepository;
 import tfg.psygcv.repository.base.TreatmentRepository;
 import tfg.psygcv.repository.base.VaccineRepository;
 import tfg.psygcv.repository.base.VisitRepository;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.interfaces.VisitServiceInterface;
 import tfg.psygcv.service.validator.VisitValidator;
 
@@ -46,6 +47,7 @@ public class VisitServiceImpl implements VisitServiceInterface {
   private final TreatmentRepository treatmentRepository;
   private final VaccineRepository vaccineRepository;
   private final VisitValidator visitValidator;
+  private final UserServiceInterface userService;
 
   @Override
   @Transactional
@@ -58,15 +60,19 @@ public class VisitServiceImpl implements VisitServiceInterface {
                     new EntityNotFoundException(
                         "Medical record not found with ID: " + medicalRecordId));
     Pet pet = medicalRecord.getPet();
-    visitValidator.validateForCreation(visit, veterinarian, pet);
-    setupVisitRelationships(visit, medicalRecord, veterinarian);
+    User veterinarianWithClinicContext =
+        userService.findByIdWithClinicContext(veterinarian.getId());
+    visitValidator.validateForCreation(visit, veterinarianWithClinicContext, pet);
+    setupVisitRelationships(visit, medicalRecord, veterinarianWithClinicContext);
     return visitRepository.save(visit);
   }
 
   @Override
   @Transactional
   public Visit updateVisit(Long visitId, Visit updatedVisit, User veterinarian) {
-    visitValidator.validateForUpdate(visitId, updatedVisit, veterinarian);
+    User veterinarianWithClinicContext =
+        userService.findByIdWithClinicContext(veterinarian.getId());
+    visitValidator.validateForUpdate(visitId, updatedVisit, veterinarianWithClinicContext);
     Visit existingVisit = findCompleteById(visitId);
     updateVisitFields(existingVisit, updatedVisit);
     updateRelatedEntities(existingVisit, updatedVisit);

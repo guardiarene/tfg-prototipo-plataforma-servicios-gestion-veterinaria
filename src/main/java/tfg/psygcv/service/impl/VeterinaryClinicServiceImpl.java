@@ -136,12 +136,10 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
   public void updateClinicData(User owner, VeterinaryClinic updatedClinic) {
     VeterinaryClinic currentClinic = findByOwnerId(owner.getId());
     updatedClinic.setId(currentClinic.getId());
-    updatedClinic.setOwner(owner);
     update(updatedClinic);
   }
 
   private void updateClinicFields(VeterinaryClinic existing, VeterinaryClinic updated) {
-    existing.setOwner(updated.getOwner());
     existing.setName(updated.getName());
     existing.setAddress(updated.getAddress());
     existing.setEmail(updated.getEmail());

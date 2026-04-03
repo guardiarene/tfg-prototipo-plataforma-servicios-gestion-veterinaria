@@ -56,6 +56,14 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
   }
 
   @Override
+  public User findByIdWithClinicContext(Long userId) {
+    userValidator.validateId(userId);
+    return userRepository
+        .findByIdWithClinicContext(userId)
+        .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+  }
+
+  @Override
   public User findByEmail(String email) {
     userValidator.validateEmail(email);
     return userRepository

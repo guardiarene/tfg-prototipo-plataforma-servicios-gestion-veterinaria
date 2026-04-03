@@ -25,6 +25,7 @@ import tfg.psygcv.repository.base.VeterinaryClinicRepository;
 import tfg.psygcv.repository.query.AppointmentQueryRepository;
 import tfg.psygcv.repository.query.MedicalRecordQueryRepository;
 import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.interfaces.VisitServiceInterface;
 import tfg.psygcv.service.validator.MedicalRecordValidator;
 
@@ -39,6 +40,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   private final PetRepository petRepository;
   private final AppointmentQueryRepository appointmentQueryRepository;
   private final VisitServiceInterface visitService;
+  private final UserServiceInterface userService;
   private final MedicalRecordValidator medicalRecordValidator;
 
   @Override
@@ -134,24 +136,28 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
   @Override
   @Transactional
   public MedicalRecord save(MedicalRecord medicalRecord, User veterinarian) {
-    medicalRecordValidator.validateForCreation(medicalRecord, veterinarian);
+    User veterinarianWithClinicContext =
+        userService.findByIdWithClinicContext(veterinarian.getId());
+    medicalRecordValidator.validateForCreation(medicalRecord, veterinarianWithClinicContext);
     Pet pet =
         petRepository
             .findByIdAndActive(medicalRecord.getPet().getId())
             .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
-    validatePetAppointments(pet, veterinarian);
+    validatePetAppointments(pet, veterinarianWithClinicContext);
     validateExistingMedicalRecord(pet);
     MedicalRecord newMedicalRecord = createMedicalRecord(pet);
     MedicalRecord savedRecord = medicalRecordRepository.save(newMedicalRecord);
     Visit firstVisit = createFirstVisitFromMedicalRecord(medicalRecord);
-    visitService.createVisit(savedRecord.getId(), firstVisit, veterinarian);
+    visitService.createVisit(savedRecord.getId(), firstVisit, veterinarianWithClinicContext);
     return savedRecord;
   }
 
   @Override
   @Transactional
   public MedicalRecord update(Long id, MedicalRecord updatedRecord, User veterinarian) {
-    medicalRecordValidator.validateForUpdate(id, updatedRecord, veterinarian);
+    User veterinarianWithClinicContext =
+        userService.findByIdWithClinicContext(veterinarian.getId());
+    medicalRecordValidator.validateForUpdate(id, updatedRecord, veterinarianWithClinicContext);
     MedicalRecord existingRecord =
         medicalRecordRepository
             .findById(id)
@@ -178,9 +184,11 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
           updatedVisit.getVaccines().forEach(vax -> vax.setVisit(updatedVisit));
         }
         if (updatedVisit.getId() != null) {
-          visitService.updateVisit(updatedVisit.getId(), updatedVisit, veterinarian);
+          visitService.updateVisit(
+              updatedVisit.getId(), updatedVisit, veterinarianWithClinicContext);
         } else {
-          visitService.createVisit(existingRecord.getId(), updatedVisit, veterinarian);
+          visitService.createVisit(
+              existingRecord.getId(), updatedVisit, veterinarianWithClinicContext);
         }
       }
     }

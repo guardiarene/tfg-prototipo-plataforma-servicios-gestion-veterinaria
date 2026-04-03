@@ -43,9 +43,14 @@ public class PetServiceImpl implements PetServiceInterface {
   @Override
   public List<Pet> findPetsWithAppointmentsInClinics(User veterinarian) {
     petValidator.validateVeterinarian(veterinarian);
-    Set<VeterinaryClinic> clinics = new LinkedHashSet<>(veterinarian.getClinicsOwned());
-    if (veterinarian.getWorkClinic() != null) {
-      clinics.add(veterinarian.getWorkClinic());
+    User veterinarianWithClinicContext =
+        userService.findByIdWithClinicContext(veterinarian.getId());
+    petValidator.validateVeterinarian(veterinarianWithClinicContext);
+
+    Set<VeterinaryClinic> clinics =
+        new LinkedHashSet<>(veterinarianWithClinicContext.getClinicsOwned());
+    if (veterinarianWithClinicContext.getWorkClinic() != null) {
+      clinics.add(veterinarianWithClinicContext.getWorkClinic());
     }
     return appointmentQueryRepository.findPetsWithAppointmentsInClinics(clinics);
   }
