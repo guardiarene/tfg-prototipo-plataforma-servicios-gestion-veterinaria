@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.user;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -13,14 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.UserRepository;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.validator.UserValidator;
+import tfg.psygcv.repository.user.UserRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class UserServiceImpl implements UserDetailsService, UserServiceInterface {
+public class UserServiceImpl implements UserDetailsService, UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;

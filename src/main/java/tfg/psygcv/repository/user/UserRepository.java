@@ -1,4 +1,4 @@
-package tfg.psygcv.repository.base;
+package tfg.psygcv.repository.user;
 
 import java.util.List;
 import java.util.Optional;

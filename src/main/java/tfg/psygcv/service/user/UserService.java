@@ -1,9 +1,9 @@
-package tfg.psygcv.service.interfaces;
+package tfg.psygcv.service.user;
 
 import java.util.List;
 import tfg.psygcv.entity.user.User;
 
-public interface UserServiceInterface {
+public interface UserService {
 
   List<User> findAll();
 
