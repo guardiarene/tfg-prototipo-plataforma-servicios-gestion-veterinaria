@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.pet;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.LinkedHashSet;
@@ -10,19 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.PetRepository;
-import tfg.psygcv.repository.query.AppointmentQueryRepository;
-import tfg.psygcv.service.interfaces.PetServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.validator.PetValidator;
+import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
+import tfg.psygcv.repository.pet.PetRepository;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class PetServiceImpl implements PetServiceInterface {
+public class PetServiceImpl implements PetService {
 
   private final PetRepository petRepository;
-  private final UserServiceInterface userService;
+  private final UserService userService;
   private final AppointmentQueryRepository appointmentQueryRepository;
   private final PetValidator petValidator;
 

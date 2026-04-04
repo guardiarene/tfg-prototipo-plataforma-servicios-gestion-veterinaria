@@ -1,10 +1,10 @@
-package tfg.psygcv.service.interfaces;
+package tfg.psygcv.service.pet;
 
 import java.util.List;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
 
-public interface PetServiceInterface {
+public interface PetService {
 
   Pet findById(Long petId);
 
