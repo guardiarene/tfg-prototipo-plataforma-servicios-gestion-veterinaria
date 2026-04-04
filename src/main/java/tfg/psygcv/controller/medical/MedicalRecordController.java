@@ -17,25 +17,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.medical.Anamnesis;
 import tfg.psygcv.entity.medical.ClinicalExam;
 import tfg.psygcv.entity.medical.MedicalRecord;
 import tfg.psygcv.entity.medical.Visit;
 import tfg.psygcv.entity.medical.VisitType;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
-import tfg.psygcv.service.interfaces.PetServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
+import tfg.psygcv.service.medical.MedicalRecordService;
+import tfg.psygcv.service.pet.PetService;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/medical-records")
 @Controller
 public class MedicalRecordController extends BaseController {
 
-  private final MedicalRecordServiceInterface medicalRecordService;
-  private final PetServiceInterface petService;
-  private final UserServiceInterface userService;
+  private final MedicalRecordService medicalRecordService;
+  private final PetService petService;
+  private final UserService userService;
 
   @GetMapping("/{id}")
   public String showMedicalRecordDetails(

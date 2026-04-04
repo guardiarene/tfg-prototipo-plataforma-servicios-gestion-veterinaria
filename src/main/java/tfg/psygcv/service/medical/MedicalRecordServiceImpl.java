@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.medical;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
@@ -19,28 +19,25 @@ import tfg.psygcv.entity.medical.Visit;
 import tfg.psygcv.entity.medical.VisitType;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.MedicalRecordRepository;
-import tfg.psygcv.repository.base.PetRepository;
-import tfg.psygcv.repository.base.VeterinaryClinicRepository;
-import tfg.psygcv.repository.query.AppointmentQueryRepository;
-import tfg.psygcv.repository.query.MedicalRecordQueryRepository;
-import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VisitServiceInterface;
-import tfg.psygcv.service.validator.MedicalRecordValidator;
+import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
+import tfg.psygcv.repository.clinic.VeterinaryClinicRepository;
+import tfg.psygcv.repository.medical.MedicalRecordQueryRepository;
+import tfg.psygcv.repository.medical.MedicalRecordRepository;
+import tfg.psygcv.repository.pet.PetRepository;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class MedicalRecordServiceImpl implements MedicalRecordServiceInterface {
+public class MedicalRecordServiceImpl implements MedicalRecordService {
 
   private final MedicalRecordRepository medicalRecordRepository;
   private final MedicalRecordQueryRepository medicalRecordQueryRepository;
   private final VeterinaryClinicRepository veterinaryClinicRepository;
   private final PetRepository petRepository;
   private final AppointmentQueryRepository appointmentQueryRepository;
-  private final VisitServiceInterface visitService;
-  private final UserServiceInterface userService;
+  private final VisitService visitService;
+  private final UserService userService;
   private final MedicalRecordValidator medicalRecordValidator;
 
   @Override

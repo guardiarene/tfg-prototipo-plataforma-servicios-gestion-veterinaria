@@ -1,10 +1,10 @@
-package tfg.psygcv.service.interfaces;
+package tfg.psygcv.service.medical;
 
 import java.util.List;
 import tfg.psygcv.entity.medical.MedicalRecord;
 import tfg.psygcv.entity.user.User;
 
-public interface MedicalRecordServiceInterface {
+public interface MedicalRecordService {
 
   MedicalRecord findCompleteById(Long clinicId);
 

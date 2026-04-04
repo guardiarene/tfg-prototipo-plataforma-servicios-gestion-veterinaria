@@ -1,4 +1,4 @@
-package tfg.psygcv.repository.base;
+package tfg.psygcv.repository.medical;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

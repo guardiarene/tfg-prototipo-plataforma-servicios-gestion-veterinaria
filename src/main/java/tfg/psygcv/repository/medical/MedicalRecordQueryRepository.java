@@ -1,4 +1,4 @@
-package tfg.psygcv.repository.query;
+package tfg.psygcv.repository.medical;
 
 import java.util.List;
 import java.util.Optional;
