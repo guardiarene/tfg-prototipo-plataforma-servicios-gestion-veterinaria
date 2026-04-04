@@ -39,11 +39,9 @@ public class PetServiceImpl implements PetService {
   }
 
   @Override
-  public List<Pet> findPetsWithAppointmentsInClinics(User veterinarian) {
-    petValidator.validateVeterinarian(veterinarian);
-    User veterinarianWithClinicContext =
-        userService.findByIdWithClinicContext(veterinarian.getId());
-    petValidator.validateVeterinarian(veterinarianWithClinicContext);
+  public List<Pet> findPetsWithAppointmentsInClinics(Long veterinarianId) {
+    petValidator.validateId(veterinarianId);
+    User veterinarianWithClinicContext = userService.findByIdWithClinicContext(veterinarianId);
 
     Set<VeterinaryClinic> clinics =
         new LinkedHashSet<>(veterinarianWithClinicContext.getClinicsOwned());
@@ -55,21 +53,32 @@ public class PetServiceImpl implements PetService {
 
   @Override
   @Transactional
-  public Pet save(Pet pet, Long ownerId) {
-    petValidator.validateForCreation(pet);
-    petValidator.validateId(ownerId);
-    User owner = userService.findById(ownerId);
+  public Pet save(CreatePetCommand command) {
+    petValidator.validateForCreation(command);
+    User owner = userService.findById(command.getOwnerId());
+    Pet pet = new Pet();
+    pet.setName(command.getName());
+    pet.setSex(command.getSex());
+    pet.setBreed(command.getBreed());
+    pet.setSpecies(command.getSpecies());
+    pet.setBirthDate(command.getBirthDate());
+    pet.setWeight(command.getWeight());
     pet.setOwner(owner);
     return petRepository.save(pet);
   }
 
   @Override
   @Transactional
-  public Pet update(Long petId, Pet pet) {
+  public Pet update(Long petId, UpdatePetCommand command) {
     petValidator.validateId(petId);
-    petValidator.validateForUpdate(pet);
+    petValidator.validateForUpdate(command);
     Pet existingPet = findById(petId);
-    updatePetFields(existingPet, pet);
+    existingPet.setName(command.getName());
+    existingPet.setSex(command.getSex());
+    existingPet.setBreed(command.getBreed());
+    existingPet.setSpecies(command.getSpecies());
+    existingPet.setBirthDate(command.getBirthDate());
+    existingPet.setWeight(command.getWeight());
     return petRepository.save(existingPet);
   }
 
@@ -79,14 +88,5 @@ public class PetServiceImpl implements PetService {
     Pet existingPet = findById(petId);
     existingPet.setActive(false);
     petRepository.save(existingPet);
-  }
-
-  private void updatePetFields(Pet existing, Pet updated) {
-    existing.setName(updated.getName());
-    existing.setSex(updated.getSex());
-    existing.setBreed(updated.getBreed());
-    existing.setSpecies(updated.getSpecies());
-    existing.setBirthDate(updated.getBirthDate());
-    existing.setWeight(updated.getWeight());
   }
 }

@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
   public User findByEmail(String email) {
     userValidator.validateEmail(email);
     return userRepository
-        .findByEmail(email)
+        .findByEmailAndActiveTrue(email)
         .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
   }
 
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
   @Transactional
   public User save(User user) {
     userValidator.validateForCreation(user);
-    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+    if (userRepository.findByEmailAndActiveTrue(user.getEmail()).isPresent()) {
       throw new IllegalArgumentException("Ya existe un usuario con este email: " + user.getEmail());
     }
     encodePassword(user);
@@ -82,41 +82,61 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
   @Override
   @Transactional
-  public void saveComplete(User user) {
-    if (user.getActive() == null) {
-      user.setActive(true);
-    }
+  public User registerCustomer(RegisterCustomerCommand command) {
+    User user = new User();
+    user.setFirstName(command.getFirstName());
+    user.setLastName(command.getLastName());
+    user.setEmail(command.getEmail());
+    user.setPassword(command.getPassword());
+    user.setPhone(command.getPhone());
+    user.setRole(Role.CUSTOMER);
+    user.setActive(true);
+    return save(user);
+  }
+
+  @Override
+  @Transactional
+  public void saveComplete(CreateAdminUserCommand command) {
+    User user = new User();
+    user.setFirstName(command.getFirstName());
+    user.setLastName(command.getLastName());
+    user.setEmail(command.getEmail());
+    user.setPassword(command.getPassword());
+    user.setPhone(command.getPhone());
+    user.setRole(command.getRole());
+    user.setActive(true);
     save(user);
   }
 
   @Override
   @Transactional
-  public User update(User user) {
-    userValidator.validateForUpdate(user);
-    User existingUser = findById(user.getId());
-    updateBasicUserFields(existingUser, user);
-    return userRepository.save(existingUser);
-  }
-
-  @Override
-  @Transactional
-  public void updateComplete(Long userId, User updatedUser) {
+  public void updateComplete(Long userId, UpdateAdminUserCommand command) {
     userValidator.validateId(userId);
-    userValidator.validateForCompleteUpdate(updatedUser);
+    userValidator.validateForCompleteUpdate(command);
     User existingUser = findById(userId);
-    updateAllUserFields(existingUser, updatedUser);
-    if (shouldUpdatePassword(updatedUser)) {
-      encodePassword(existingUser, updatedUser.getPassword());
+    existingUser.setFirstName(command.getFirstName());
+    existingUser.setLastName(command.getLastName());
+    existingUser.setPhone(command.getPhone());
+    existingUser.setEmail(command.getEmail());
+    existingUser.setRole(command.getRole());
+    existingUser.setActive(command.getActive());
+    if (command.getPassword() != null && !command.getPassword().isEmpty()) {
+      encodePassword(existingUser, command.getPassword());
     }
     userRepository.save(existingUser);
   }
 
   @Override
   @Transactional
-  public void updateVeterinarianProfile(User currentVeterinarian, User updatedVeterinarian) {
-    updatedUserFields(currentVeterinarian, updatedVeterinarian);
-    userValidator.validateForUpdate(currentVeterinarian);
-    userRepository.save(currentVeterinarian);
+  public void updateVeterinarianProfile(Long veterinarianId, UpdateUserProfileCommand command) {
+    userValidator.validateId(veterinarianId);
+    User user = findById(veterinarianId);
+    user.setFirstName(command.getFirstName());
+    user.setLastName(command.getLastName());
+    user.setEmail(command.getEmail());
+    user.setPhone(command.getPhone());
+    userValidator.validateForUpdate(user);
+    userRepository.save(user);
   }
 
   @Override
@@ -127,35 +147,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     userRepository.save(user);
   }
 
+  @Override
+  public List<User> findActiveByWorkClinicId(Long clinicId) {
+    return userRepository.findByWorkClinicId(clinicId);
+  }
+
   private void encodePassword(User user) {
     user.setPassword(passwordEncoder.encode(user.getPassword()));
   }
 
   private void encodePassword(User user, String newPassword) {
     user.setPassword(passwordEncoder.encode(newPassword));
-  }
-
-  private boolean shouldUpdatePassword(User user) {
-    return user.getPassword() != null && !user.getPassword().isEmpty();
-  }
-
-  private void updateBasicUserFields(User existing, User updated) {
-    existing.setFirstName(updated.getFirstName());
-    existing.setLastName(updated.getLastName());
-    existing.setPhone(updated.getPhone());
-    existing.setEmail(updated.getEmail());
-  }
-
-  private void updatedUserFields(User existing, User updated) {
-    existing.setFirstName(updated.getFirstName());
-    existing.setLastName(updated.getLastName());
-    existing.setEmail(updated.getEmail());
-    existing.setPhone(updated.getPhone());
-  }
-
-  private void updateAllUserFields(User existing, User updated) {
-    updateBasicUserFields(existing, updated);
-    existing.setRole(updated.getRole());
-    existing.setActive(updated.getActive());
   }
 }

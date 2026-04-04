@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.entity.clinic.MedicalService;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.clinic.MedicalServiceRepository;
 
 @RequiredArgsConstructor
@@ -36,9 +35,9 @@ public class MedicalServiceServiceImpl implements MedicalServiceService {
   }
 
   @Override
-  public List<MedicalService> findByVeterinarianClinic(User veterinarian) {
-    medicalServiceValidator.validateVeterinarian(veterinarian);
-    VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
+  public List<MedicalService> findByVeterinarianClinic(Long veterinarianId) {
+    medicalServiceValidator.validateId(veterinarianId);
+    VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarianId);
     return medicalServiceRepository.findByClinicId(clinic.getId());
   }
 
@@ -55,20 +54,23 @@ public class MedicalServiceServiceImpl implements MedicalServiceService {
 
   @Override
   @Transactional
-  public MedicalService save(MedicalService medicalService, Long clinicId) {
-    medicalServiceValidator.validateForCreation(medicalService);
-    medicalServiceValidator.validateId(clinicId);
-    VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
-    medicalService.setClinic(clinic);
-    return medicalServiceRepository.save(medicalService);
+  public MedicalService save(CreateMedicalServiceCommand command) {
+    medicalServiceValidator.validateForCreation(command);
+    VeterinaryClinic clinic = veterinaryClinicService.findById(command.getClinicId());
+    MedicalService service = new MedicalService();
+    service.setName(command.getName());
+    service.setDescription(command.getDescription());
+    service.setClinic(clinic);
+    return medicalServiceRepository.save(service);
   }
 
   @Override
   @Transactional
-  public MedicalService update(Long serviceId, MedicalService updatedService, Long clinicId) {
-    medicalServiceValidator.validateForUpdate(updatedService);
+  public MedicalService update(Long serviceId, UpdateMedicalServiceCommand command, Long clinicId) {
+    medicalServiceValidator.validateForUpdate(command);
     MedicalService existingService = findByIdAndValidateClinic(serviceId, clinicId);
-    updateServiceFields(existingService, updatedService);
+    existingService.setName(command.getName());
+    existingService.setDescription(command.getDescription());
     return medicalServiceRepository.save(existingService);
   }
 
@@ -85,10 +87,5 @@ public class MedicalServiceServiceImpl implements MedicalServiceService {
     if (!service.getClinic().getId().equals(clinicId)) {
       throw new AccessDeniedException("Medical service does not belong to the specified clinic");
     }
-  }
-
-  private void updateServiceFields(MedicalService existing, MedicalService updated) {
-    existing.setName(updated.getName());
-    existing.setDescription(updated.getDescription());
   }
 }

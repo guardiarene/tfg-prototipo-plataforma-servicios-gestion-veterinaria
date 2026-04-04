@@ -2,7 +2,6 @@ package tfg.psygcv.service.clinic;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,26 +75,21 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
 
   @Override
   @Transactional
-  public void registerStaff(User owner, User staffUser) {
-    VeterinaryClinic clinic = findByOwnerId(owner.getId());
+  public void registerStaff(Long ownerId, CreateStaffCommand command) {
+    if (command.getRole() != Role.VETERINARIAN && command.getRole() != Role.RECEPTIONIST) {
+      throw new IllegalArgumentException("Staff role must be VETERINARIAN or RECEPTIONIST");
+    }
+    VeterinaryClinic clinic = findByOwnerId(ownerId);
+    User staffUser = new User();
+    staffUser.setFirstName(command.getFirstName());
+    staffUser.setLastName(command.getLastName());
+    staffUser.setEmail(command.getEmail());
+    staffUser.setPassword(command.getPassword());
+    staffUser.setPhone(command.getPhone());
+    staffUser.setRole(command.getRole());
+    staffUser.setActive(true);
     staffUser.setWorkClinic(clinic);
-    userService.saveComplete(staffUser);
-  }
-
-  @Override
-  @Transactional
-  public VeterinaryClinic save(VeterinaryClinic veterinaryClinic) {
-    veterinaryClinicValidator.validateForCreation(veterinaryClinic);
-    return veterinaryClinicRepository.save(veterinaryClinic);
-  }
-
-  @Override
-  @Transactional
-  public VeterinaryClinic update(VeterinaryClinic veterinaryClinic) {
-    veterinaryClinicValidator.validateForUpdate(veterinaryClinic);
-    VeterinaryClinic existingClinic = findById(veterinaryClinic.getId());
-    updateClinicFields(existingClinic, veterinaryClinic);
-    return veterinaryClinicRepository.save(existingClinic);
+    userService.save(staffUser);
   }
 
   @Override
@@ -104,43 +98,43 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
     VeterinaryClinic existingClinic = findById(clinicId);
     existingClinic.setActive(false);
     veterinaryClinicRepository.save(existingClinic);
+    userService
+        .findActiveByWorkClinicId(clinicId)
+        .forEach(staff -> userService.deactivate(staff.getId()));
   }
 
   @Override
   @Transactional
-  public void registerClinicWithVeterinarian(Map<String, String> params) {
-    String password = params.get("userPassword");
-    User user = new User();
-    user.setFirstName(params.get("userFirstName"));
-    user.setLastName(params.get("userLastName"));
-    user.setEmail(params.get("userEmail"));
-    user.setPhone(params.get("userPhone"));
-    user.setPassword(password);
-    user.setRole(Role.VETERINARIAN);
-    user.setActive(true);
-    userService.saveComplete(user);
+  public void registerClinicWithVeterinarian(RegisterClinicWithVeterinarianCommand command) {
+    User owner = new User();
+    owner.setFirstName(command.getUserFirstName());
+    owner.setLastName(command.getUserLastName());
+    owner.setEmail(command.getUserEmail());
+    owner.setPassword(command.getUserPassword());
+    owner.setPhone(command.getUserPhone());
+    owner.setRole(Role.VETERINARIAN);
+    owner.setActive(true);
+    userService.save(owner);
+
     VeterinaryClinic clinic = new VeterinaryClinic();
-    clinic.setName(params.get("clinicName"));
-    clinic.setAddress(params.get("clinicAddress"));
-    clinic.setEmail(params.get("clinicEmail"));
-    clinic.setPhone(params.get("clinicPhone"));
-    clinic.setOwner(user);
+    clinic.setName(command.getClinicName());
+    clinic.setAddress(command.getClinicAddress());
+    clinic.setPhone(command.getClinicPhone());
+    clinic.setEmail(command.getClinicEmail());
+    clinic.setOwner(owner);
     clinic.setActive(true);
-    save(clinic);
+    veterinaryClinicValidator.validateForCreation(clinic);
+    veterinaryClinicRepository.save(clinic);
   }
 
   @Override
   @Transactional
-  public void updateClinicData(User owner, VeterinaryClinic updatedClinic) {
-    VeterinaryClinic currentClinic = findByOwnerId(owner.getId());
-    updatedClinic.setId(currentClinic.getId());
-    update(updatedClinic);
-  }
-
-  private void updateClinicFields(VeterinaryClinic existing, VeterinaryClinic updated) {
-    existing.setName(updated.getName());
-    existing.setAddress(updated.getAddress());
-    existing.setEmail(updated.getEmail());
-    existing.setPhone(updated.getPhone());
+  public void updateClinicData(Long veterinarianId, UpdateClinicCommand command) {
+    VeterinaryClinic clinic = findByOwnerId(veterinarianId);
+    clinic.setName(command.getName());
+    clinic.setAddress(command.getAddress());
+    clinic.setPhone(command.getPhone());
+    clinic.setEmail(command.getEmail());
+    veterinaryClinicRepository.save(clinic);
   }
 }

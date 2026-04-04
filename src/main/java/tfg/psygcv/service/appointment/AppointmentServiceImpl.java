@@ -83,10 +83,9 @@ public class AppointmentServiceImpl implements AppointmentService {
   @Override
   @Transactional
   public void createClientAppointment(
-      String dateStr, Long petId, Long serviceId, Long clinicId, User client) {
+      LocalDate date, Long petId, Long serviceId, Long clinicId, User client) {
     appointmentValidator.validateClientAppointmentCreation(
-        dateStr, petId, serviceId, clinicId, client);
-    LocalDate date = LocalDate.parse(dateStr);
+        date, petId, serviceId, clinicId, client);
     Pet pet = petService.findById(petId);
     MedicalService service = medicalServiceService.findById(serviceId);
     VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
@@ -97,14 +96,17 @@ public class AppointmentServiceImpl implements AppointmentService {
   @Override
   @Transactional
   public void createReceptionistAppointment(
-      Appointment appointment, Long customerId, Long serviceId, Long receptionistId) {
-    User customer = userService.findById(customerId);
-    appointment.setCustomer(customer);
+      ScheduleAppointmentCommand command, Long customerId, Long serviceId, Long receptionistId) {
     appointmentValidator.validateReceptionistAppointmentCreation(
-        appointment, serviceId, receptionistId);
-    Pet pet = petService.findById(appointment.getPet().getId());
+        command, serviceId, receptionistId);
+    User customer = userService.findById(customerId);
+    Pet pet = petService.findById(command.getPetId());
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionistId);
     MedicalService service = medicalServiceService.findById(serviceId);
+    Appointment appointment = new Appointment();
+    appointment.setDate(command.getDate());
+    appointment.setTime(command.getTime());
+    appointment.setCustomer(customer);
     appointment.setPet(pet);
     appointment.setClinic(clinic);
     appointment.setMedicalService(service);
@@ -124,13 +126,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
   @Override
   @Transactional
-  public void reschedule(Long appointmentId, Appointment updatedAppointment) {
-    appointmentValidator.validateReschedule(appointmentId, updatedAppointment);
+  public void reschedule(Long appointmentId, RescheduleAppointmentCommand command) {
+    appointmentValidator.validateReschedule(appointmentId, command);
     Appointment existingAppointment = findWithDetails(appointmentId);
-    MedicalService service =
-        medicalServiceService.findById(updatedAppointment.getMedicalService().getId());
-    existingAppointment.setDate(updatedAppointment.getDate());
-    existingAppointment.setTime(updatedAppointment.getTime());
+    MedicalService service = medicalServiceService.findById(command.getMedicalServiceId());
+    existingAppointment.setDate(command.getDate());
+    existingAppointment.setTime(command.getTime());
     existingAppointment.setMedicalService(service);
     existingAppointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
     appointmentRepository.save(existingAppointment);

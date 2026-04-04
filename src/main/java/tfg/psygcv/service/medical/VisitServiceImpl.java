@@ -2,6 +2,7 @@ package tfg.psygcv.service.medical;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +10,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class VisitServiceImpl implements VisitService {
 
   @Override
   @Transactional
-  public Visit createVisit(Long medicalRecordId, Visit visit, User veterinarian) {
+  public Visit createVisit(Long medicalRecordId, CreateVisitCommand command, User veterinarian) {
     MedicalRecord medicalRecord =
         medicalRecordRepository
             .findById(medicalRecordId)
@@ -60,20 +60,21 @@ public class VisitServiceImpl implements VisitService {
     Pet pet = medicalRecord.getPet();
     User veterinarianWithClinicContext =
         userService.findByIdWithClinicContext(veterinarian.getId());
-    visitValidator.validateForCreation(visit, veterinarianWithClinicContext, pet);
+    visitValidator.validateForCreation(command, veterinarianWithClinicContext, pet);
+    Visit visit = buildVisitFromCommand(command);
     setupVisitRelationships(visit, medicalRecord, veterinarianWithClinicContext);
     return visitRepository.save(visit);
   }
 
   @Override
   @Transactional
-  public Visit updateVisit(Long visitId, Visit updatedVisit, User veterinarian) {
+  public Visit updateVisit(Long visitId, UpdateVisitCommand command, User veterinarian) {
     User veterinarianWithClinicContext =
         userService.findByIdWithClinicContext(veterinarian.getId());
-    visitValidator.validateForUpdate(visitId, updatedVisit, veterinarianWithClinicContext);
+    visitValidator.validateForUpdate(visitId, command, veterinarianWithClinicContext);
     Visit existingVisit = findCompleteById(visitId);
-    updateVisitFields(existingVisit, updatedVisit);
-    updateRelatedEntities(existingVisit, updatedVisit);
+    updateVisitFields(existingVisit, command);
+    updateRelatedEntities(existingVisit, command);
     return visitRepository.save(existingVisit);
   }
 
@@ -161,6 +162,86 @@ public class VisitServiceImpl implements VisitService {
     visitRepository.save(visit);
   }
 
+  private Visit buildVisitFromCommand(CreateVisitCommand command) {
+    Visit visit = new Visit();
+    visit.setDate(command.getDate());
+    visit.setReasonForVisit(command.getReasonForVisit());
+    visit.setVisitType(command.getVisitType());
+    visit.setObservations(command.getObservations());
+    visit.setClinicalExam(buildClinicalExam(command.getClinicalExam()));
+    visit.setAnamnesis(buildAnamnesis(command.getAnamnesis()));
+    if (command.getDiagnostics() != null) {
+      command.getDiagnostics().stream().map(this::buildDiagnostic).forEach(d -> d.setVisit(visit));
+    }
+    if (command.getTreatments() != null) {
+      command.getTreatments().stream().map(this::buildTreatment).forEach(t -> t.setVisit(visit));
+    }
+    if (command.getVaccines() != null) {
+      command.getVaccines().stream().map(this::buildVaccine).forEach(v -> v.setVisit(visit));
+    }
+    return visit;
+  }
+
+  private ClinicalExam buildClinicalExam(CreateVisitCommand.ClinicalExamData data) {
+    if (data == null) {
+      return null;
+    }
+    ClinicalExam exam = new ClinicalExam();
+    exam.setTemperature(data.getTemperature());
+    exam.setHeartRate(data.getHeartRate());
+    exam.setRespiratoryRate(data.getRespiratoryRate());
+    exam.setWeight(data.getWeight());
+    exam.setPulse(data.getPulse());
+    exam.setMucosalMembranes(data.getMucosalMembranes());
+    exam.setTemperament(data.getTemperament());
+    exam.setDescription(data.getDescription());
+    return exam;
+  }
+
+  private Anamnesis buildAnamnesis(CreateVisitCommand.AnamnesisData data) {
+    if (data == null) {
+      return null;
+    }
+    Anamnesis anamnesis = new Anamnesis();
+    anamnesis.setAllergies(data.getAllergies());
+    anamnesis.setPreviousDiseases(data.getPreviousDiseases());
+    anamnesis.setSurgeries(data.getSurgeries());
+    anamnesis.setCurrentMedications(data.getCurrentMedications());
+    anamnesis.setDiet(data.getDiet());
+    anamnesis.setReproductiveStatus(data.getReproductiveStatus());
+    anamnesis.setLastDewormingDate(data.getLastDewormingDate());
+    anamnesis.setLastHeatDate(data.getLastHeatDate());
+    anamnesis.setLastBirthDate(data.getLastBirthDate());
+    return anamnesis;
+  }
+
+  private Diagnostic buildDiagnostic(CreateVisitCommand.DiagnosticData data) {
+    Diagnostic diagnostic = new Diagnostic();
+    if (data.getProblems() != null) {
+      diagnostic.setProblems(new ArrayList<>(data.getProblems()));
+    }
+    return diagnostic;
+  }
+
+  private Treatment buildTreatment(CreateVisitCommand.TreatmentData data) {
+    Treatment treatment = new Treatment();
+    treatment.setProduct(data.getProduct());
+    treatment.setRoute(data.getRoute());
+    treatment.setFrequency(data.getFrequency());
+    treatment.setStartDate(data.getStartDate());
+    treatment.setEndDate(data.getEndDate());
+    return treatment;
+  }
+
+  private Vaccine buildVaccine(CreateVisitCommand.VaccineData data) {
+    Vaccine vaccine = new Vaccine();
+    vaccine.setApplicationDate(data.getApplicationDate());
+    vaccine.setBrand(data.getBrand());
+    vaccine.setDose(data.getDose());
+    vaccine.setBatch(data.getBatch());
+    return vaccine;
+  }
+
   private void setupVisitRelationships(
       Visit visit, MedicalRecord medicalRecord, User veterinarian) {
     visit.setMedicalRecord(medicalRecord);
@@ -180,183 +261,201 @@ public class VisitServiceImpl implements VisitService {
       visit.getAnamnesis().setVisit(visit);
       visit.getAnamnesis().setActive(true);
     }
-    if (visit.getDiagnostics() != null) {
-      visit
-          .getDiagnostics()
-          .forEach(
-              d -> {
-                d.setVisit(visit);
-                d.setActive(true);
-              });
-    }
-    if (visit.getTreatments() != null) {
-      visit
-          .getTreatments()
-          .forEach(
-              t -> {
-                t.setVisit(visit);
-                t.setActive(true);
-              });
-    }
-    if (visit.getVaccines() != null) {
-      visit
-          .getVaccines()
-          .forEach(
-              v -> {
-                v.setVisit(visit);
-                v.setMedicalRecord(medicalRecord);
-                v.setActive(true);
-              });
-    }
-  }
-
-  private void updateVisitFields(Visit existing, Visit updated) {
-    existing.setReasonForVisit(updated.getReasonForVisit());
-    existing.setVisitType(updated.getVisitType());
-    existing.setObservations(updated.getObservations());
-    if (updated.getDate() != null) {
-      existing.setDate(updated.getDate());
-    }
-  }
-
-  private void updateRelatedEntities(Visit existing, Visit updated) {
-    updateClinicalExam(existing, updated.getClinicalExam());
-    updateAnamnesis(existing, updated.getAnamnesis());
-    updateDiagnostics(existing, updated.getDiagnostics());
-    updateTreatments(existing, updated.getTreatments());
-    updateVaccines(existing, updated.getVaccines());
-  }
-
-  private void updateClinicalExam(Visit existing, ClinicalExam updatedExam) {
-    if (updatedExam != null) {
-      ClinicalExam existingExam = existing.getClinicalExam();
-      if (existingExam == null) {
-        existingExam = new ClinicalExam();
-        existingExam.setActive(true);
-        existing.setClinicalExam(existingExam);
-      }
-      BeanUtils.copyProperties(updatedExam, existingExam, "id", "version", "createdAt", "visit");
-      if (existingExam.getWeight() != null
-          && existing.getMedicalRecord() != null
-          && existing.getMedicalRecord().getPet() != null) {
-        existing.getMedicalRecord().getPet().setWeight(existingExam.getWeight());
-      }
-    }
-  }
-
-  private void updateAnamnesis(Visit existing, Anamnesis updatedAnamnesis) {
-    if (updatedAnamnesis != null) {
-      Anamnesis existingAnamnesis = existing.getAnamnesis();
-      if (existingAnamnesis == null) {
-        existingAnamnesis = new Anamnesis();
-        existingAnamnesis.setActive(true);
-        existing.setAnamnesis(existingAnamnesis);
-      }
-      BeanUtils.copyProperties(
-          updatedAnamnesis, existingAnamnesis, "id", "version", "createdAt", "visit");
-    }
-  }
-
-  private void updateDiagnostics(Visit existing, List<Diagnostic> newDiagnostics) {
-    if (newDiagnostics == null) {
-      return;
-    }
-    List<Long> newDiagnosticIds =
-        newDiagnostics.stream().map(Diagnostic::getId).filter(Objects::nonNull).toList();
-    existing
+    visit
         .getDiagnostics()
-        .removeIf(d -> d.getId() != null && !newDiagnosticIds.contains(d.getId()));
-    newDiagnostics.forEach(
-        newDiagnostic -> {
-          if (newDiagnostic.getId() == null) {
-            Diagnostic diagnostic = new Diagnostic();
-            BeanUtils.copyProperties(newDiagnostic, diagnostic, "id", "version");
-            diagnostic.setVisit(existing);
-            diagnostic.setActive(true);
-            existing.getDiagnostics().add(diagnostic);
-          } else {
-            Diagnostic existingDiagnostic =
-                existing.getDiagnostics().stream()
-                    .filter(d -> d.getId().equals(newDiagnostic.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException("Diagnostic not found"));
-            BeanUtils.copyProperties(
-                newDiagnostic, existingDiagnostic, "id", "version", "createdAt", "visit");
-          }
-        });
-  }
-
-  private void updateTreatments(Visit existing, List<Treatment> newTreatments) {
-    if (newTreatments == null) {
-      return;
-    }
-    List<Long> newTreatmentIds =
-        newTreatments.stream().map(Treatment::getId).filter(Objects::nonNull).toList();
-    existing
+        .forEach(
+            d -> {
+              d.setVisit(visit);
+              d.setActive(true);
+            });
+    visit
         .getTreatments()
-        .removeIf(t -> t.getId() != null && !newTreatmentIds.contains(t.getId()));
-    newTreatments.forEach(
-        newTreatment -> {
-          if (newTreatment.getId() == null) {
-            Treatment treatment = new Treatment();
-            BeanUtils.copyProperties(newTreatment, treatment, "id", "version");
-            treatment.setVisit(existing);
-            treatment.setActive(true);
-            existing.getTreatments().add(treatment);
-          } else {
-            Treatment existingTreatment =
-                existing.getTreatments().stream()
-                    .filter(t -> t.getId().equals(newTreatment.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException("Treatment not found"));
-            BeanUtils.copyProperties(
-                newTreatment, existingTreatment, "id", "version", "createdAt", "visit");
-          }
-        });
+        .forEach(
+            t -> {
+              t.setVisit(visit);
+              t.setActive(true);
+            });
+    visit
+        .getVaccines()
+        .forEach(
+            v -> {
+              v.setVisit(visit);
+              v.setMedicalRecord(medicalRecord);
+              v.setActive(true);
+            });
   }
 
-  private void updateVaccines(Visit existing, List<Vaccine> newVaccines) {
-    if (newVaccines == null) {
+  private void updateVisitFields(Visit existing, UpdateVisitCommand command) {
+    existing.setReasonForVisit(command.getReasonForVisit());
+    existing.setVisitType(command.getVisitType());
+    existing.setObservations(command.getObservations());
+    if (command.getDate() != null) {
+      existing.setDate(command.getDate());
+    }
+  }
+
+  private void updateRelatedEntities(Visit existing, UpdateVisitCommand command) {
+    updateClinicalExam(existing, command.getClinicalExam());
+    updateAnamnesis(existing, command.getAnamnesis());
+    updateDiagnostics(existing, command.getDiagnostics());
+    updateTreatments(existing, command.getTreatments());
+    updateVaccines(existing, command.getVaccines());
+  }
+
+  private void updateClinicalExam(Visit visit, UpdateVisitCommand.ClinicalExamData data) {
+    if (data == null) {
       return;
     }
-    List<Vaccine> allVaccines = existing.getMedicalRecord().getVaccines();
+    ClinicalExam exam = visit.getClinicalExam();
+    if (exam == null) {
+      exam = new ClinicalExam();
+      exam.setActive(true);
+      visit.setClinicalExam(exam);
+    }
+    exam.setTemperature(data.getTemperature());
+    exam.setHeartRate(data.getHeartRate());
+    exam.setRespiratoryRate(data.getRespiratoryRate());
+    exam.setWeight(data.getWeight());
+    exam.setPulse(data.getPulse());
+    exam.setMucosalMembranes(data.getMucosalMembranes());
+    exam.setTemperament(data.getTemperament());
+    exam.setDescription(data.getDescription());
+    if (exam.getWeight() != null
+        && visit.getMedicalRecord() != null
+        && visit.getMedicalRecord().getPet() != null) {
+      visit.getMedicalRecord().getPet().setWeight(exam.getWeight());
+    }
+  }
+
+  private void updateAnamnesis(Visit visit, UpdateVisitCommand.AnamnesisData data) {
+    if (data == null) {
+      return;
+    }
+    Anamnesis anamnesis = visit.getAnamnesis();
+    if (anamnesis == null) {
+      anamnesis = new Anamnesis();
+      anamnesis.setActive(true);
+      visit.setAnamnesis(anamnesis);
+    }
+    anamnesis.setAllergies(data.getAllergies());
+    anamnesis.setPreviousDiseases(data.getPreviousDiseases());
+    anamnesis.setSurgeries(data.getSurgeries());
+    anamnesis.setCurrentMedications(data.getCurrentMedications());
+    anamnesis.setDiet(data.getDiet());
+    anamnesis.setReproductiveStatus(data.getReproductiveStatus());
+    anamnesis.setLastDewormingDate(data.getLastDewormingDate());
+    anamnesis.setLastHeatDate(data.getLastHeatDate());
+    anamnesis.setLastBirthDate(data.getLastBirthDate());
+  }
+
+  private void updateDiagnostics(Visit visit, List<UpdateVisitCommand.DiagnosticData> diagnostics) {
+    if (diagnostics == null) {
+      return;
+    }
+    List<Long> newIds =
+        diagnostics.stream()
+            .map(UpdateVisitCommand.DiagnosticData::getId)
+            .filter(Objects::nonNull)
+            .toList();
+    visit.getDiagnostics().removeIf(d -> d.getId() != null && !newIds.contains(d.getId()));
+    for (UpdateVisitCommand.DiagnosticData data : diagnostics) {
+      if (data.getId() == null) {
+        Diagnostic diag = new Diagnostic();
+        diag.setProblems(
+            data.getProblems() != null ? new ArrayList<>(data.getProblems()) : new ArrayList<>());
+        diag.setVisit(visit);
+        diag.setActive(true);
+        visit.getDiagnostics().add(diag);
+      } else {
+        Diagnostic diag =
+            visit.getDiagnostics().stream()
+                .filter(d -> d.getId().equals(data.getId()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Diagnostic not found"));
+        diag.setProblems(
+            data.getProblems() != null ? new ArrayList<>(data.getProblems()) : new ArrayList<>());
+      }
+    }
+  }
+
+  private void updateTreatments(Visit visit, List<UpdateVisitCommand.TreatmentData> treatments) {
+    if (treatments == null) {
+      return;
+    }
+    List<Long> newIds =
+        treatments.stream()
+            .map(UpdateVisitCommand.TreatmentData::getId)
+            .filter(Objects::nonNull)
+            .toList();
+    visit.getTreatments().removeIf(t -> t.getId() != null && !newIds.contains(t.getId()));
+    for (UpdateVisitCommand.TreatmentData data : treatments) {
+      if (data.getId() == null) {
+        Treatment treatment = new Treatment();
+        treatment.setProduct(data.getProduct());
+        treatment.setRoute(data.getRoute());
+        treatment.setFrequency(data.getFrequency());
+        treatment.setStartDate(data.getStartDate());
+        treatment.setEndDate(data.getEndDate());
+        treatment.setVisit(visit);
+        treatment.setActive(true);
+        visit.getTreatments().add(treatment);
+      } else {
+        Treatment treatment =
+            visit.getTreatments().stream()
+                .filter(t -> t.getId().equals(data.getId()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Treatment not found"));
+        treatment.setProduct(data.getProduct());
+        treatment.setRoute(data.getRoute());
+        treatment.setFrequency(data.getFrequency());
+        treatment.setStartDate(data.getStartDate());
+        treatment.setEndDate(data.getEndDate());
+      }
+    }
+  }
+
+  private void updateVaccines(Visit visit, List<UpdateVisitCommand.VaccineData> vaccines) {
+    if (vaccines == null) {
+      return;
+    }
+    List<Vaccine> allVaccines = visit.getMedicalRecord().getVaccines();
     Map<Long, Vaccine> existingVaccinesMap =
         allVaccines.stream()
-            .filter(v -> v.getVisit() != null && v.getVisit().getId().equals(existing.getId()))
+            .filter(v -> v.getVisit() != null && v.getVisit().getId().equals(visit.getId()))
             .collect(Collectors.toMap(Vaccine::getId, Function.identity()));
-    List<Long> newVaccineIds =
-        newVaccines.stream().map(Vaccine::getId).filter(Objects::nonNull).toList();
+    List<Long> newIds =
+        vaccines.stream()
+            .map(UpdateVisitCommand.VaccineData::getId)
+            .filter(Objects::nonNull)
+            .toList();
     allVaccines.removeIf(
         v ->
             v.getVisit() != null
-                && v.getVisit().getId().equals(existing.getId())
+                && v.getVisit().getId().equals(visit.getId())
                 && v.getId() != null
-                && !newVaccineIds.contains(v.getId()));
-    newVaccines.forEach(
-        newVaccine -> {
-          if (newVaccine.getId() == null) {
-            Vaccine vaccine = new Vaccine();
-            BeanUtils.copyProperties(newVaccine, vaccine, "id", "version");
-            vaccine.setVisit(existing);
-            vaccine.setMedicalRecord(existing.getMedicalRecord());
-            vaccine.setActive(true);
-            allVaccines.add(vaccine);
-          } else {
-            Vaccine existingVaccine =
-                Optional.ofNullable(existingVaccinesMap.get(newVaccine.getId()))
-                    .orElseThrow(
-                        () ->
-                            new EntityNotFoundException(
-                                "Vaccine not found with ID: " + newVaccine.getId()));
-            BeanUtils.copyProperties(
-                newVaccine,
-                existingVaccine,
-                "id",
-                "version",
-                "createdAt",
-                "visit",
-                "medicalRecord");
-          }
-        });
+                && !newIds.contains(v.getId()));
+    for (UpdateVisitCommand.VaccineData data : vaccines) {
+      if (data.getId() == null) {
+        Vaccine vaccine = new Vaccine();
+        vaccine.setApplicationDate(data.getApplicationDate());
+        vaccine.setBrand(data.getBrand());
+        vaccine.setDose(data.getDose());
+        vaccine.setBatch(data.getBatch());
+        vaccine.setVisit(visit);
+        vaccine.setMedicalRecord(visit.getMedicalRecord());
+        vaccine.setActive(true);
+        allVaccines.add(vaccine);
+      } else {
+        Vaccine vaccine =
+            Optional.ofNullable(existingVaccinesMap.get(data.getId()))
+                .orElseThrow(
+                    () ->
+                        new EntityNotFoundException("Vaccine not found with ID: " + data.getId()));
+        vaccine.setApplicationDate(data.getApplicationDate());
+        vaccine.setBrand(data.getBrand());
+        vaccine.setDose(data.getDose());
+        vaccine.setBatch(data.getBatch());
+      }
+    }
   }
 }

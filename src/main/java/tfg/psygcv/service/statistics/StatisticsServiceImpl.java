@@ -88,10 +88,11 @@ public class StatisticsServiceImpl implements StatisticsService {
     return veterinaryClinicRepository
         .findByVeterinarianId(user.getId())
         .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(user.getId()))
-        .or(() -> veterinaryClinicRepository.findByReceptionistIdOptional(user.getId()))
+        .or(() -> veterinaryClinicRepository.findByReceptionistId(user.getId()))
         .orElseThrow(
             () ->
-                new IllegalArgumentException("No clinic found for dashboard with ID: " + user.getId()));
+                new IllegalArgumentException(
+                    "No clinic found for dashboard with ID: " + user.getId()));
   }
 
   private Map<String, Long> processProblems(List<String> problems) {
