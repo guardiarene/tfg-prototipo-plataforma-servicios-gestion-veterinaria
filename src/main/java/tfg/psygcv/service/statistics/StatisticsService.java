@@ -1,10 +1,10 @@
-package tfg.psygcv.service.interfaces;
+package tfg.psygcv.service.statistics;
 
 import java.time.LocalDate;
 import java.util.Map;
 import tfg.psygcv.entity.user.User;
 
-public interface StatisticsServiceInterface {
+public interface StatisticsService {
 
   Map<String, Long> getCommonDiseases(User user, LocalDate startDate, LocalDate endDate);
 

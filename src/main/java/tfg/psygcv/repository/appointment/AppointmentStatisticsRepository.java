@@ -1,4 +1,4 @@
-package tfg.psygcv.repository.statistics;
+package tfg.psygcv.repository.appointment;
 
 import java.time.LocalDate;
 import java.util.List;

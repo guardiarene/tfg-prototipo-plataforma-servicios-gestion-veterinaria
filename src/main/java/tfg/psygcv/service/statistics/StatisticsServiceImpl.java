@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.statistics;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -12,17 +12,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.VeterinaryClinicRepository;
-import tfg.psygcv.repository.statistics.AppointmentStatisticsRepository;
-import tfg.psygcv.repository.statistics.DiagnosticStatisticsRepository;
-import tfg.psygcv.repository.statistics.TreatmentStatisticsRepository;
-import tfg.psygcv.service.interfaces.StatisticsServiceInterface;
-import tfg.psygcv.service.validator.StatisticsValidator;
+import tfg.psygcv.repository.appointment.AppointmentStatisticsRepository;
+import tfg.psygcv.repository.clinic.VeterinaryClinicRepository;
+import tfg.psygcv.repository.medical.DiagnosticStatisticsRepository;
+import tfg.psygcv.repository.medical.TreatmentStatisticsRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class StatisticsServiceImpl implements StatisticsServiceInterface {
+public class StatisticsServiceImpl implements StatisticsService {
 
   private final DiagnosticStatisticsRepository diagnosticStatisticsRepository;
   private final TreatmentStatisticsRepository treatmentStatisticsRepository;
@@ -93,7 +91,7 @@ public class StatisticsServiceImpl implements StatisticsServiceInterface {
         .or(() -> veterinaryClinicRepository.findByReceptionistIdOptional(user.getId()))
         .orElseThrow(
             () ->
-                new IllegalArgumentException("No clinic found for user with ID: " + user.getId()));
+                new IllegalArgumentException("No clinic found for dashboard with ID: " + user.getId()));
   }
 
   private Map<String, Long> processProblems(List<String> problems) {
