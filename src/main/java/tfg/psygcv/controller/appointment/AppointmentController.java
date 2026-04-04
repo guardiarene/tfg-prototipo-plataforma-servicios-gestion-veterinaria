@@ -67,10 +67,16 @@ public class AppointmentController extends BaseController {
       @RequestParam("date") String date,
       @RequestParam("petId") Long petId,
       @RequestParam("serviceId") Long serviceId,
-      Authentication authentication) {
-    User currentUser = getCurrentUser(authentication, userService);
-    appointmentService.createClientAppointment(date, petId, serviceId, clinicId, currentUser);
-    return REDIRECT_MY_APPOINTMENTS;
+      Authentication authentication,
+      RedirectAttributes ra) {
+    try {
+      User currentUser = getCurrentUser(authentication, userService);
+      appointmentService.createClientAppointment(date, petId, serviceId, clinicId, currentUser);
+      return REDIRECT_MY_APPOINTMENTS;
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", e.getMessage());
+      return "redirect:/appointments/new?clinicId=" + clinicId;
+    }
   }
 
   @GetMapping("/{id}")
@@ -85,9 +91,14 @@ public class AppointmentController extends BaseController {
   }
 
   @PostMapping("/{id}/cancel")
-  public String cancelAppointment(@PathVariable Long id, Authentication authentication) {
-    appointmentService.cancel(id);
+  public String cancelAppointment(
+      @PathVariable Long id, Authentication authentication, RedirectAttributes ra) {
     AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
+    try {
+      appointmentService.cancel(id);
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", e.getMessage());
+    }
     if (currentUser.getRole() == Role.RECEPTIONIST) {
       return REDIRECT_RECEPTIONIST_DASHBOARD;
     }
@@ -96,8 +107,14 @@ public class AppointmentController extends BaseController {
 
   @PostMapping("/{id}/update-status")
   public String updateAppointmentStatus(
-      @PathVariable Long id, @RequestParam("status") AppointmentStatus status) {
-    appointmentService.updateStatus(id, status);
+      @PathVariable Long id,
+      @RequestParam("status") AppointmentStatus status,
+      RedirectAttributes ra) {
+    try {
+      appointmentService.updateStatus(id, status);
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", e.getMessage());
+    }
     return REDIRECT_RECEPTIONIST_DASHBOARD;
   }
 
@@ -160,13 +177,31 @@ public class AppointmentController extends BaseController {
       BindingResult result,
       @RequestParam("customerId") Long customerId,
       @RequestParam("serviceId") Long serviceId,
-      Authentication authentication) {
+      Authentication authentication,
+      Model model) {
     if (result.hasErrors()) {
+      AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
+      VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
+      model.addAttribute("customerId", customerId);
+      model.addAttribute("customers", userService.findActiveCustomers());
+      model.addAttribute("pets", petService.findByOwnerId(customerId));
+      model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
       return "receptionist/schedule_appointment";
     }
-    AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
-    appointmentService.createReceptionistAppointment(
-        appointment, customerId, serviceId, receptionist.getId());
-    return REDIRECT_RECEPTIONIST_DASHBOARD;
+    try {
+      AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
+      appointmentService.createReceptionistAppointment(
+          appointment, customerId, serviceId, receptionist.getId());
+      return REDIRECT_RECEPTIONIST_DASHBOARD;
+    } catch (Exception e) {
+      AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
+      VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
+      model.addAttribute("customerId", customerId);
+      model.addAttribute("customers", userService.findActiveCustomers());
+      model.addAttribute("pets", petService.findByOwnerId(customerId));
+      model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
+      model.addAttribute("error", e.getMessage());
+      return "receptionist/schedule_appointment";
+    }
   }
 }

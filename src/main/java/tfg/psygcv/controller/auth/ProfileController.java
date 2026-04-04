@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
@@ -47,30 +48,43 @@ public class ProfileController extends BaseController {
       @ModelAttribute("user") User user,
       BindingResult result,
       Authentication authentication,
-      Model model) {
+      Model model,
+      RedirectAttributes ra) {
     User currentUser = getCurrentUser(authentication, userService);
     if (result.hasErrors()) {
       model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
       return "profile/edit";
     }
-    User persistedUser = userService.findById(currentUser.getId());
-    persistedUser.setFirstName(user.getFirstName());
-    persistedUser.setLastName(user.getLastName());
-    persistedUser.setEmail(user.getEmail());
-    persistedUser.setPhone(user.getPhone());
-    persistedUser.setRole(currentUser.getRole());
-    userService.update(persistedUser);
-    return REDIRECT_MY_PROFILE;
+    try {
+      User persistedUser = userService.findById(currentUser.getId());
+      persistedUser.setFirstName(user.getFirstName());
+      persistedUser.setLastName(user.getLastName());
+      persistedUser.setEmail(user.getEmail());
+      persistedUser.setPhone(user.getPhone());
+      persistedUser.setRole(currentUser.getRole());
+      userService.update(persistedUser);
+      ra.addFlashAttribute("success", "Perfil actualizado correctamente.");
+      return REDIRECT_MY_PROFILE;
+    } catch (Exception e) {
+      model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
+      model.addAttribute("error", e.getMessage());
+      return "profile/edit";
+    }
   }
 
   @PostMapping("/deactivate")
-  public String deactivateAccount(Authentication authentication) {
-    User currentUser = getCurrentUser(authentication, userService);
-    if (currentUser.getRole() == Role.VETERINARIAN) {
-      veterinaryClinicService.deactivate(
-          veterinaryClinicService.findByVeterinarianId(currentUser.getId()).getId());
+  public String deactivateAccount(Authentication authentication, RedirectAttributes ra) {
+    try {
+      User currentUser = getCurrentUser(authentication, userService);
+      if (currentUser.getRole() == Role.VETERINARIAN) {
+        veterinaryClinicService.deactivate(
+            veterinaryClinicService.findByVeterinarianId(currentUser.getId()).getId());
+      }
+      userService.deactivate(currentUser.getId());
+      return REDIRECT_LOGIN_LOGOUT;
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", e.getMessage());
+      return REDIRECT_MY_PROFILE;
     }
-    userService.deactivate(currentUser.getId());
-    return REDIRECT_LOGIN_LOGOUT;
   }
 }

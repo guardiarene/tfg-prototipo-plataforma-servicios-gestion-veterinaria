@@ -34,12 +34,23 @@ public class VeterinaryClinicController extends BaseController {
       @RequestParam Map<String, String> params,
       Model model,
       RedirectAttributes redirectAttributes) {
+    String password = params.get("userPassword");
+    String confirmPassword = params.get("confirmPassword");
+    if (password == null || !password.equals(confirmPassword)) {
+      model.addAttribute("error", "Las contraseñas no coinciden.");
+      params.remove("userPassword");
+      params.remove("confirmPassword");
+      model.addAllAttributes(params);
+      return "clinics/register";
+    }
     try {
       veterinaryClinicService.registerClinicWithVeterinarian(params);
       redirectAttributes.addAttribute("success", true);
       return REDIRECT_LOGIN;
     } catch (Exception e) {
-      model.addAttribute("errorMessage", "Error al registrar: " + e.getMessage());
+      model.addAttribute("error", "Error al registrar: " + e.getMessage());
+      params.remove("userPassword");
+      params.remove("confirmPassword");
       model.addAllAttributes(params);
       return "clinics/register";
     }

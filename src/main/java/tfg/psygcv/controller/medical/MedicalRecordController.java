@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.entity.medical.Anamnesis;
 import tfg.psygcv.entity.medical.ClinicalExam;
@@ -60,15 +61,22 @@ public class MedicalRecordController extends BaseController {
       @Valid @ModelAttribute("medicalRecord") MedicalRecord medicalRecord,
       BindingResult result,
       Authentication authentication,
-      Model model) {
+      Model model,
+      RedirectAttributes ra) {
+    User veterinarian = getCurrentUser(authentication, userService);
     if (result.hasErrors()) {
-      User veterinarian = getCurrentUser(authentication, userService);
       model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
       return "medical_records/new";
     }
-    User veterinarian = getCurrentUser(authentication, userService);
-    medicalRecordService.save(medicalRecord, veterinarian);
-    return REDIRECT_VETERINARIAN_DASHBOARD;
+    try {
+      medicalRecordService.save(medicalRecord, veterinarian);
+      ra.addFlashAttribute("success", "Historia clínica creada correctamente.");
+      return REDIRECT_VETERINARIAN_DASHBOARD;
+    } catch (Exception e) {
+      model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
+      model.addAttribute("error", e.getMessage());
+      return "medical_records/new";
+    }
   }
 
   @GetMapping("/{id}/edit")
@@ -85,14 +93,24 @@ public class MedicalRecordController extends BaseController {
       @Valid @ModelAttribute("medicalRecord") MedicalRecord medicalRecord,
       BindingResult result,
       Authentication authentication,
-      Model model) {
+      Model model,
+      RedirectAttributes ra) {
     if (result.hasErrors()) {
+      MedicalRecord completeRecord = medicalRecordService.findCompleteForEditing(id);
+      medicalRecord.setPet(completeRecord.getPet());
       model.addAttribute("pets", List.of(medicalRecord.getPet()));
       return "medical_records/edit";
     }
-    User veterinarian = getCurrentUser(authentication, userService);
-    medicalRecordService.update(id, medicalRecord, veterinarian);
-    return "redirect:/medical-records/" + id;
+    try {
+      User veterinarian = getCurrentUser(authentication, userService);
+      medicalRecordService.update(id, medicalRecord, veterinarian);
+      ra.addFlashAttribute("success", "Historia clínica actualizada correctamente.");
+      return "redirect:/medical-records/" + id;
+    } catch (Exception e) {
+      model.addAttribute("pets", List.of(medicalRecord.getPet()));
+      model.addAttribute("error", e.getMessage());
+      return "medical_records/edit";
+    }
   }
 
   private MedicalRecord initializeNewMedicalRecord() {

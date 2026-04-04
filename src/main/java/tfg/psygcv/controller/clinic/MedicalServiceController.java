@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.entity.clinic.MedicalService;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
@@ -64,7 +65,7 @@ public class MedicalServiceController extends BaseController {
       medicalServiceService.save(medicalService, clinicId);
       return REDIRECT_MY_SERVICES_CREATED;
     } catch (Exception e) {
-      model.addAttribute("errorMessage", "Error al guardar el servicio: " + e.getMessage());
+      model.addAttribute("error", "Error al guardar el servicio: " + e.getMessage());
       model.addAttribute("clinicId", clinicId);
       return "medical_services/new";
     }
@@ -95,17 +96,23 @@ public class MedicalServiceController extends BaseController {
       medicalServiceService.update(id, medicalService, clinicId);
       return REDIRECT_MY_SERVICES_UPDATED;
     } catch (Exception e) {
-      model.addAttribute("errorMessage", "Error al actualizar el servicio: " + e.getMessage());
+      model.addAttribute("error", "Error al actualizar el servicio: " + e.getMessage());
       model.addAttribute("clinicId", clinicId);
       return "medical_services/edit";
     }
   }
 
   @PostMapping("/{id}/delete")
-  public String deleteService(@PathVariable Long id, Authentication authentication) {
-    User veterinarian = getCurrentUser(authentication, userService);
-    VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
-    medicalServiceService.deactivate(id, clinic.getId());
-    return REDIRECT_MY_SERVICES_DELETED;
+  public String deleteService(
+      @PathVariable Long id, Authentication authentication, RedirectAttributes ra) {
+    try {
+      User veterinarian = getCurrentUser(authentication, userService);
+      VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarian.getId());
+      medicalServiceService.deactivate(id, clinic.getId());
+      return REDIRECT_MY_SERVICES_DELETED;
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", e.getMessage());
+      return "redirect:/medical-services";
+    }
   }
 }

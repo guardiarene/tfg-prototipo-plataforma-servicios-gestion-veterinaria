@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
 import tfg.psygcv.entity.pet.Pet;
@@ -48,13 +49,21 @@ public class PetController extends BaseController {
 
   @PostMapping("/new")
   public String savePet(
-      @Valid @ModelAttribute Pet pet, BindingResult result, Authentication authentication) {
+      @Valid @ModelAttribute Pet pet,
+      BindingResult result,
+      Authentication authentication,
+      Model model) {
     if (result.hasErrors()) {
       return "pets/new";
     }
-    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-    petService.save(pet, currentUser.getId());
-    return REDIRECT_MY_PETS_CREATED;
+    try {
+      AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
+      petService.save(pet, currentUser.getId());
+      return REDIRECT_MY_PETS_CREATED;
+    } catch (Exception e) {
+      model.addAttribute("error", e.getMessage());
+      return "pets/new";
+    }
   }
 
   @GetMapping("/{id}/edit")
@@ -65,17 +74,27 @@ public class PetController extends BaseController {
 
   @PostMapping("/{id}/edit")
   public String updatePet(
-      @PathVariable Long id, @Valid @ModelAttribute Pet pet, BindingResult result) {
+      @PathVariable Long id, @Valid @ModelAttribute Pet pet, BindingResult result, Model model) {
     if (result.hasErrors()) {
       return "pets/edit";
     }
-    petService.update(id, pet);
-    return REDIRECT_MY_PETS_UPDATED;
+    try {
+      petService.update(id, pet);
+      return REDIRECT_MY_PETS_UPDATED;
+    } catch (Exception e) {
+      model.addAttribute("error", e.getMessage());
+      return "pets/edit";
+    }
   }
 
   @PostMapping("/{id}/delete")
-  public String deletePet(@PathVariable Long id) {
-    petService.deactivate(id);
-    return REDIRECT_MY_PETS_DELETED;
+  public String deletePet(@PathVariable Long id, RedirectAttributes ra) {
+    try {
+      petService.deactivate(id);
+      return REDIRECT_MY_PETS_DELETED;
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", e.getMessage());
+      return "redirect:/pets";
+    }
   }
 }
