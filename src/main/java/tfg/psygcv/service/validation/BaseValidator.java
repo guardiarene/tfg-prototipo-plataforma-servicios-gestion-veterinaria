@@ -1,4 +1,4 @@
-package tfg.psygcv.service.validator;
+package tfg.psygcv.service.validation;
 
 public abstract class BaseValidator {
 
