@@ -7,27 +7,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/layout :: layout('Mi Clínica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+<div th:replace="~{layouts/layout :: layout('Mi Clínica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content}, ~{})}">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-hospital', 'Información de la Clínica', null)}"></div>
                     <div class="card-body p-4">
+                        <div class="mb-3" th:if="${param.updated}">
+                            <div th:replace="~{fragments/alert :: successAlert('Datos actualizados correctamente.')}"></div>
+                        </div>
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="card h-100 border-0 bg-light shadow-sm">
                                     <div class="card-header bg-primary text-white border-0 py-3">
-                                        <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Responsable</h5>
+                                        <h5 class="mb-0"><i aria-hidden="true" class="bi bi-person-badge me-2"></i>Responsable
+                                        </h5>
                                     </div>
                                     <div class="card-body">
                                         <dl class="mb-0">
                                             <dt class="small text-muted">Nombre Completo</dt>
-                                            <dd class="fw-bold mb-3" th:text="${veterinarian.firstName + ' ' + veterinarian.lastName}"></dd>
-                                            
+                                            <dd class="fw-bold mb-3"
+                                                th:text="${veterinarian.firstName + ' ' + veterinarian.lastName}"></dd>
+
                                             <dt class="small text-muted">Teléfono</dt>
                                             <dd class="mb-3" th:text="${veterinarian.phone}"></dd>
-                                            
+
                                             <dt class="small text-muted">Email</dt>
                                             <dd class="mb-0 text-truncate" th:text="${veterinarian.email}"></dd>
                                         </dl>
@@ -37,19 +42,20 @@
                             <div class="col-md-6">
                                 <div class="card h-100 border-0 bg-light shadow-sm">
                                     <div class="card-header bg-primary text-white border-0 py-3">
-                                        <h5 class="mb-0"><i class="bi bi-building me-2"></i>Establecimiento</h5>
+                                        <h5 class="mb-0"><i aria-hidden="true" class="bi bi-building me-2"></i>Establecimiento
+                                        </h5>
                                     </div>
                                     <div class="card-body">
                                         <dl class="mb-0">
                                             <dt class="small text-muted">Nombre Comercial</dt>
                                             <dd class="fw-bold mb-3" th:text="${clinic.name}"></dd>
-                                            
+
                                             <dt class="small text-muted">Dirección</dt>
                                             <dd class="mb-3" th:text="${clinic.address}"></dd>
-                                            
+
                                             <dt class="small text-muted">Teléfono</dt>
                                             <dd class="mb-3" th:text="${clinic.phone}"></dd>
-                                            
+
                                             <dt class="small text-muted">Email de Contacto</dt>
                                             <dd class="mb-0 text-truncate" th:text="${clinic.email}"></dd>
                                         </dl>
@@ -57,19 +63,20 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="mt-5 border-top pt-4">
                             <div class="d-flex justify-content-end gap-3 flex-wrap">
                                 <a class="btn btn-secondary px-4" th:href="@{/veterinarian/dashboard}">
-                                    <i class="bi bi-arrow-left-circle me-2"></i>Volver
+                                    <i aria-hidden="true" class="bi bi-arrow-left-circle me-2"></i>Volver
                                 </a>
                                 <a class="btn btn-primary px-4" th:href="@{/veterinarian/clinic/edit}">
-                                    <i class="bi bi-pencil-square me-2"></i>Actualizar Datos
+                                    <i aria-hidden="true" class="bi bi-pencil-square me-2"></i>Actualizar Datos
                                 </a>
-                                <form class="d-inline" method="POST" th:action="@{/profile/deactivate}"
-                                      onsubmit="return confirm('¿Estás seguro de que deseas desactivar tu cuenta?');">
+                                <form class="d-inline"
+                                      data-confirm="¿Estás seguro de que deseas desactivar tu cuenta?"
+                                      method="POST"
+                                      th:action="@{/profile/deactivate}">
                                     <button class="btn btn-outline-danger px-4" type="submit">
-                                        <i class="bi bi-trash3 me-2"></i>Eliminar Cuenta
+                                        <i aria-hidden="true" class="bi bi-trash3 me-2"></i>Eliminar Cuenta
                                     </button>
                                 </form>
                             </div>
@@ -80,6 +87,5 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

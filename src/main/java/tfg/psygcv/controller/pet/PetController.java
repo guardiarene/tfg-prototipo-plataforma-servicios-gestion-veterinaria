@@ -1,6 +1,8 @@
 package tfg.psygcv.controller.pet;
 
-import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_CREATED;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_DELETED;
+import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_UPDATED;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +15,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
 
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class PetController extends BaseController {
 
   @GetMapping
   public String listPets(Model model, Authentication authentication) {
-    User currentUser = getCurrentUser(authentication);
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
     model.addAttribute("pets", petService.findByOwnerId(currentUser.getId()));
     return "pets/list";
   }
@@ -46,13 +49,21 @@ public class PetController extends BaseController {
 
   @PostMapping("/new")
   public String savePet(
-      @Valid @ModelAttribute Pet pet, BindingResult result, Authentication authentication) {
+      @Valid @ModelAttribute Pet pet,
+      BindingResult result,
+      Authentication authentication,
+      Model model) {
     if (result.hasErrors()) {
       return "pets/new";
     }
-    User currentUser = getCurrentUser(authentication);
-    petService.save(pet, currentUser.getId());
-    return REDIRECT_MY_PETS;
+    try {
+      AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
+      petService.save(pet, currentUser.getId());
+      return REDIRECT_MY_PETS_CREATED;
+    } catch (Exception e) {
+      model.addAttribute("error", e.getMessage());
+      return "pets/new";
+    }
   }
 
   @GetMapping("/{id}/edit")
@@ -63,17 +74,27 @@ public class PetController extends BaseController {
 
   @PostMapping("/{id}/edit")
   public String updatePet(
-      @PathVariable Long id, @Valid @ModelAttribute Pet pet, BindingResult result) {
+      @PathVariable Long id, @Valid @ModelAttribute Pet pet, BindingResult result, Model model) {
     if (result.hasErrors()) {
       return "pets/edit";
     }
-    petService.update(id, pet);
-    return REDIRECT_MY_PETS;
+    try {
+      petService.update(id, pet);
+      return REDIRECT_MY_PETS_UPDATED;
+    } catch (Exception e) {
+      model.addAttribute("error", e.getMessage());
+      return "pets/edit";
+    }
   }
 
   @PostMapping("/{id}/delete")
-  public String deletePet(@PathVariable Long id) {
-    petService.deactivate(id);
-    return REDIRECT_MY_PETS;
+  public String deletePet(@PathVariable Long id, RedirectAttributes ra) {
+    try {
+      petService.deactivate(id);
+      return REDIRECT_MY_PETS_DELETED;
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", e.getMessage());
+      return "redirect:/pets";
+    }
   }
 }

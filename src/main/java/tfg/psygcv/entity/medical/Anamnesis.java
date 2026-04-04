@@ -1,0 +1,76 @@
+package tfg.psygcv.entity.medical;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.PastOrPresent;
+import java.time.LocalDate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.entity.pet.ReproductiveStatus;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "ANAMNESIS")
+public class Anamnesis extends AuditableEntity {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
+
+  @Column(name = "ALLERGIES", columnDefinition = "TEXT")
+  private String allergies;
+
+  @Column(name = "PREVIOUS_DISEASES", columnDefinition = "TEXT")
+  private String previousDiseases;
+
+  @Column(name = "SURGERIES", columnDefinition = "TEXT")
+  private String surgeries;
+
+  @Column(name = "CURRENT_MEDICATIONS", columnDefinition = "TEXT")
+  private String currentMedications;
+
+  @Column(name = "DIET", columnDefinition = "TEXT")
+  private String diet;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "REPRODUCTIVE_STATUS", length = 30)
+  private ReproductiveStatus reproductiveStatus;
+
+  @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  @Column(name = "LAST_DEWORMING_DATE")
+  private LocalDate lastDewormingDate;
+
+  @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  @Column(name = "LAST_HEAT_DATE")
+  private LocalDate lastHeatDate;
+
+  @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  @Column(name = "LAST_BIRTH_DATE")
+  private LocalDate lastBirthDate;
+
+  @OneToOne(mappedBy = "anamnesis")
+  private Visit visit;
+
+  public void setVisit(Visit visit) {
+    this.visit = visit;
+    if (visit != null && visit.getAnamnesis() != this) {
+      visit.setAnamnesis(this);
+    }
+  }
+}

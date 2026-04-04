@@ -2,23 +2,19 @@ package tfg.psygcv.controller.clinic;
 
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_LOGIN;
 
-import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.user.Role;
-import tfg.psygcv.model.user.User;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 
 @RequiredArgsConstructor
@@ -28,29 +24,36 @@ public class VeterinaryClinicController extends BaseController {
 
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
 
-  private final UserServiceInterface userService;
-
   @GetMapping("/register")
   public String showRegistrationForm(Model model) {
-    model.addAttribute("user", new User());
-    model.addAttribute("clinic", new VeterinaryClinic());
     return "clinics/register";
   }
 
   @PostMapping("/register")
   public String registerVeterinarianAndClinic(
-      @Valid @ModelAttribute User user,
-      BindingResult userResult,
-      @Valid @ModelAttribute VeterinaryClinic clinic,
-      BindingResult clinicResult) {
-    if (userResult.hasErrors() || clinicResult.hasErrors()) {
+      @RequestParam Map<String, String> params,
+      Model model,
+      RedirectAttributes redirectAttributes) {
+    String password = params.get("userPassword");
+    String confirmPassword = params.get("confirmPassword");
+    if (password == null || !password.equals(confirmPassword)) {
+      model.addAttribute("error", "Las contraseñas no coinciden.");
+      params.remove("userPassword");
+      params.remove("confirmPassword");
+      model.addAllAttributes(params);
       return "clinics/register";
     }
-    user.setRole(Role.VETERINARIAN);
-    userService.save(user);
-    clinic.setVeterinarian(user);
-    veterinaryClinicService.save(clinic);
-    return REDIRECT_LOGIN;
+    try {
+      veterinaryClinicService.registerClinicWithVeterinarian(params);
+      redirectAttributes.addAttribute("success", true);
+      return REDIRECT_LOGIN;
+    } catch (Exception e) {
+      model.addAttribute("error", "Error al registrar: " + e.getMessage());
+      params.remove("userPassword");
+      params.remove("confirmPassword");
+      model.addAllAttributes(params);
+      return "clinics/register";
+    }
   }
 
   @GetMapping("/search")

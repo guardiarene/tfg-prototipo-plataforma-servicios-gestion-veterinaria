@@ -18,6 +18,6 @@ public class CustomerController extends BaseController {
   @GetMapping("/dashboard")
   public String showClientDashboard(Model model) {
     model.addAttribute("veterinaryClinics", veterinaryClinicService.findAll());
-    return "client/dashboard";
+    return "customer/dashboard";
   }
 }

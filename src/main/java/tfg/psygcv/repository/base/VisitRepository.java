@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import tfg.psygcv.model.medical.Visit;
+import tfg.psygcv.entity.medical.Visit;
 
 @Repository
 public interface VisitRepository extends JpaRepository<Visit, Long> {
@@ -18,6 +18,23 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
       "SELECT v FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
   List<Visit> findByMedicalRecordIdAndActiveOrderByDateDesc(
       @Param("medicalRecordId") Long medicalRecordId);
+
+  @Query(
+      "SELECT DISTINCT v FROM Visit v "
+          + "LEFT JOIN FETCH v.clinicalExam "
+          + "LEFT JOIN FETCH v.anamnesis a "
+          + "LEFT JOIN FETCH v.veterinarian "
+          + "WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
+  List<Visit> findCompleteByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
+
+  @Query("SELECT DISTINCT v FROM Visit v LEFT JOIN FETCH v.diagnostics WHERE v.id IN :ids")
+  List<Visit> findWithDiagnosticsByIds(@Param("ids") List<Long> ids);
+
+  @Query("SELECT DISTINCT v FROM Visit v LEFT JOIN FETCH v.treatments WHERE v.id IN :ids")
+  List<Visit> findWithTreatmentsByIds(@Param("ids") List<Long> ids);
+
+  @Query("SELECT DISTINCT v FROM Visit v LEFT JOIN FETCH v.vaccines WHERE v.id IN :ids")
+  List<Visit> findWithVaccinesByIds(@Param("ids") List<Long> ids);
 
   @Query(
       "SELECT v FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
@@ -32,25 +49,22 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
       @Param("endDate") LocalDate endDate);
 
   @Query(
-      "SELECT v FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
+      "SELECT v FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC LIMIT 1")
   Optional<Visit> findLatestByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
 
   @Query(
-      "SELECT DISTINCT v FROM Visit v "
+      "SELECT v FROM Visit v "
           + "LEFT JOIN FETCH v.clinicalExam "
           + "LEFT JOIN FETCH v.anamnesis a "
-          + "LEFT JOIN FETCH v.diagnostics "
-          + "LEFT JOIN FETCH v.treatments "
-          + "LEFT JOIN FETCH v.vaccines "
           + "WHERE v.id = :id AND v.active = true")
   Optional<Visit> findCompleteById(@Param("id") Long id);
 
-  @Query(
-      "SELECT v FROM Visit v "
-          + "LEFT JOIN FETCH v.veterinarian "
-          + "WHERE v.id = :id AND v.active = true")
-  Optional<Visit> findByIdWithVeterinarian(@Param("id") Long id);
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.diagnostics WHERE v.id = :id")
+  List<Visit> findWithDiagnostics(@Param("id") Long id);
 
-  @Query("SELECT COUNT(v) FROM Visit v WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true")
-  Long countByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.treatments WHERE v.id = :id")
+  List<Visit> findWithTreatments(@Param("id") Long id);
+
+  @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.vaccines WHERE v.id = :id")
+  List<Visit> findWithVaccines(@Param("id") Long id);
 }

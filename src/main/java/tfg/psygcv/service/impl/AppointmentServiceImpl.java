@@ -8,17 +8,18 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.appointment.AppointmentStatus;
-import tfg.psygcv.model.clinic.MedicalService;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.entity.appointment.AppointmentStatus;
+import tfg.psygcv.entity.clinic.MedicalService;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.base.AppointmentRepository;
 import tfg.psygcv.repository.query.AppointmentQueryRepository;
 import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
 import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 import tfg.psygcv.service.validator.AppointmentValidator;
 
@@ -28,15 +29,11 @@ import tfg.psygcv.service.validator.AppointmentValidator;
 public class AppointmentServiceImpl implements AppointmentServiceInterface {
 
   private final AppointmentRepository appointmentRepository;
-
   private final AppointmentQueryRepository appointmentQueryRepository;
-
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
-
   private final MedicalServiceServiceInterface medicalServiceService;
-
   private final PetServiceInterface petService;
-
+  private final UserServiceInterface userService;
   private final AppointmentValidator appointmentValidator;
 
   @Override
@@ -50,7 +47,11 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
 
   @Override
   public Appointment findWithDetails(Long appointmentId) {
-    return findById(appointmentId);
+    appointmentValidator.validateId(appointmentId);
+    return appointmentRepository
+        .findByIdWithDetails(appointmentId)
+        .orElseThrow(
+            () -> new EntityNotFoundException("Appointment not found with ID: " + appointmentId));
   }
 
   @Override
@@ -76,14 +77,14 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     appointmentValidator.validateAppointment(appointment);
     return Optional.ofNullable(appointment.getMedicalService())
         .map(MedicalService::getClinic)
-        .map(VeterinaryClinic::getVeterinarian)
+        .map(VeterinaryClinic::getOwner)
         .map(User::getFirstName)
         .orElse("Veterinarian not assigned");
   }
 
   @Override
   @Transactional
-  public Appointment createClientAppointment(
+  public void createClientAppointment(
       String dateStr, Long petId, Long serviceId, Long clinicId, User client) {
     appointmentValidator.validateClientAppointmentCreation(
         dateStr, petId, serviceId, clinicId, client);
@@ -92,48 +93,55 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     MedicalService service = medicalServiceService.findById(serviceId);
     VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
     Appointment appointment = buildClientAppointment(date, pet, service, clinic, client);
-    return appointmentRepository.save(appointment);
+    appointmentRepository.save(appointment);
   }
 
   @Override
   @Transactional
-  public Appointment createReceptionistAppointment(
-      Appointment appointment, Long serviceId, Long receptionistId) {
+  public void createReceptionistAppointment(
+      Appointment appointment, Long customerId, Long serviceId, Long receptionistId) {
+    User customer = userService.findById(customerId);
+    appointment.setCustomer(customer);
     appointmentValidator.validateReceptionistAppointmentCreation(
         appointment, serviceId, receptionistId);
+    Pet pet = petService.findById(appointment.getPet().getId());
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionistId);
     MedicalService service = medicalServiceService.findById(serviceId);
+    appointment.setPet(pet);
     appointment.setClinic(clinic);
     appointment.setMedicalService(service);
     appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
-    return appointmentRepository.save(appointment);
+    appointmentRepository.save(appointment);
   }
 
   @Override
   @Transactional
-  public Appointment updateStatus(Long appointmentId, AppointmentStatus status) {
+  public void updateStatus(Long appointmentId, AppointmentStatus status) {
     appointmentValidator.validateId(appointmentId);
     appointmentValidator.validateStatus(status);
-    Appointment appointment = findById(appointmentId);
+    Appointment appointment = findWithDetails(appointmentId);
     appointment.setAppointmentStatus(status);
-    return appointmentRepository.save(appointment);
+    appointmentRepository.save(appointment);
   }
 
   @Override
   @Transactional
-  public Appointment reschedule(Long appointmentId, Appointment updatedAppointment) {
+  public void reschedule(Long appointmentId, Appointment updatedAppointment) {
     appointmentValidator.validateReschedule(appointmentId, updatedAppointment);
-    Appointment existingAppointment = findById(appointmentId);
+    Appointment existingAppointment = findWithDetails(appointmentId);
     MedicalService service =
         medicalServiceService.findById(updatedAppointment.getMedicalService().getId());
-    updateAppointmentSchedule(existingAppointment, updatedAppointment, service);
-    return appointmentRepository.save(existingAppointment);
+    existingAppointment.setDate(updatedAppointment.getDate());
+    existingAppointment.setTime(updatedAppointment.getTime());
+    existingAppointment.setMedicalService(service);
+    existingAppointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
+    appointmentRepository.save(existingAppointment);
   }
 
   @Override
   @Transactional
-  public Appointment cancel(Long appointmentId) {
-    return updateStatus(appointmentId, AppointmentStatus.CANCELLED);
+  public void cancel(Long appointmentId) {
+    updateStatus(appointmentId, AppointmentStatus.CANCELLED);
   }
 
   private Appointment buildClientAppointment(
@@ -147,12 +155,5 @@ public class AppointmentServiceImpl implements AppointmentServiceInterface {
     appointment.setPet(pet);
     appointment.setAppointmentStatus(AppointmentStatus.PENDING);
     return appointment;
-  }
-
-  private void updateAppointmentSchedule(
-      Appointment existing, Appointment updated, MedicalService service) {
-    existing.setDate(updated.getDate());
-    existing.setTime(updated.getTime());
-    existing.setMedicalService(service);
   }
 }

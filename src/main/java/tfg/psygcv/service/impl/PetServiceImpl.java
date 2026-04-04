@@ -1,13 +1,15 @@
 package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.base.PetRepository;
 import tfg.psygcv.repository.query.AppointmentQueryRepository;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
@@ -20,11 +22,8 @@ import tfg.psygcv.service.validator.PetValidator;
 public class PetServiceImpl implements PetServiceInterface {
 
   private final PetRepository petRepository;
-
   private final UserServiceInterface userService;
-
   private final AppointmentQueryRepository appointmentQueryRepository;
-
   private final PetValidator petValidator;
 
   @Override
@@ -44,7 +43,15 @@ public class PetServiceImpl implements PetServiceInterface {
   @Override
   public List<Pet> findPetsWithAppointmentsInClinics(User veterinarian) {
     petValidator.validateVeterinarian(veterinarian);
-    List<VeterinaryClinic> clinics = veterinarian.getClinicsOwned();
+    User veterinarianWithClinicContext =
+        userService.findByIdWithClinicContext(veterinarian.getId());
+    petValidator.validateVeterinarian(veterinarianWithClinicContext);
+
+    Set<VeterinaryClinic> clinics =
+        new LinkedHashSet<>(veterinarianWithClinicContext.getClinicsOwned());
+    if (veterinarianWithClinicContext.getWorkClinic() != null) {
+      clinics.add(veterinarianWithClinicContext.getWorkClinic());
+    }
     return appointmentQueryRepository.findPetsWithAppointmentsInClinics(clinics);
   }
 

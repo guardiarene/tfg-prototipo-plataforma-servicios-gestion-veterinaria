@@ -3,14 +3,16 @@ package tfg.psygcv.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.model.user.Role;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.config.security.AuthenticatedUser;
+import tfg.psygcv.entity.user.Role;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.base.UserRepository;
 import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.validator.UserValidator;
@@ -21,19 +23,18 @@ import tfg.psygcv.service.validator.UserValidator;
 public class UserServiceImpl implements UserDetailsService, UserServiceInterface {
 
   private final UserRepository userRepository;
-
   private final PasswordEncoder passwordEncoder;
-
   private final UserValidator userValidator;
 
   @Override
   @Transactional(readOnly = true)
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+  public @NonNull UserDetails loadUserByUsername(@NonNull String email)
+      throws UsernameNotFoundException {
     User user = findByEmail(email);
     if (user == null) {
       throw new UsernameNotFoundException("User not found with email: " + email);
     }
-    return user;
+    return AuthenticatedUser.from(user);
   }
 
   @Override
@@ -55,6 +56,14 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
   }
 
   @Override
+  public User findByIdWithClinicContext(Long userId) {
+    userValidator.validateId(userId);
+    return userRepository
+        .findByIdWithClinicContext(userId)
+        .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+  }
+
+  @Override
   public User findByEmail(String email) {
     userValidator.validateEmail(email);
     return userRepository
@@ -66,17 +75,20 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
   @Transactional
   public User save(User user) {
     userValidator.validateForCreation(user);
+    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+      throw new IllegalArgumentException("Ya existe un usuario con este email: " + user.getEmail());
+    }
     encodePassword(user);
     return userRepository.save(user);
   }
 
   @Override
   @Transactional
-  public User saveComplete(User user) {
+  public void saveComplete(User user) {
     if (user.getActive() == null) {
       user.setActive(true);
     }
-    return save(user);
+    save(user);
   }
 
   @Override
@@ -90,7 +102,7 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
 
   @Override
   @Transactional
-  public User updateComplete(Long userId, User updatedUser) {
+  public void updateComplete(Long userId, User updatedUser) {
     userValidator.validateId(userId);
     userValidator.validateForCompleteUpdate(updatedUser);
     User existingUser = findById(userId);
@@ -98,7 +110,15 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
     if (shouldUpdatePassword(updatedUser)) {
       encodePassword(existingUser, updatedUser.getPassword());
     }
-    return userRepository.save(existingUser);
+    userRepository.save(existingUser);
+  }
+
+  @Override
+  @Transactional
+  public void updateVeterinarianProfile(User currentVeterinarian, User updatedVeterinarian) {
+    updatedUserFields(currentVeterinarian, updatedVeterinarian);
+    userValidator.validateForUpdate(currentVeterinarian);
+    userRepository.save(currentVeterinarian);
   }
 
   @Override
@@ -126,6 +146,13 @@ public class UserServiceImpl implements UserDetailsService, UserServiceInterface
     existing.setLastName(updated.getLastName());
     existing.setPhone(updated.getPhone());
     existing.setEmail(updated.getEmail());
+  }
+
+  private void updatedUserFields(User existing, User updated) {
+    existing.setFirstName(updated.getFirstName());
+    existing.setLastName(updated.getLastName());
+    existing.setEmail(updated.getEmail());
+    existing.setPhone(updated.getPhone());
   }
 
   private void updateAllUserFields(User existing, User updated) {

@@ -1,7 +1,7 @@
 package tfg.psygcv.service.interfaces;
 
 import java.util.List;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.user.User;
 
 public interface UserServiceInterface {
 
@@ -11,15 +11,19 @@ public interface UserServiceInterface {
 
   User findById(Long userId);
 
+  User findByIdWithClinicContext(Long userId);
+
   User findByEmail(String email);
 
   User save(User user);
 
-  User saveComplete(User user);
+  void saveComplete(User user);
 
   User update(User user);
 
-  User updateComplete(Long userId, User updatedUser);
+  void updateComplete(Long userId, User updatedUser);
+
+  void updateVeterinarianProfile(User currentVeterinarian, User updatedVeterinarian);
 
   void deactivate(Long userId);
 }

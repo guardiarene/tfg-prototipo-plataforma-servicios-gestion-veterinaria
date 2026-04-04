@@ -2,11 +2,15 @@ package tfg.psygcv.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.user.Role;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.base.VeterinaryClinicRepository;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
 import tfg.psygcv.service.validator.VeterinaryClinicValidator;
 
@@ -16,8 +20,8 @@ import tfg.psygcv.service.validator.VeterinaryClinicValidator;
 public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInterface {
 
   private final VeterinaryClinicRepository veterinaryClinicRepository;
-
   private final VeterinaryClinicValidator veterinaryClinicValidator;
+  private final UserServiceInterface userService;
 
   @Override
   public List<VeterinaryClinic> findAll() {
@@ -28,7 +32,7 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
   public VeterinaryClinic findById(Long clinicId) {
     veterinaryClinicValidator.validateId(clinicId);
     return veterinaryClinicRepository
-        .findByIdAndActive(clinicId)
+        .findByIdWithDetails(clinicId)
         .orElseThrow(
             () -> new EntityNotFoundException("Veterinary clinic not found with ID: " + clinicId));
   }
@@ -40,14 +44,25 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
   }
 
   @Override
-  public VeterinaryClinic findByVeterinarianId(Long veterinarianId) {
-    veterinaryClinicValidator.validateId(veterinarianId);
-    VeterinaryClinic clinic = veterinaryClinicRepository.findByVeterinarianId(veterinarianId);
+  public VeterinaryClinic findByOwnerId(Long ownerId) {
+    veterinaryClinicValidator.validateId(ownerId);
+    VeterinaryClinic clinic = veterinaryClinicRepository.findByOwnerId(ownerId);
     if (clinic == null) {
-      throw new EntityNotFoundException(
-          "Veterinary clinic not found for veterinarian ID: " + veterinarianId);
+      throw new EntityNotFoundException("Veterinary clinic not found for owner ID: " + ownerId);
     }
     return clinic;
+  }
+
+  @Override
+  public VeterinaryClinic findByVeterinarianId(Long veterinarianId) {
+    veterinaryClinicValidator.validateId(veterinarianId);
+    return veterinaryClinicRepository
+        .findByVeterinarianId(veterinarianId)
+        .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarianId))
+        .orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "Veterinary clinic not found for veterinarian ID: " + veterinarianId));
   }
 
   @Override
@@ -59,6 +74,14 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
             () ->
                 new EntityNotFoundException(
                     "Veterinary clinic not found for receptionist ID: " + receptionistId));
+  }
+
+  @Override
+  @Transactional
+  public void registerStaff(User owner, User staffUser) {
+    VeterinaryClinic clinic = findByOwnerId(owner.getId());
+    staffUser.setWorkClinic(clinic);
+    userService.saveComplete(staffUser);
   }
 
   @Override
@@ -85,8 +108,38 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInter
     veterinaryClinicRepository.save(existingClinic);
   }
 
+  @Override
+  @Transactional
+  public void registerClinicWithVeterinarian(Map<String, String> params) {
+    String password = params.get("userPassword");
+    User user = new User();
+    user.setFirstName(params.get("userFirstName"));
+    user.setLastName(params.get("userLastName"));
+    user.setEmail(params.get("userEmail"));
+    user.setPhone(params.get("userPhone"));
+    user.setPassword(password);
+    user.setRole(Role.VETERINARIAN);
+    user.setActive(true);
+    userService.saveComplete(user);
+    VeterinaryClinic clinic = new VeterinaryClinic();
+    clinic.setName(params.get("clinicName"));
+    clinic.setAddress(params.get("clinicAddress"));
+    clinic.setEmail(params.get("clinicEmail"));
+    clinic.setPhone(params.get("clinicPhone"));
+    clinic.setOwner(user);
+    clinic.setActive(true);
+    save(clinic);
+  }
+
+  @Override
+  @Transactional
+  public void updateClinicData(User owner, VeterinaryClinic updatedClinic) {
+    VeterinaryClinic currentClinic = findByOwnerId(owner.getId());
+    updatedClinic.setId(currentClinic.getId());
+    update(updatedClinic);
+  }
+
   private void updateClinicFields(VeterinaryClinic existing, VeterinaryClinic updated) {
-    existing.setVeterinarian(updated.getVeterinarian());
     existing.setName(updated.getName());
     existing.setAddress(updated.getAddress());
     existing.setEmail(updated.getEmail());

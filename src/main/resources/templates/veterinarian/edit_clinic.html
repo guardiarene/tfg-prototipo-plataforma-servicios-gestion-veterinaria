@@ -2,84 +2,71 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Actualizar Clínica Veterinaria</title>
+    <title>Actualizar Clinica Veterinaria</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/layout :: layout('Actualizar Clínica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+<div th:replace="~{layouts/layout :: layout('Actualizar Clinica', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content}, ~{})}">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Actualizar Datos del Establecimiento', null)}"></div>
                     <div class="card-body p-4">
-                        
-                        <!-- Formulario Veterinario -->
-                        <form method="POST" th:action="@{/veterinarian/profile/update}" th:object="${veterinarian}" class="mb-5">
+                        <div th:if="${errorProfile}"
+                             th:insert="~{fragments/alert :: errorAlert(${errorProfile})}"></div>
+                        <form class="mb-5" data-confirm="Estas seguro de que deseas actualizar tu perfil profesional?"
+                              method="POST"
+                              th:action="@{/veterinarian/profile/update}"
+                              th:object="${veterinarian}">
                             <input th:field="*{id}" type="hidden"/>
                             <h5 class="mb-3 border-bottom pb-2 text-primary">
-                                <i class="bi bi-person-badge me-2"></i>Datos del Responsable
+                                <i aria-hidden="true" class="bi bi-person-badge me-2"></i>Datos del Responsable
                             </h5>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Nombre</label>
-                                    <input class="form-control" th:field="*{firstName}" type="text" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Nombre', 'firstName', 'bi-person', 'text', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Apellido</label>
-                                    <input class="form-control" th:field="*{lastName}" type="text" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Apellido', 'lastName', 'bi-person', 'text', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Teléfono</label>
-                                    <input class="form-control" th:field="*{phone}" type="tel" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Telefono', 'phone', 'bi-telephone', 'tel', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Email</label>
-                                    <input class="form-control" th:field="*{email}" type="email" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Email', 'email', 'bi-envelope', 'email', '', true)}"></div>
                                 </div>
-                                <div class="col-12">
-                                    <button class="btn btn-outline-primary" type="submit">
-                                        <i class="bi bi-check2-circle me-2"></i>Actualizar Perfil Profesional
-                                    </button>
+                                <div class="col-12 mt-3">
+                                    <div th:replace="~{fragments/button-group :: formButtons('/veterinarian/clinic', 'Cancelar', 'Actualizar Perfil Profesional', true)}"></div>
                                 </div>
                             </div>
                         </form>
-
                         <hr class="my-4">
-
-                        <!-- Formulario Clínica -->
-                        <form method="POST" th:action="@{/veterinarian/clinic/update}" th:object="${clinic}">
+                        <div th:if="${errorClinic}"
+                             th:insert="~{fragments/alert :: errorAlert(${errorClinic})}"></div>
+                        <form data-confirm="Estas seguro de que deseas actualizar los datos de la clinica?"
+                              method="POST"
+                              th:action="@{/veterinarian/clinic/update}" th:object="${clinic}">
                             <input th:field="*{id}" type="hidden"/>
                             <h5 class="mb-3 border-bottom pb-2 text-primary">
-                                <i class="bi bi-hospital me-2"></i>Datos de la Clínica
+                                <i aria-hidden="true" class="bi bi-hospital me-2"></i>Datos de la Clinica
                             </h5>
                             <div class="row g-3">
                                 <div class="col-md-12">
-                                    <label class="form-label fw-bold">Nombre Comercial</label>
-                                    <input class="form-control" th:field="*{name}" type="text" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Nombre Comercial', 'name', 'bi-building', 'text', '', true)}"></div>
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label fw-bold">Dirección</label>
-                                    <input class="form-control" th:field="*{address}" type="text" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Direccion', 'address', 'bi-geo-alt', 'text', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Teléfono de Contacto</label>
-                                    <input class="form-control" th:field="*{phone}" type="tel" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Telefono de Contacto', 'phone', 'bi-telephone', 'tel', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Email Público</label>
-                                    <input class="form-control" th:field="*{email}" type="email" required/>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Email Publico', 'email', 'bi-envelope', 'email', '', true)}"></div>
                                 </div>
                                 <div class="col-12 mt-4">
-                                    <div class="d-flex justify-content-end gap-3">
-                                        <a class="btn btn-secondary px-4" th:href="@{/veterinarian/clinic}">
-                                            <i class="bi bi-arrow-left-circle me-2"></i>Volver
-                                        </a>
-                                        <button class="btn btn-primary px-4" type="submit">
-                                            <i class="bi bi-save2 me-2"></i>Guardar Cambios Clínica
-                                        </button>
-                                    </div>
+                                    <div th:replace="~{fragments/button-group :: formButtons('/veterinarian/clinic', 'Cancelar', 'Guardar Cambios Clinica', true)}"></div>
                                 </div>
                             </div>
                         </form>
@@ -89,6 +76,5 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

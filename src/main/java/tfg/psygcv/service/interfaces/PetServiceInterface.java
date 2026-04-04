@@ -1,8 +1,8 @@
 package tfg.psygcv.service.interfaces;
 
 import java.util.List;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.entity.user.User;
 
 public interface PetServiceInterface {
 

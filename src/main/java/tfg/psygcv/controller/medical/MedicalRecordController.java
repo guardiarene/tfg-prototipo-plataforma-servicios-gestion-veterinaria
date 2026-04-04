@@ -16,14 +16,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.medical.Anamnesis;
-import tfg.psygcv.model.medical.MedicalRecord;
-import tfg.psygcv.model.medical.Visit;
-import tfg.psygcv.model.medical.VisitType;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.medical.Anamnesis;
+import tfg.psygcv.entity.medical.ClinicalExam;
+import tfg.psygcv.entity.medical.MedicalRecord;
+import tfg.psygcv.entity.medical.Visit;
+import tfg.psygcv.entity.medical.VisitType;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
 import tfg.psygcv.service.interfaces.PetServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 
 @RequiredArgsConstructor
 @RequestMapping("/medical-records")
@@ -31,21 +34,22 @@ import tfg.psygcv.service.interfaces.PetServiceInterface;
 public class MedicalRecordController extends BaseController {
 
   private final MedicalRecordServiceInterface medicalRecordService;
-
   private final PetServiceInterface petService;
+  private final UserServiceInterface userService;
 
   @GetMapping("/{id}")
   public String showMedicalRecordDetails(
       @PathVariable Long id, Model model, Authentication authentication) {
-    User user = getCurrentUser(authentication);
+    User user = getCurrentUser(authentication, userService);
     MedicalRecord medicalRecord = medicalRecordService.findCompleteById(id);
     model.addAttribute("medicalRecord", medicalRecord);
+    model.addAttribute("role", user.getRole().name());
     return "medical_records/details";
   }
 
   @GetMapping("/new")
   public String showNewMedicalRecordForm(Model model, Authentication authentication) {
-    User veterinarian = getCurrentUser(authentication);
+    User veterinarian = getCurrentUser(authentication, userService);
     MedicalRecord medicalRecord = initializeNewMedicalRecord();
     model.addAttribute("medicalRecord", medicalRecord);
     model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
@@ -57,19 +61,26 @@ public class MedicalRecordController extends BaseController {
       @Valid @ModelAttribute("medicalRecord") MedicalRecord medicalRecord,
       BindingResult result,
       Authentication authentication,
-      Model model) {
+      Model model,
+      RedirectAttributes ra) {
+    User veterinarian = getCurrentUser(authentication, userService);
     if (result.hasErrors()) {
-      User veterinarian = getCurrentUser(authentication);
       model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
       return "medical_records/new";
     }
-    User veterinarian = getCurrentUser(authentication);
-    medicalRecordService.save(medicalRecord, veterinarian);
-    return REDIRECT_VETERINARIAN_DASHBOARD;
+    try {
+      medicalRecordService.save(medicalRecord, veterinarian);
+      ra.addFlashAttribute("success", "Historia clínica creada correctamente.");
+      return REDIRECT_VETERINARIAN_DASHBOARD;
+    } catch (Exception e) {
+      model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarian));
+      model.addAttribute("error", e.getMessage());
+      return "medical_records/new";
+    }
   }
 
   @GetMapping("/{id}/edit")
-  public String showEditForm(@PathVariable Long id, Model model, Authentication authentication) {
+  public String showEditForm(@PathVariable Long id, Model model) {
     MedicalRecord medicalRecord = medicalRecordService.findCompleteForEditing(id);
     model.addAttribute("medicalRecord", medicalRecord);
     model.addAttribute("pets", List.of(medicalRecord.getPet()));
@@ -82,24 +93,28 @@ public class MedicalRecordController extends BaseController {
       @Valid @ModelAttribute("medicalRecord") MedicalRecord medicalRecord,
       BindingResult result,
       Authentication authentication,
-      Model model) {
+      Model model,
+      RedirectAttributes ra) {
     if (result.hasErrors()) {
+      MedicalRecord completeRecord = medicalRecordService.findCompleteForEditing(id);
+      medicalRecord.setPet(completeRecord.getPet());
       model.addAttribute("pets", List.of(medicalRecord.getPet()));
       return "medical_records/edit";
     }
-    User veterinarian = getCurrentUser(authentication);
-    medicalRecordService.update(id, medicalRecord, veterinarian);
-    return "redirect:/medical-records/" + id;
+    try {
+      User veterinarian = getCurrentUser(authentication, userService);
+      medicalRecordService.update(id, medicalRecord, veterinarian);
+      ra.addFlashAttribute("success", "Historia clínica actualizada correctamente.");
+      return "redirect:/medical-records/" + id;
+    } catch (Exception e) {
+      model.addAttribute("pets", List.of(medicalRecord.getPet()));
+      model.addAttribute("error", e.getMessage());
+      return "medical_records/edit";
+    }
   }
 
-  /**
-   * Initializes a new MedicalRecord with a first Visit for backward compatibility with existing
-   * forms
-   */
   private MedicalRecord initializeNewMedicalRecord() {
     MedicalRecord medicalRecord = new MedicalRecord();
-
-    // Create first visit (backward compatibility)
     Visit firstVisit = new Visit();
     firstVisit.setDate(LocalDate.now());
     firstVisit.setVisitType(VisitType.CONSULTATION);
@@ -107,14 +122,9 @@ public class MedicalRecordController extends BaseController {
     firstVisit.setDiagnostics(new ArrayList<>());
     firstVisit.setTreatments(new ArrayList<>());
     firstVisit.setVaccines(new ArrayList<>());
-
-    // Initialize anamnesis
-    Anamnesis anamnesis = new Anamnesis();
-    firstVisit.setAnamnesis(anamnesis);
-
-    // Add first visit to medical record
+    firstVisit.setAnamnesis(new Anamnesis());
+    firstVisit.setClinicalExam(new ClinicalExam());
     medicalRecord.getVisits().add(firstVisit);
-
     return medicalRecord;
   }
 }

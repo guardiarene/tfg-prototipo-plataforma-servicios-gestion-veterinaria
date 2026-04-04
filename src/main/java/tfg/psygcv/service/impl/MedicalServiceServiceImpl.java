@@ -6,9 +6,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.model.clinic.MedicalService;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.clinic.MedicalService;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.base.MedicalServiceRepository;
 import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
 import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
@@ -20,9 +20,7 @@ import tfg.psygcv.service.validator.MedicalServiceValidator;
 public class MedicalServiceServiceImpl implements MedicalServiceServiceInterface {
 
   private final MedicalServiceRepository medicalServiceRepository;
-
   private final VeterinaryClinicServiceInterface veterinaryClinicService;
-
   private final MedicalServiceValidator medicalServiceValidator;
 
   @Override

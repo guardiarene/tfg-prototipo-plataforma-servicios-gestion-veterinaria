@@ -1,19 +1,18 @@
 package tfg.psygcv.service.validator;
 
-import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.appointment.Appointment;
-import tfg.psygcv.model.clinic.VeterinaryClinic;
-import tfg.psygcv.model.medical.Visit;
-import tfg.psygcv.model.medical.VisitType;
-import tfg.psygcv.model.pet.Pet;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.clinic.VeterinaryClinic;
+import tfg.psygcv.entity.medical.Visit;
+import tfg.psygcv.entity.medical.VisitType;
+import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.repository.query.AppointmentQueryRepository;
 
 @Component
 @RequiredArgsConstructor
-public class VisitValidator {
+public class VisitValidator extends BaseValidator {
 
   private final AppointmentQueryRepository appointmentQueryRepository;
 
@@ -21,7 +20,6 @@ public class VisitValidator {
     validateNotNull(visit, "Visit cannot be null");
     validateNotNull(veterinarian, "Veterinarian cannot be null");
     validateNotNull(pet, "Pet cannot be null");
-
     validateVisitFields(visit);
     validateVeterinarianClinicAccess(veterinarian, pet);
     validateAppointmentRequirement(visit, veterinarian, pet);
@@ -34,6 +32,7 @@ public class VisitValidator {
     validateVisitFields(visit);
   }
 
+  @Override
   public void validateId(Long id) {
     if (id == null || id <= 0) {
       throw new IllegalArgumentException("Visit ID must be a positive number");
@@ -41,74 +40,43 @@ public class VisitValidator {
   }
 
   private void validateVisitFields(Visit visit) {
-    if (visit.getDate() == null) {
-      throw new IllegalArgumentException("Visit date cannot be null");
-    }
-
-    if (visit.getReasonForVisit() == null || visit.getReasonForVisit().isBlank()) {
-      throw new IllegalArgumentException("Reason for visit cannot be empty");
-    }
-
-    if (visit.getVisitType() == null) {
-      throw new IllegalArgumentException("Visit type cannot be null");
-    }
+    validateNotNull(visit.getDate(), "Visit date cannot be null");
+    validateStringNotBlank(visit.getReasonForVisit(), "Reason for visit");
+    validateNotNull(visit.getVisitType(), "Visit type cannot be null");
   }
 
   private void validateVeterinarianClinicAccess(User veterinarian, Pet pet) {
-    List<VeterinaryClinic> veterinarianClinics = veterinarian.getClinicsOwned();
-
-    if (veterinarianClinics == null || veterinarianClinics.isEmpty()) {
-      throw new IllegalStateException("Veterinarian has no registered clinics");
-    }
-
-    boolean hasPetAccess =
-        appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
-            pet, veterinarianClinics, pet.getOwner());
-
-    if (!hasPetAccess) {
-      throw new IllegalStateException(
-          "Pet is not registered in any of the veterinarian's clinics");
+    if (hasVeterinarianAccessToPet(veterinarian, pet)) {
+      throw new IllegalStateException("Pet is not registered in any of the veterinarian's clinics");
     }
   }
 
   private void validateAppointmentRequirement(Visit visit, User veterinarian, Pet pet) {
-    // Visitas de emergencia no requieren cita previa
     if (visit.getVisitType() == VisitType.EMERGENCY) {
       return;
     }
-
-    // Para otros tipos de visita, verificar que existe cita
-    List<VeterinaryClinic> veterinarianClinics = veterinarian.getClinicsOwned();
-    boolean hasAppointments =
-        appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
-            pet, veterinarianClinics, pet.getOwner());
-
-    if (!hasAppointments) {
+    if (hasVeterinarianAccessToPet(veterinarian, pet)) {
       throw new IllegalStateException(
           "Pet has no registered appointments in veterinarian's clinics. Emergency visits can be created without appointments.");
     }
   }
 
-  private void validateNotNull(Object object, String message) {
-    if (object == null) {
-      throw new IllegalArgumentException(message);
+  private boolean hasVeterinarianAccessToPet(User veterinarian, Pet pet) {
+    Set<VeterinaryClinic> veterinarianClinics = veterinarian.getClinicsOwned();
+    VeterinaryClinic workClinic = veterinarian.getWorkClinic();
+    if ((veterinarianClinics == null || veterinarianClinics.isEmpty()) && workClinic == null) {
+      throw new IllegalStateException("Veterinarian has no registered clinics or work clinic");
     }
-  }
-
-  public void validateAppointmentCompatibility(Visit visit, Appointment appointment) {
-    if (appointment == null) {
-      return; // Visitas sin cita son válidas (ej: emergencias)
+    if (veterinarianClinics != null && !veterinarianClinics.isEmpty()) {
+      if (appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
+          pet, veterinarianClinics, pet.getOwner())) {
+        return false;
+      }
     }
-
-    if (visit.getVisitType() == VisitType.EMERGENCY) {
-      throw new IllegalStateException("Emergency visits should not be linked to appointments");
+    if (workClinic != null) {
+      return !appointmentQueryRepository.existsAppointmentByPetAndClinicAndCustomer(
+          pet, workClinic, pet.getOwner());
     }
-
-    // Validar que la cita corresponde a la mascota correcta
-    if (visit.getMedicalRecord() != null
-        && visit.getMedicalRecord().getPet() != null
-        && !visit.getMedicalRecord().getPet().getId().equals(appointment.getPet().getId())) {
-      throw new IllegalStateException("Appointment does not belong to the same pet");
-    }
+    return true;
   }
 }

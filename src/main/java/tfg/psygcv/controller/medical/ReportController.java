@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import tfg.psygcv.config.util.JsonUtil;
 import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.model.user.User;
+import tfg.psygcv.entity.user.User;
 import tfg.psygcv.service.interfaces.StatisticsServiceInterface;
+import tfg.psygcv.service.interfaces.UserServiceInterface;
 
 @RequiredArgsConstructor
 @RequestMapping("/reports")
@@ -22,8 +23,8 @@ import tfg.psygcv.service.interfaces.StatisticsServiceInterface;
 public class ReportController extends BaseController {
 
   private final StatisticsServiceInterface statisticsService;
-
   private final JsonUtil jsonUtil;
+  private final UserServiceInterface userService;
 
   @GetMapping("/diseases-treatments")
   public String showDiseasesTreatmentsReport(Model model) {
@@ -37,11 +38,10 @@ public class ReportController extends BaseController {
       @RequestParam LocalDate endDate,
       Authentication authentication,
       Model model) {
-    User veterinarian = getCurrentUser(authentication);
-    Map<String, Long> diseases =
-        statisticsService.getCommonDiseases(veterinarian, startDate, endDate);
+    User user = getCurrentUser(authentication, userService);
+    Map<String, Long> diseases = statisticsService.getCommonDiseases(user, startDate, endDate);
     Map<String, Long> treatments =
-        statisticsService.getFrequentTreatments(veterinarian, startDate, endDate);
+        statisticsService.getFrequentTreatments(user, startDate, endDate);
     populateReportModel(model, diseases, treatments, startDate, endDate);
     return "reports/diseases_treatments";
   }
@@ -61,9 +61,9 @@ public class ReportController extends BaseController {
       @RequestParam LocalDate endDate,
       Authentication authentication,
       Model model) {
-    User veterinarian = getCurrentUser(authentication);
+    User user = getCurrentUser(authentication, userService);
     Map<LocalDate, Long> appointments =
-        statisticsService.getAppointmentsByDate(veterinarian, startDate, endDate);
+        statisticsService.getAppointmentsByDate(user, startDate, endDate);
     model.addAttribute("appointments", appointments);
     model.addAttribute("appointmentsJson", jsonUtil.toJson(appointments));
     model.addAttribute("startDate", startDate);

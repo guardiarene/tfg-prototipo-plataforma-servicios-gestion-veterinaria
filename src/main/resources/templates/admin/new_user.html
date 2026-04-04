@@ -7,82 +7,58 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/layout :: layout('Registro de Usuario', ~{layouts/navbar :: navbar('ADMIN')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+<div th:replace="~{layouts/layout :: layout('Registro de Usuario', ~{layouts/navbar :: navbar('SYSTEM_ADMINISTRATOR')}, ~{::content}, ~{})}">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-person-plus', 'Registrar Nuevo Usuario', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form method="POST" th:action="@{/users/new}" th:object="${user}">
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Nombre</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                        <input class="form-control" required th:errorclass="is-invalid" th:field="*{firstName}" type="text">
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
-                                    </div>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Nombre', 'firstName', 'bi-person', 'text', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Apellido</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                        <input class="form-control" required th:errorclass="is-invalid" th:field="*{lastName}" type="text">
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
-                                    </div>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Apellido', 'lastName', 'bi-person', 'text', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Teléfono</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
-                                        <input class="form-control" th:errorclass="is-invalid" th:field="*{phone}" type="tel">
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
-                                    </div>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Telefono', 'phone', 'bi-telephone', 'tel', '', false)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Email</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-                                        <input class="form-control" required th:errorclass="is-invalid" th:field="*{email}" type="email">
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                                    </div>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Email', 'email', 'bi-envelope', 'email', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Contraseña</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
-                                        <input class="form-control" required th:errorclass="is-invalid" th:field="*{password}" type="password">
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-                                    </div>
+                                    <div th:replace="~{fragments/input-group :: inputGroup('Contrasena', 'password', 'bi-key', 'password', '', true)}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Rol</label>
+                                    <label class="form-label fw-bold" for="role">Rol</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
-                                        <select class="form-select" required th:errorclass="is-invalid" th:field="*{role}">
-                                            <option value="" disabled selected>Seleccionar rol...</option>
-                                            <option th:each="role : ${roles}" th:text="${role.name()}" th:value="${role}"></option>
+                                        <span class="input-group-text bg-light">
+                                            <i aria-hidden="true" class="bi bi-shield-check"></i>
+                                        </span>
+                                        <select class="form-select" id="role" required th:errorclass="is-invalid"
+                                                th:field="*{role}">
+                                            <option disabled selected value="">Seleccionar rol...</option>
+                                            <option th:each="role : ${roles}" th:text="${role.name()}"
+                                                    th:value="${role}"></option>
                                         </select>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+                                        <div class="invalid-feedback" th:errors="*{role}"
+                                             th:if="${#fields.hasErrors('role')}"></div>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-check form-switch mt-2">
-                                        <input checked class="form-check-input" id="activeSwitch" role="switch" th:field="*{active}"
+                                        <input checked class="form-check-input" id="activeSwitch" role="switch"
+                                               th:field="*{active}"
                                                type="checkbox">
                                         <label class="form-check-label fw-bold" for="activeSwitch">Cuenta Activa</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-end gap-3 mt-5">
-                                <a class="btn btn-secondary px-4" th:href="@{/admin/dashboard}">
-                                    <i class="bi bi-arrow-left-circle me-2"></i> Cancelar
-                                </a>
-                                <button class="btn btn-primary px-4" type="submit">
-                                    <i class="bi bi-save2 me-2"></i> Registrar Usuario
-                                </button>
-                            </div>
+                            <div th:replace="~{fragments/button-group :: formButtons('/admin/dashboard', 'Cancelar', 'Registrar Usuario', true)}"></div>
                         </form>
                     </div>
                 </div>
@@ -90,6 +66,5 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

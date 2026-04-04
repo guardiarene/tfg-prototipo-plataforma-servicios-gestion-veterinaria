@@ -7,62 +7,74 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{layouts/layout :: layout('Agendar Turno', ~{layouts/navbar :: navbar('RECEPTIONIST')}, ~{::content})}">
-    <div th:fragment="content" class="container mt-4">
+<div th:replace="~{layouts/layout :: layout('Agendar Turno', ~{layouts/navbar :: navbar('RECEPTIONIST')}, ~{::content}, ~{::pageScripts})}">
+    <div class="container mt-4" th:fragment="content">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-calendar-plus', 'Agendar Nuevo Turno', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form method="post" th:action="@{/appointments/schedule}" th:object="${appointment}">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Cliente</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-                                        <select class="form-select" id="clientId" name="clientId" required>
+                                        <span class="input-group-text bg-light"><i aria-hidden="true"
+                                                                                   class="bi bi-person"></i></span>
+                                        <select class="form-select" id="customerId" name="customerId" required>
                                             <option disabled selected value="">Seleccione un cliente...</option>
-                                            <option th:each="client : ${clients}"
-                                                    th:selected="${client.id == clientId}"
-                                                    th:text="${client.firstName + ' ' + client.lastName}"
-                                                    th:value="${client.id}"></option>
+                                            <option th:each="customer : ${customers}"
+                                                    th:selected="${customer.id == customerId}"
+                                                    th:text="${customer.firstName + ' ' + customer.lastName}"
+                                                    th:value="${customer.id}"></option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Mascota</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-heart"></i></span>
-                                        <select class="form-select" id="petId" name="pet.id" required th:field="*{pet.id}">
+                                        <span class="input-group-text bg-light"><i aria-hidden="true"
+                                                                                   class="bi bi-heart"></i></span>
+                                        <select class="form-select" id="petId" required
+                                                th:field="*{pet.id}">
                                             <option disabled selected value="">Seleccione una mascota...</option>
                                             <option th:each="pet : ${pets}"
-                                                    th:text="${pet.name + ' (' + pet.species + ')'}"
+                                                    th:text="${pet.name + ' (' + pet.species.description + ')'}"
                                                     th:value="${pet.id}"></option>
                                         </select>
                                     </div>
-                                    <div class="alert alert-warning mt-2 py-2 small" th:if="${clientId != null && #lists.isEmpty(pets)}">
-                                        <i class="bi bi-exclamation-triangle me-1"></i>Este cliente no tiene mascotas registradas.
+                                    <div class="alert alert-warning mt-2 py-2 small"
+                                         th:if="${customerId != null && #lists.isEmpty(pets)}">
+                                        <i aria-hidden="true" class="bi bi-exclamation-triangle me-1"></i>Este cliente
+                                        no tiene mascotas
+                                        registradas.
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Fecha</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-calendar3"></i></span>
-                                        <input class="form-control" required th:field="*{date}" type="date"
-                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                        <span class="input-group-text bg-light"><i aria-hidden="true"
+                                                                                   class="bi bi-calendar3"></i></span>
+                                        <input class="form-control" required th:field="*{date}"
+                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                               type="date">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Hora</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
+                                        <span class="input-group-text bg-light"><i aria-hidden="true"
+                                                                                   class="bi bi-clock"></i></span>
                                         <input class="form-control" required th:field="*{time}" type="time">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-bold">Servicio Médico</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-clipboard2-pulse"></i></span>
+                                        <span class="input-group-text bg-light"><i
+                                                class="bi bi-clipboard2-pulse"></i></span>
                                         <select class="form-select" id="serviceId" name="serviceId" required>
                                             <option disabled selected value="">Seleccione un servicio...</option>
                                             <option th:each="service : ${services}" th:text="${service.name}"
@@ -73,10 +85,12 @@
                             </div>
                             <div class="d-flex justify-content-end gap-3 mt-5">
                                 <a class="btn btn-secondary px-4" th:href="@{/receptionist/dashboard}">
-                                    <i class="bi bi-arrow-left-circle me-2"></i> Volver
+                                    <i aria-hidden="true" class="bi bi-arrow-left-circle me-2"></i> Volver
                                 </a>
-                                <button class="btn btn-primary px-4" type="submit" th:disabled="${clientId == null || #lists.isEmpty(pets)}">
-                                    <i class="bi bi-save2 me-2"></i> Registrar Turno
+                                <button class="btn btn-primary px-4"
+                                        th:disabled="${customerId == null || #lists.isEmpty(pets)}"
+                                        type="submit">
+                                    <i aria-hidden="true" class="bi bi-save2 me-2"></i> Registrar Turno
                                 </button>
                             </div>
                         </form>
@@ -86,18 +100,20 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.getElementById('clientId').addEventListener('change', function () {
-        const selectedValue = this.value;
-        const url = new URL(window.location.href);
-        if (selectedValue) {
-            url.searchParams.set('clientId', selectedValue);
-        } else {
-            url.searchParams.delete('clientId');
-        }
-        window.location.href = url.toString();
-    });
-</script>
+<div th:fragment="pageScripts">
+    <script>
+        document.getElementById('customerId').addEventListener('change', function () {
+            var selectedValue = this.value;
+            var url = new URL(window.location.href);
+            if (selectedValue) {
+                url.searchParams.set('customerId', selectedValue);
+            } else {
+                url.searchParams.delete('customerId');
+            }
+            window.location.href = url.toString();
+        });
+    </script>
+</div>
+</div>
 </body>
 </html>

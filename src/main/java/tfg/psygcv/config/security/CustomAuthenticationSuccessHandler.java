@@ -3,26 +3,32 @@ package tfg.psygcv.config.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.model.user.User;
 
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
   @Override
   public void onAuthenticationSuccess(
-      HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull Authentication authentication)
       throws IOException {
-    User user = (User) authentication.getPrincipal();
-    String role = user.getAuthorities().iterator().next().getAuthority();
+    String role =
+        authentication.getAuthorities().stream()
+            .findFirst()
+            .map(GrantedAuthority::getAuthority)
+            .orElseThrow(() -> new IllegalStateException("Authenticated user has no authorities"));
     String redirectUrl =
         switch (role) {
-          case "ROLE_VETERINARIO" -> "/veterinarian/dashboard";
-          case "ROLE_RECEPCIONISTA" -> "/receptionist/dashboard";
-          case "ROLE_CLIENTE" -> "/client/dashboard";
-          case "ROLE_ADMINISTRADOR" -> "/admin/dashboard";
+          case "ROLE_VETERINARIAN" -> "/veterinarian/dashboard";
+          case "ROLE_RECEPTIONIST" -> "/receptionist/dashboard";
+          case "ROLE_CUSTOMER" -> "/customer/dashboard";
+          case "ROLE_SYSTEM_ADMINISTRATOR" -> "/admin/dashboard";
           default -> throw new IllegalStateException("Non-existent role: " + role);
         };
     response.sendRedirect(redirectUrl);
