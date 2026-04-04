@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.clinic;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.nio.file.AccessDeniedException;
@@ -9,18 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.entity.clinic.MedicalService;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.MedicalServiceRepository;
-import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
-import tfg.psygcv.service.validator.MedicalServiceValidator;
+import tfg.psygcv.repository.clinic.MedicalServiceRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class MedicalServiceServiceImpl implements MedicalServiceServiceInterface {
+public class MedicalServiceServiceImpl implements MedicalServiceService {
 
   private final MedicalServiceRepository medicalServiceRepository;
-  private final VeterinaryClinicServiceInterface veterinaryClinicService;
+  private final VeterinaryClinicService veterinaryClinicService;
   private final MedicalServiceValidator medicalServiceValidator;
 
   @Override
