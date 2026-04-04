@@ -19,10 +19,12 @@ public class UserValidator extends BaseValidator {
     validateBasicFields(user);
   }
 
-  public void validateForCompleteUpdate(User user) {
-    validateNotNull(user, "User cannot be null");
-    validateBasicFields(user);
-    validateNotNull(user.getRole(), "User role cannot be null");
+  public void validateForCompleteUpdate(UpdateAdminUserCommand command) {
+    validateNotNull(command, "Update command cannot be null");
+    validateStringNotBlank(command.getFirstName(), "First name");
+    validateStringNotBlank(command.getLastName(), "Last name");
+    validateEmail(command.getEmail());
+    validateNotNull(command.getRole(), "User role cannot be null");
   }
 
   private void validateBasicFields(User user) {

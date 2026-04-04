@@ -1,7 +1,6 @@
 package tfg.psygcv.service.appointment;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import tfg.psygcv.entity.appointment.Appointment;
@@ -14,8 +13,11 @@ import tfg.psygcv.service.validation.BaseValidator;
 public class AppointmentValidator extends BaseValidator {
 
   public void validateClientAppointmentCreation(
-      String dateStr, Long petId, Long serviceId, Long clinicId, User client) {
-    validateDateString(dateStr);
+      LocalDate date, Long petId, Long serviceId, Long clinicId, User client) {
+    validateNotNull(date, "Appointment date cannot be null");
+    if (date.isBefore(LocalDate.now())) {
+      throw new IllegalArgumentException("Appointment date cannot be in the past");
+    }
     validateId(petId);
     validateId(serviceId);
     validateId(clinicId);
@@ -23,21 +25,24 @@ public class AppointmentValidator extends BaseValidator {
   }
 
   public void validateReceptionistAppointmentCreation(
-      Appointment appointment, Long serviceId, Long receptionistId) {
-    validateAppointment(appointment);
+      ScheduleAppointmentCommand command, Long serviceId, Long receptionistId) {
+    validateNotNull(command, "Schedule command cannot be null");
+    validateNotNull(command.getDate(), "Appointment date is required");
+    validateNotNull(command.getTime(), "Appointment time is required");
+    validateNotNull(command.getPetId(), "Pet is required for appointment");
     validateId(serviceId);
     validateId(receptionistId);
-    validateAppointmentBasicFields(appointment);
   }
 
-  public void validateReschedule(Long appointmentId, Appointment updatedAppointment) {
+  public void validateReschedule(Long appointmentId, RescheduleAppointmentCommand command) {
     validateId(appointmentId);
-    validateAppointment(updatedAppointment);
-    validateAppointmentScheduleFields(updatedAppointment);
-    if (updatedAppointment.getMedicalService() == null
-        || updatedAppointment.getMedicalService().getId() == null) {
-      throw new IllegalArgumentException("Medical service is required for rescheduling");
+    validateNotNull(command, "Reschedule command cannot be null");
+    validateNotNull(command.getDate(), "New appointment date is required");
+    validateNotNull(command.getTime(), "New appointment time is required");
+    if (command.getDate().isBefore(LocalDate.now())) {
+      throw new IllegalArgumentException("New appointment date cannot be in the past");
     }
+    validateNotNull(command.getMedicalServiceId(), "Medical service is required for rescheduling");
   }
 
   public void validateAppointment(Appointment appointment) {
@@ -54,35 +59,8 @@ public class AppointmentValidator extends BaseValidator {
     }
   }
 
-  private void validateDateString(String dateStr) {
-    validateStringNotBlank(dateStr, "Date string");
-    try {
-      LocalDate date = LocalDate.parse(dateStr);
-      if (date.isBefore(LocalDate.now())) {
-        throw new IllegalArgumentException("Appointment date cannot be in the past");
-      }
-    } catch (DateTimeParseException e) {
-      throw new IllegalArgumentException("Invalid date format. Expected format: YYYY-MM-DD");
-    }
-  }
-
   private void validateClient(User client) {
     validateNotNull(client, "Client cannot be null");
     validateNotNull(client.getId(), "Client must have a valid ID");
-  }
-
-  private void validateAppointmentBasicFields(Appointment appointment) {
-    validateNotNull(appointment.getDate(), "Appointment date is required");
-    validateNotNull(appointment.getTime(), "Appointment time is required");
-    validateNotNull(appointment.getPet(), "Pet is required for appointment");
-    validateNotNull(appointment.getCustomer(), "Client is required for appointment");
-  }
-
-  private void validateAppointmentScheduleFields(Appointment appointment) {
-    validateNotNull(appointment.getDate(), "New appointment date is required");
-    validateNotNull(appointment.getTime(), "New appointment time is required");
-    if (appointment.getDate().isBefore(LocalDate.now())) {
-      throw new IllegalArgumentException("New appointment date cannot be in the past");
-    }
   }
 }
