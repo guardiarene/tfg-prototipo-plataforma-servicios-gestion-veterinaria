@@ -15,7 +15,7 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
   Optional<Pet> findByIdAndActive(@Param("petId") Long petId);
 
   @Query(
-      "SELECT p FROM Pet p LEFT JOIN FETCH p.medicalRecord"
+      "SELECT p FROM Pet p JOIN FETCH p.owner LEFT JOIN FETCH p.medicalRecord"
           + " WHERE p.owner.id = :ownerId AND p.active = TRUE")
   List<Pet> findByOwnerId(@Param("ownerId") Long ownerId);
 }

@@ -13,11 +13,13 @@ import tfg.psygcv.entity.user.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-  Optional<User> findByEmail(String email);
+  Optional<User> findByEmailAndActiveTrue(String email);
 
   @EntityGraph(attributePaths = {"clinicsOwned", "workClinic"})
   @Query("SELECT DISTINCT u FROM User u WHERE u.id = :userId")
   Optional<User> findByIdWithClinicContext(@Param("userId") Long userId);
 
   List<User> findByRoleAndActive(Role role, Boolean active);
+
+  List<User> findByWorkClinicId(Long clinicId);
 }
