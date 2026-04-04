@@ -22,7 +22,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         authentication.getAuthorities().stream()
             .findFirst()
             .map(GrantedAuthority::getAuthority)
-            .orElseThrow(() -> new IllegalStateException("Authenticated user has no authorities"));
+            .orElseThrow(
+                () -> new IllegalStateException("Authenticated dashboard has no authorities"));
     String redirectUrl =
         switch (role) {
           case "ROLE_VETERINARIAN" -> "/veterinarian/dashboard";
