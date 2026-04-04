@@ -20,16 +20,17 @@ Referenced by `CLAUDE.md` and `.github/copilot-instructions.md`.
 
 Layered: **Controller -> Service -> Repository**
 
-| Layer      | Responsibility                           | Rules                                                                              |
-|------------|------------------------------------------|------------------------------------------------------------------------------------|
-| Controller | Receive HTTP requests, delegate, respond | No business logic. No `try/catch`. No entity types in signatures. Always use DTOs. |
-| Service    | All business logic                       | `@Transactional`. Returns `Optional<T>` for single lookups. Never returns `null`.  |
-| Repository | Data access via JPA interfaces           | No business logic. No transactions. No service/controller imports.                 |
-| Entity     | Persistence model                        | No business logic. No presentation logic. No service/controller imports.           |
-| DTO        | Transfer objects for controller I/O      | Validation annotations. No JPA annotations. No entity imports.                     |
-| Mapper     | Entity <-> DTO conversion                | Static methods or dedicated classes. No framework dependencies.                    |
-| Exception  | Domain-specific error types              | Extend `RuntimeException`. Handled exclusively by `@ControllerAdvice`.             |
-| Validator  | Complex business validation              | Called by services. Throws domain exceptions.                                      |
+| Layer      | Responsibility                           | Rules                                                                                                                                                           |
+|------------|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Controller | Receive HTTP requests, delegate, respond | No business logic. No `try/catch`. No entity types in signatures. Always use DTOs. Calls mappers to convert between DTOs and entities/commands.                 |
+| Service    | All business logic                       | `@Transactional`. Returns `Optional<T>` for single lookups. Never returns `null`. Never imports from `dto.*`. Accepts entities, primitives, or command objects. |
+| Repository | Data access via JPA interfaces           | No business logic. No transactions. No service/controller imports.                                                                                              |
+| Entity     | Persistence model                        | No business logic. No presentation logic. No service/controller imports.                                                                                        |
+| DTO        | Transfer objects for controller I/O      | Jakarta Validation annotations. No JPA annotations. No entity imports. Lives in `dto/<domain>/request/` or `dto/<domain>/response/`.                            |
+| Mapper     | Entity <-> DTO conversion                | Non-instantiable utility class. All methods `public static`. Called only from controllers. No framework dependencies.                                           |
+| Command    | Input contract for complex service ops   | Plain POJO in `service/<domain>/`. No validation annotations. No JPA annotations. Used when parameters exceed 3 or map to no single entity.                     |
+| Exception  | Domain-specific error types              | Extend `RuntimeException`. Handled exclusively by `@ControllerAdvice`.                                                                                          |
+| Validator  | Complex business validation              | Called by services. Throws domain exceptions.                                                                                                                   |
 
 ---
 
@@ -56,10 +57,26 @@ tfg.psygcv
 │
 ├── dto/                       # Request/response DTOs
 │   ├── appointment/
+│   │   ├── request/           #   ScheduleAppointmentRequest, RescheduleAppointmentRequest
+│   │   └── response/          #   AppointmentResponse, AppointmentSummaryResponse
 │   ├── clinic/
+│   │   ├── request/           #   RegisterClinicRequest, UpdateClinicRequest
+│   │   └── response/          #   VeterinaryClinicResponse, VeterinaryClinicSummaryResponse,
+│   │                          #   MedicalServiceResponse
 │   ├── medical/
+│   │   ├── request/           #   CreateMedicalRecordRequest, UpdateMedicalRecordRequest,
+│   │   │                      #   CreateVisitRequest, UpdateVisitRequest,
+│   │   │                      #   ClinicalExamRequest, AnamnesisRequest,
+│   │   │                      #   DiagnosticRequest, TreatmentRequest, VaccineRequest
+│   │   └── response/          #   MedicalRecordResponse, MedicalRecordSummaryResponse,
+│   │                          #   VisitResponse, ClinicalExamResponse, AnamnesisResponse,
+│   │                          #   DiagnosticResponse, TreatmentResponse, VaccineResponse
 │   ├── pet/
+│   │   ├── request/           #   CreatePetRequest, UpdatePetRequest
+│   │   └── response/          #   PetResponse, PetSummaryResponse
 │   └── user/
+│       ├── request/           #   CreateStaffRequest, UpdateUserRequest
+│       └── response/          #   UserResponse, UserSummaryResponse
 │
 ├── entity/                    # JPA entities and enums
 │   ├── appointment/
@@ -109,10 +126,13 @@ tfg.psygcv
 ### Principles
 
 - Sub-packages group by **domain**: `user/`, `pet/`, `medical/`, `appointment/`, `clinic/`
-- Interface, implementation, and validator for the same service are **co-located** in the same domain package
+- Interface, implementation, validator, and command objects for the same service are **co-located** in the same domain
+  package
 - Cross-cutting base classes live in dedicated shared packages (`entity/audit/`, `service/validation/`)
 - Single classes that serve the entire layer live at the layer root (e.g., `BaseController.java`,
   `PublicController.java`)
+- DTOs are always split into `request/` and `response/` sub-packages within each domain
+- Command objects (`XCommand`) live in `service/<domain>/`, not in `dto/`
 - Max nesting: 3 levels
 - No catch-all packages: `utils/`, `helpers/`, `misc/`, `common/`, `base/`
 
@@ -129,20 +149,23 @@ tfg.psygcv
 
 ## Naming Conventions
 
-| Element            | Convention                         | Example                             |
-|--------------------|------------------------------------|-------------------------------------|
-| Classes            | `PascalCase`                       | `AppointmentService`                |
-| Methods            | `camelCase`                        | `findByClinicId`                    |
-| Constants          | `UPPER_SNAKE_CASE`                 | `MAX_RETRY_COUNT`                   |
-| URL paths          | `kebab-case`                       | `/medical-records/{id}`             |
-| Boolean methods    | `is`, `has`, `can`                 | `isActive()`, `hasAppointments()`   |
-| Service interfaces | `XService`                         | `UserService`, `PetService`         |
-| Service impls      | `XServiceImpl`                     | `UserServiceImpl`, `PetServiceImpl` |
-| DTOs (input)       | `CreateXRequest`, `UpdateXRequest` | `CreateUserRequest`                 |
-| DTOs (output)      | `XResponse`, `XSummaryResponse`    | `UserResponse`                      |
-| Mappers            | `XMapper`                          | `UserMapper`, `PetMapper`           |
-| Exceptions         | Descriptive noun                   | `DuplicateEmailException`           |
-| Validators         | `XValidator`                       | `AppointmentValidator`              |
+| Element                | Convention                         | Example                                               |
+|------------------------|------------------------------------|-------------------------------------------------------|
+| Classes                | `PascalCase`                       | `AppointmentService`                                  |
+| Methods                | `camelCase`                        | `findByClinicId`                                      |
+| Constants              | `UPPER_SNAKE_CASE`                 | `MAX_RETRY_COUNT`                                     |
+| URL paths              | `kebab-case`                       | `/medical-records/{id}`                               |
+| Boolean methods        | `is`, `has`, `can`                 | `isActive()`, `hasAppointments()`                     |
+| Service interfaces     | `XService`                         | `UserService`, `PetService`                           |
+| Service impls          | `XServiceImpl`                     | `UserServiceImpl`, `PetServiceImpl`                   |
+| DTOs (input, CRUD)     | `CreateXRequest`, `UpdateXRequest` | `CreatePetRequest`, `UpdatePetRequest`                |
+| DTOs (input, domain)   | `<VerbPhrase>Request`              | `ScheduleAppointmentRequest`, `RegisterClinicRequest` |
+| DTOs (output, full)    | `XResponse`                        | `UserResponse`, `AppointmentResponse`                 |
+| DTOs (output, summary) | `XSummaryResponse`                 | `PetSummaryResponse`, `UserSummaryResponse`           |
+| Mappers                | `XMapper`                          | `UserMapper`, `PetMapper`                             |
+| Command objects        | `XCommand`                         | `ScheduleAppointmentCommand`                          |
+| Exceptions             | Descriptive noun                   | `DuplicateEmailException`                             |
+| Validators             | `XValidator`                       | `AppointmentValidator`                                |
 
 No abbreviations unless universally known (`id`, `url`, `dto`).
 No generic names: `XDto`, `XData`, `XInfo`, `XObject`.
@@ -164,6 +187,7 @@ Every entity must implement `equals()` and `hashCode()` manually, based on the `
 When `id` is `null` (transient entity), fall back to `super.equals()` / `super.hashCode()`.
 
 ```java
+
 @Override
 public boolean equals(Object o) {
     if (this == o) return true;
@@ -200,9 +224,19 @@ Controllers never accept or return JPA entities. All controller I/O uses DTOs.
 
 ### Naming
 
-- `CreateXRequest`, `UpdateXRequest` for input
-- `XResponse`, `XSummaryResponse` for output
-- Never `XDto`, `XData`, `XBean`
+**Request DTOs (input):**
+
+- `CreateXRequest`, `UpdateXRequest` for standard CRUD operations
+- `<VerbPhrase>Request` for domain-specific operations that don't map to simple create/update semantics:
+  `ScheduleAppointmentRequest`, `RescheduleAppointmentRequest`, `RegisterClinicRequest`
+- The verb must reflect the domain operation, not the HTTP method
+
+**Response DTOs (output):**
+
+- `XResponse` for full detail views
+- `XSummaryResponse` for lists and selectors — only the fields the view actually needs
+
+**Never:** `XDto`, `XData`, `XBean`, `XInfo`, `XObject`
 
 ### Validation
 
@@ -212,10 +246,21 @@ Controllers never accept or return JPA entities. All controller I/O uses DTOs.
 
 ### Mapping
 
-- Manual mapping in dedicated mapper classes or static factory methods within DTOs
+- Manual mapping in dedicated mapper utility classes — one mapper per domain entity
+- Mappers are **non-instantiable utility classes**: `private` no-arg constructor that throws
+  `UnsupportedOperationException`; all methods are `public static`
 - No MapStruct, no reflection-based mappers unless explicitly approved
 - Never use `BeanUtils.copyProperties()` — it copies audit fields silently and breaks with entity inheritance
-- Mapper methods: `toEntity(dto)`, `toResponse(entity)`, `toSummary(entity)`
+- Mappers are called **only from controllers** — never from services or repositories
+
+**Standard mapper methods:**
+
+| Method                    | Direction    | Use                                        |
+|---------------------------|--------------|--------------------------------------------|
+| `toEntity(XRequest)`      | DTO → Entity | Before passing to service on create/update |
+| `toResponse(Entity)`      | Entity → DTO | Detail views                               |
+| `toSummary(Entity)`       | Entity → DTO | Lists and selectors                        |
+| `toUpdateRequest(Entity)` | Entity → DTO | Pre-populating edit forms                  |
 
 ---
 
@@ -237,6 +282,30 @@ Controllers never accept or return JPA entities. All controller I/O uses DTOs.
 
 Services that operate on user-owned resources (appointments, pets, visits, medical records) must verify
 that the authenticated user has access to the resource before performing the operation.
+
+### Layer Boundaries
+
+Services must not import from the `dto.*` package. DTOs are a presentation concern; importing them
+into the service layer couples the domain to the presentation contract and inverts the dependency
+direction.
+
+**What services accept as parameters:**
+
+| Scenario                                                         | Service receives                                                | Who does the conversion                 |
+|------------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------|
+| Simple CRUD                                                      | `Entity` (mapped from DTO by controller via mapper)             | Controller                              |
+| Few independent params (≤ 3)                                     | Explicit primitives: `Long id`, `LocalDate date`, `String name` | Controller                              |
+| Complex operation (> 3 params, or params span multiple entities) | `XCommand` (defined in `service/<domain>/`)                     | Controller maps `XRequest` → `XCommand` |
+
+**Command objects (`XCommand`):**
+
+- Plain POJO — no Jakarta Validation annotations, no JPA annotations, no Spring annotations
+- Lives in `service/<domain>/` alongside the service interface and implementation
+- Represents the service's own input contract, decoupled from the presentation DTO
+- Use `@Builder` (Lombok) is acceptable here — commands are not JPA entities
+
+**Services always return entities.** The controller is responsible for mapping returned entities
+to the appropriate response DTO.
 
 ---
 
@@ -440,4 +509,6 @@ Conventional Commits format: `feat(user): implement profile page with avatar upl
 - Catch exceptions in controllers (use `@ControllerAdvice`)
 - Return `null` from service methods (use `Optional`)
 - Use `BeanUtils.copyProperties()` for entity mapping
+- Import from `dto.*` in the service or repository layer
+- Call mapper methods from services or repositories — mappers belong in the controller layer
 - Log passwords, tokens, or personal data
