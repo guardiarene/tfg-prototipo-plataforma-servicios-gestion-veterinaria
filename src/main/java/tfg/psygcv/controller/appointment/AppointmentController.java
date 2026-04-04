@@ -19,28 +19,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.config.security.AuthenticatedUser;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.appointment.AppointmentStatus;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
-import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
-import tfg.psygcv.service.interfaces.PetServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
+import tfg.psygcv.service.appointment.AppointmentService;
+import tfg.psygcv.service.clinic.MedicalServiceService;
+import tfg.psygcv.service.clinic.VeterinaryClinicService;
+import tfg.psygcv.service.pet.PetService;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/appointments")
 @Controller
 public class AppointmentController extends BaseController {
 
-  private final VeterinaryClinicServiceInterface veterinaryClinicService;
-  private final MedicalServiceServiceInterface medicalServiceService;
-  private final PetServiceInterface petService;
-  private final AppointmentServiceInterface appointmentService;
-  private final UserServiceInterface userService;
+  private final VeterinaryClinicService veterinaryClinicService;
+  private final MedicalServiceService medicalServiceService;
+  private final PetService petService;
+  private final AppointmentService appointmentService;
+  private final UserService userService;
 
   @GetMapping
   public String listAppointments(Model model, Authentication authentication) {

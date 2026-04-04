@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.config.security.AuthenticatedUser;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.service.interfaces.PetServiceInterface;
+import tfg.psygcv.service.pet.PetService;
 
 @RequiredArgsConstructor
 @RequestMapping("/pets")
 @Controller
 public class PetController extends BaseController {
 
-  private final PetServiceInterface petService;
+  private final PetService petService;
 
   @GetMapping
   public String listPets(Model model, Authentication authentication) {

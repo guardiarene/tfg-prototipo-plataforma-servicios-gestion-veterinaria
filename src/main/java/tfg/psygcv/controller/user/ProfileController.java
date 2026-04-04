@@ -1,4 +1,4 @@
-package tfg.psygcv.controller.auth;
+package tfg.psygcv.controller.user;
 
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_LOGIN_LOGOUT;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PROFILE;
@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
+import tfg.psygcv.service.clinic.VeterinaryClinicService;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/profile")
 @Controller
 public class ProfileController extends BaseController {
 
-  private final UserServiceInterface userService;
-  private final VeterinaryClinicServiceInterface veterinaryClinicService;
+  private final UserService userService;
+  private final VeterinaryClinicService veterinaryClinicService;
 
   @GetMapping
   public String showProfile(Model model, Authentication authentication) {

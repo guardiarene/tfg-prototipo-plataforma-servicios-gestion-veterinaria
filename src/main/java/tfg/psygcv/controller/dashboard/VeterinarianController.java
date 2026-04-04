@@ -1,4 +1,4 @@
-package tfg.psygcv.controller.user;
+package tfg.psygcv.controller.dashboard;
 
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_CLINIC_UPDATED;
 
@@ -10,21 +10,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
+import tfg.psygcv.service.clinic.VeterinaryClinicService;
+import tfg.psygcv.service.medical.MedicalRecordService;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/veterinarian")
 @Controller
 public class VeterinarianController extends BaseController {
 
-  private final MedicalRecordServiceInterface medicalRecordService;
-  private final VeterinaryClinicServiceInterface veterinaryClinicService;
-  private final UserServiceInterface userService;
+  private final MedicalRecordService medicalRecordService;
+  private final VeterinaryClinicService veterinaryClinicService;
+  private final UserService userService;
 
   @GetMapping("/dashboard")
   public String showDashboard(Model model, Authentication authentication) {

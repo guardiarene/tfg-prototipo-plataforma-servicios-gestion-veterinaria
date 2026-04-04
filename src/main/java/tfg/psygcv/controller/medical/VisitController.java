@@ -14,24 +14,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.medical.Anamnesis;
 import tfg.psygcv.entity.medical.MedicalRecord;
 import tfg.psygcv.entity.medical.Visit;
 import tfg.psygcv.entity.medical.VisitType;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.interfaces.MedicalRecordServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VisitServiceInterface;
+import tfg.psygcv.service.medical.MedicalRecordService;
+import tfg.psygcv.service.medical.VisitService;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/visits")
 @Controller
 public class VisitController extends BaseController {
 
-  private final VisitServiceInterface visitService;
-  private final MedicalRecordServiceInterface medicalRecordService;
-  private final UserServiceInterface userService;
+  private final VisitService visitService;
+  private final MedicalRecordService medicalRecordService;
+  private final UserService userService;
 
   @GetMapping("/{id}")
   public String showVisitDetails(@PathVariable Long id, Model model) {

@@ -1,4 +1,4 @@
-package tfg.psygcv.controller.user;
+package tfg.psygcv.controller.dashboard;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -7,19 +7,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tfg.psygcv.config.security.AuthenticatedUser;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.appointment.AppointmentStatus;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
+import tfg.psygcv.service.appointment.AppointmentService;
+import tfg.psygcv.service.clinic.VeterinaryClinicService;
 
 @RequiredArgsConstructor
 @RequestMapping("/receptionist")
 @Controller
 public class ReceptionistController extends BaseController {
 
-  private final AppointmentServiceInterface appointmentService;
-  private final VeterinaryClinicServiceInterface veterinaryClinicService;
+  private final AppointmentService appointmentService;
+  private final VeterinaryClinicService veterinaryClinicService;
 
   @GetMapping("/dashboard")
   public String showReceptionistDashboard(Model model, Authentication authentication) {

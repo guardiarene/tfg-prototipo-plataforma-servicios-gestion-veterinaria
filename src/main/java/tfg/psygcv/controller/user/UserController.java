@@ -1,4 +1,4 @@
-package tfg.psygcv.controller.auth;
+package tfg.psygcv.controller.user;
 
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_ADMIN_DASHBOARD;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_LOGIN_REGISTERED;
@@ -19,17 +19,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/users")
 @Controller
 public class UserController extends BaseController {
 
-  private final UserServiceInterface userService;
+  private final UserService userService;
 
   @GetMapping("/register")
   public String showRegistrationForm(Model model) {

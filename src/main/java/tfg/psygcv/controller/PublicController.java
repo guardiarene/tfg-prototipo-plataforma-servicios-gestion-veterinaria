@@ -1,4 +1,4 @@
-package tfg.psygcv.controller.auth;
+package tfg.psygcv.controller;
 
 import static tfg.psygcv.config.constant.RouteConstant.VIEW_ACCESS_DENIED;
 

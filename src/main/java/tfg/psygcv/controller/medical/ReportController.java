@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import tfg.psygcv.config.util.JsonUtil;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.interfaces.StatisticsServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
+import tfg.psygcv.service.statistics.StatisticsService;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/reports")
 @Controller
 public class ReportController extends BaseController {
 
-  private final StatisticsServiceInterface statisticsService;
+  private final StatisticsService statisticsService;
   private final JsonUtil jsonUtil;
-  private final UserServiceInterface userService;
+  private final UserService userService;
 
   @GetMapping("/diseases-treatments")
   public String showDiseasesTreatmentsReport(Model model) {

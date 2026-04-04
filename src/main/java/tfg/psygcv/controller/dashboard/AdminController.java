@@ -1,4 +1,4 @@
-package tfg.psygcv.controller.user;
+package tfg.psygcv.controller.dashboard;
 
 import static tfg.psygcv.config.constant.RouteConstant.VIEW_ADMIN_DASHBOARD;
 
@@ -7,15 +7,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import tfg.psygcv.controller.base.BaseController;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
+import tfg.psygcv.controller.BaseController;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 @Controller
 public class AdminController extends BaseController {
 
-  private final UserServiceInterface userService;
+  private final UserService userService;
 
   @GetMapping("/dashboard")
   public String showAdminDashboard(Model model) {

@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tfg.psygcv.controller.base.BaseController;
+import tfg.psygcv.controller.BaseController;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
+import tfg.psygcv.service.clinic.VeterinaryClinicService;
 
 @RequiredArgsConstructor
 @RequestMapping("/clinics")
 @Controller
 public class VeterinaryClinicController extends BaseController {
 
-  private final VeterinaryClinicServiceInterface veterinaryClinicService;
+  private final VeterinaryClinicService veterinaryClinicService;
 
   @GetMapping("/register")
   public String showRegistrationForm(Model model) {
