@@ -3,9 +3,6 @@ package tfg.psygcv.entity.medical;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -25,11 +22,6 @@ import tfg.psygcv.entity.audit.AuditableEntity;
 @Entity
 @Table(name = "TREATMENT")
 public class Treatment extends AuditableEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "ID")
-  private Long id;
 
   @NotBlank
   @Column(name = "PRODUCT", nullable = false, length = 100)

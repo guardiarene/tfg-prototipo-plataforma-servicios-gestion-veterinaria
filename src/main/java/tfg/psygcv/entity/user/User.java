@@ -6,9 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -34,11 +31,6 @@ import tfg.psygcv.entity.pet.Pet;
 @Entity
 @Table(name = "APP_USER")
 public class User extends AuditableEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "ID")
-  private Long id;
 
   @NotBlank
   @Column(name = "FIRST_NAME", nullable = false, length = 50)
