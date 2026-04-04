@@ -15,6 +15,9 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-pulse', 'Gestión de Servicios Médicos', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}">
+                            <div th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
+                        </div>
                         <div th:if="${param.created}">
                             <div th:replace="~{fragments/alert :: successAlert('Servicio creado correctamente.')}"></div>
                         </div>

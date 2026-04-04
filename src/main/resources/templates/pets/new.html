@@ -8,6 +8,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-plus', 'Registrar Nueva Mascota', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form data-confirm="¿Estás seguro de registrar esta mascota?"
                               method="post" th:action="@{/pets/new}" th:object="${pet}">
                             <div class="row g-4">

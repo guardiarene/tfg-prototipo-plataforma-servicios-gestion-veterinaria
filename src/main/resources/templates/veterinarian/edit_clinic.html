@@ -14,10 +14,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Actualizar Datos del Establecimiento', null)}"></div>
                     <div class="card-body p-4">
-                        <div class="alert alert-danger" role="alert" th:if="${errorMessage}">
-                            <i aria-hidden="true" class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <span th:text="${errorMessage}">Error message</span>
-                        </div>
+                        <div th:if="${errorProfile}"
+                             th:insert="~{fragments/alert :: errorAlert(${errorProfile})}"></div>
                         <form class="mb-5" data-confirm="Estas seguro de que deseas actualizar tu perfil profesional?"
                               method="POST"
                               th:action="@{/veterinarian/profile/update}"
@@ -45,6 +43,8 @@
                             </div>
                         </form>
                         <hr class="my-4">
+                        <div th:if="${errorClinic}"
+                             th:insert="~{fragments/alert :: errorAlert(${errorClinic})}"></div>
                         <form data-confirm="Estas seguro de que deseas actualizar los datos de la clinica?"
                               method="POST"
                               th:action="@{/veterinarian/clinic/update}" th:object="${clinic}">

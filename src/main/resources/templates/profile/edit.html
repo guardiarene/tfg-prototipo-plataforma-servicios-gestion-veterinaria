@@ -15,6 +15,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-person-gear', 'Actualizar Perfil', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form data-confirm="¿Estás seguro de que deseas actualizar tus datos?" method="POST"
                               th:action="@{/profile/edit}"
                               th:object="${user}">

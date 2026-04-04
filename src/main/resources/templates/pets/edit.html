@@ -8,6 +8,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Editar Mascota', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form data-confirm="¿Estás seguro de actualizar esta mascota?"
                               method="post" th:action="@{/pets/{id}/edit(id=${pet.id})}" th:object="${pet}">
                             <input th:field="*{id}" type="hidden">

@@ -20,6 +20,9 @@
                                 <i aria-hidden="true" class="bi bi-plus-circle me-2"></i>Agregar Mascota
                             </a>
                         </div>
+                        <div class="mb-3" th:if="${error}">
+                            <div th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
+                        </div>
                         <div class="mb-3" th:if="${param.created}">
                             <div th:replace="~{fragments/alert :: successAlert('Mascota creada correctamente.')}"></div>
                         </div>

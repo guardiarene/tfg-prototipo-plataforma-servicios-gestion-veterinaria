@@ -15,10 +15,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-clipboard2-plus', 'Nuevo Servicio Medico', null)}"></div>
                     <div class="card-body p-4">
-                        <div class="alert alert-danger" role="alert" th:if="${errorMessage}">
-                            <i aria-hidden="true" class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <span th:text="${errorMessage}">Error message</span>
-                        </div>
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form data-confirm="Estas seguro de que deseas guardar este servicio medico?"
                               method="post"
                               th:action="@{/medical-services/new}" th:object="${medicalService}">

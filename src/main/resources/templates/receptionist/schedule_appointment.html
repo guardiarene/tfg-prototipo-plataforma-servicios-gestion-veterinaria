@@ -14,6 +14,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-calendar-plus', 'Agendar Nuevo Turno', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form method="post" th:action="@{/appointments/schedule}" th:object="${appointment}">
                             <div class="row g-4">
                                 <div class="col-md-6">

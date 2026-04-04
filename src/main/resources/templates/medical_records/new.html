@@ -12,6 +12,8 @@
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical-fill', 'Nueva Historia Clínica', null)}"></div>
             <form class="card-body" method="POST" th:action="@{/medical-records/new}" th:object="${medicalRecord}">
+                <div th:if="${error}"
+                     th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                 <div class="mb-4">
                     <h4 class="mb-3 border-bottom pb-2 text-primary">Datos Básicos</h4>
                     <div class="row g-3">

@@ -15,6 +15,10 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-person-badge', 'Mi Perfil', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
+                        <div th:if="${success}"
+                             th:insert="~{fragments/alert :: successAlert(${success})}"></div>
                         <div class="row g-4">
                             <div class="col-12">
                                 <div class="border p-3 rounded bg-white">

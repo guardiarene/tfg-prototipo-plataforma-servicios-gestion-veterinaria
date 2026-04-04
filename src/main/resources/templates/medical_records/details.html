@@ -12,6 +12,8 @@
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica de ' + medicalRecord.pet.name, null)}"></div>
             <div class="card-body">
+                <div th:if="${success}"
+                     th:insert="~{fragments/alert :: successAlert(${success})}"></div>
                 <div class="mb-4">
                     <h4 class="mb-3 border-bottom pb-2 text-primary">Información de la Mascota</h4>
                     <div class="row g-3">

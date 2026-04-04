@@ -14,10 +14,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-person-plus', 'Registrar Nuevo Personal', null)}"></div>
                     <div class="card-body p-4">
-                        <div class="alert alert-danger" role="alert" th:if="${errorMessage}">
-                            <i aria-hidden="true" class="bi bi-exclamation-triangle me-2"></i>
-                            <span th:text="${errorMessage}">Error</span>
-                        </div>
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form method="POST" th:action="@{/veterinarian/staff/save}" th:object="${staffUser}">
                             <div class="row g-4">
                                 <div class="col-md-6">

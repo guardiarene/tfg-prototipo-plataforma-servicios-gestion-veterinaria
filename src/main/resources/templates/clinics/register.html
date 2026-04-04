@@ -15,8 +15,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-building', 'Registrar mi clínica', null)}"></div>
                     <div class="card-body p-4">
-                        <div th:if="${errorMessage != null and errorMessage != ''}"
-                             th:replace="~{fragments/alert :: alert('danger', 'bi-exclamation-triangle-fill', ${errorMessage}, true)}"></div>
+                        <div th:if="${error != null and error != ''}"
+                             th:replace="~{fragments/alert :: alert('danger', 'bi-exclamation-triangle-fill', ${error}, true)}"></div>
                         <form method="POST" th:action="@{/clinics/register}">
                             <div class="row g-4">
                                 <div class="col-12">
