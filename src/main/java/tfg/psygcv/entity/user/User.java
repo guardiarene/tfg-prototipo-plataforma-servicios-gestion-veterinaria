@@ -10,9 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -32,28 +29,21 @@ import tfg.psygcv.entity.pet.Pet;
 @Table(name = "APP_USER")
 public class User extends AuditableEntity {
 
-  @NotBlank
   @Column(name = "FIRST_NAME", nullable = false, length = 50)
   private String firstName;
 
-  @NotBlank
   @Column(name = "LAST_NAME", nullable = false, length = 50)
   private String lastName;
 
-  @NotBlank
   @Column(name = "PHONE", nullable = false, length = 20)
   private String phone;
 
-  @NotBlank
-  @Email
   @Column(name = "EMAIL", nullable = false, unique = true, length = 254)
   private String email;
 
-  @NotBlank
   @Column(name = "PASSWORD", nullable = false, length = 72)
   private String password;
 
-  @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "ROLE", length = 25, nullable = false)
   private Role role;

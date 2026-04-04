@@ -8,9 +8,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -28,20 +25,15 @@ import tfg.psygcv.entity.user.User;
 @Table(name = "VETERINARY_CLINIC")
 public class VeterinaryClinic extends AuditableEntity {
 
-  @NotBlank
   @Column(name = "NAME", nullable = false, length = 100)
   private String name;
 
-  @NotBlank
   @Column(name = "ADDRESS", nullable = false, length = 255)
   private String address;
 
-  @NotBlank
   @Column(name = "PHONE", nullable = false, length = 20)
   private String phone;
 
-  @NotBlank
-  @Email
   @Column(name = "EMAIL", nullable = false, unique = true, length = 254)
   private String email;
 
@@ -57,7 +49,6 @@ public class VeterinaryClinic extends AuditableEntity {
       fetch = FetchType.LAZY)
   private Set<Appointment> appointments = new LinkedHashSet<>();
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "OWNER_ID", nullable = false)
   private User owner;

@@ -11,16 +11,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.audit.AuditableEntity;
 import tfg.psygcv.entity.user.User;
@@ -32,17 +28,12 @@ import tfg.psygcv.entity.user.User;
 @Table(name = "VISIT")
 public class Visit extends AuditableEntity {
 
-  @NotNull
-  @PastOrPresent
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "DATE", nullable = false)
   private LocalDate date;
 
-  @NotBlank
   @Column(name = "REASON_FOR_VISIT", nullable = false, length = 255)
   private String reasonForVisit;
 
-  @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "VISIT_TYPE", nullable = false, length = 30)
   private VisitType visitType;

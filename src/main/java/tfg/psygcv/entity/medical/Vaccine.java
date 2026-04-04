@@ -6,14 +6,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.entity.audit.AuditableEntity;
 
 @Getter
@@ -23,21 +19,15 @@ import tfg.psygcv.entity.audit.AuditableEntity;
 @Table(name = "VACCINE")
 public class Vaccine extends AuditableEntity {
 
-  @NotNull
-  @PastOrPresent
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "APPLICATION_DATE", nullable = false)
   private LocalDate applicationDate;
 
-  @NotBlank
   @Column(name = "BRAND", nullable = false, length = 100)
   private String brand;
 
-  @NotBlank
   @Column(name = "DOSE", nullable = false, length = 50)
   private String dose;
 
-  @NotBlank
   @Column(name = "BATCH", nullable = false, length = 50)
   private String batch;
 

@@ -8,8 +8,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -25,14 +23,12 @@ import tfg.psygcv.entity.audit.AuditableEntity;
 @Table(name = "MEDICAL_SERVICE")
 public class MedicalService extends AuditableEntity {
 
-  @NotBlank
   @Column(name = "NAME", nullable = false, length = 100)
   private String name;
 
   @Column(name = "DESCRIPTION", columnDefinition = "TEXT")
   private String description;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "CLINIC_ID", nullable = false)
   private VeterinaryClinic clinic;

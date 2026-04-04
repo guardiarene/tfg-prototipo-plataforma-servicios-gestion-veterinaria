@@ -8,7 +8,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class Diagnostic extends AuditableEntity {
   @ElementCollection
   @CollectionTable(name = "DIAGNOSTIC_PROBLEMS", joinColumns = @JoinColumn(name = "DIAGNOSTIC_ID"))
   @Column(name = "PROBLEM")
-  private List<@NotBlank String> problems = new ArrayList<>();
+  private List<String> problems = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "VISIT_ID", nullable = false)

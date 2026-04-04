@@ -6,9 +6,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,36 +19,24 @@ import tfg.psygcv.entity.pet.Temperament;
 @Table(name = "CLINICAL_EXAM")
 public class ClinicalExam extends AuditableEntity {
 
-  @NotNull
-  @PositiveOrZero
   @Column(name = "RESPIRATORY_RATE", nullable = false)
   private Integer respiratoryRate;
 
-  @NotNull
-  @PositiveOrZero
   @Column(name = "HEART_RATE", nullable = false)
   private Integer heartRate;
 
-  @NotNull
-  @PositiveOrZero
   @Column(name = "TEMPERATURE", nullable = false)
   private Float temperature;
 
-  @NotNull
-  @PositiveOrZero
   @Column(name = "WEIGHT", nullable = false)
   private Float weight;
 
-  @NotNull
-  @PositiveOrZero
   @Column(name = "PULSE", nullable = false)
   private Integer pulse;
 
-  @NotBlank
   @Column(name = "MUCOSAL_MEMBRANES", nullable = false, length = 100)
   private String mucosalMembranes;
 
-  @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "TEMPERAMENT", nullable = false, length = 15)
   private Temperament temperament;

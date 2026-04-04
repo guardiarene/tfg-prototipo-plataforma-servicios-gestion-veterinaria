@@ -9,14 +9,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.entity.audit.AuditableEntity;
 import tfg.psygcv.entity.clinic.MedicalService;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
@@ -31,14 +28,9 @@ import tfg.psygcv.entity.user.User;
 @Table(name = "APPOINTMENT")
 public class Appointment extends AuditableEntity {
 
-  @NotNull
-  @FutureOrPresent
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "DATE", nullable = false)
   private LocalDate date;
 
-  @NotNull
-  @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
   @Column(name = "TIME", nullable = false)
   private LocalTime time;
 
@@ -58,7 +50,6 @@ public class Appointment extends AuditableEntity {
   @Column(name = "APPOINTMENT_STATUS", nullable = false, length = 15)
   private AppointmentStatus appointmentStatus;
 
-  @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "PET_ID", nullable = false)
   private Pet pet;

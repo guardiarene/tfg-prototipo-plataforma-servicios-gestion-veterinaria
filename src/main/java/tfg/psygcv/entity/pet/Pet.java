@@ -11,17 +11,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.audit.AuditableEntity;
 import tfg.psygcv.entity.medical.MedicalRecord;
@@ -34,33 +29,24 @@ import tfg.psygcv.entity.user.User;
 @Table(name = "PET")
 public class Pet extends AuditableEntity {
 
-  @NotBlank
   @Column(name = "NAME", nullable = false, length = 50)
   private String name;
 
-  @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "SEX", nullable = false, length = 10)
   private Sex sex;
 
-  @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "BREED", nullable = false, length = 30)
   private Breed breed;
 
-  @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "SPECIES", nullable = false, length = 15)
   private Species species;
 
-  @NotNull
-  @PastOrPresent
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "BIRTH_DATE", nullable = false)
   private LocalDate birthDate;
 
-  @NotNull
-  @PositiveOrZero
   @Column(name = "WEIGHT", nullable = false)
   private Float weight;
 

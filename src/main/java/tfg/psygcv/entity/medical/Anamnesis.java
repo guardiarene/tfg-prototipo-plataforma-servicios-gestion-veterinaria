@@ -6,12 +6,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import tfg.psygcv.entity.audit.AuditableEntity;
 import tfg.psygcv.entity.pet.ReproductiveStatus;
 
@@ -41,18 +39,12 @@ public class Anamnesis extends AuditableEntity {
   @Column(name = "REPRODUCTIVE_STATUS", length = 30)
   private ReproductiveStatus reproductiveStatus;
 
-  @PastOrPresent
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "LAST_DEWORMING_DATE")
   private LocalDate lastDewormingDate;
 
-  @PastOrPresent
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "LAST_HEAT_DATE")
   private LocalDate lastHeatDate;
 
-  @PastOrPresent
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   @Column(name = "LAST_BIRTH_DATE")
   private LocalDate lastBirthDate;
 
