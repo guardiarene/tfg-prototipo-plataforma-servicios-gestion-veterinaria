@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.clinic;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -9,19 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.VeterinaryClinicRepository;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
-import tfg.psygcv.service.validator.VeterinaryClinicValidator;
+import tfg.psygcv.repository.clinic.VeterinaryClinicRepository;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class VeterinaryClinicServiceImpl implements VeterinaryClinicServiceInterface {
+public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
 
   private final VeterinaryClinicRepository veterinaryClinicRepository;
   private final VeterinaryClinicValidator veterinaryClinicValidator;
-  private final UserServiceInterface userService;
+  private final UserService userService;
 
   @Override
   public List<VeterinaryClinic> findAll() {

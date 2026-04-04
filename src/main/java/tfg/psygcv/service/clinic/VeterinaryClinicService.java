@@ -1,10 +1,10 @@
-package tfg.psygcv.service.interfaces;
+package tfg.psygcv.service.clinic;
 
 import java.util.List;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.User;
 
-public interface VeterinaryClinicServiceInterface {
+public interface VeterinaryClinicService {
 
   List<VeterinaryClinic> findAll();
 
