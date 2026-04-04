@@ -2,7 +2,6 @@ package tfg.psygcv.service.pet;
 
 import java.util.List;
 import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
 
 public interface PetService {
 
@@ -10,11 +9,11 @@ public interface PetService {
 
   List<Pet> findByOwnerId(Long ownerId);
 
-  List<Pet> findPetsWithAppointmentsInClinics(User veterinarian);
+  List<Pet> findPetsWithAppointmentsInClinics(Long veterinarianId);
 
-  Pet save(Pet pet, Long ownerId);
+  Pet save(CreatePetCommand command);
 
-  Pet update(Long petId, Pet pet);
+  Pet update(Long petId, UpdatePetCommand command);
 
   void deactivate(Long petId);
 }

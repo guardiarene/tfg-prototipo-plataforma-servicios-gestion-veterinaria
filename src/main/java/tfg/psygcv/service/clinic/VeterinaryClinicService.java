@@ -2,7 +2,6 @@ package tfg.psygcv.service.clinic;
 
 import java.util.List;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.user.User;
 
 public interface VeterinaryClinicService {
 
@@ -18,15 +17,11 @@ public interface VeterinaryClinicService {
 
   VeterinaryClinic findByReceptionistId(Long receptionistId);
 
-  VeterinaryClinic save(VeterinaryClinic veterinaryClinic);
-
-  VeterinaryClinic update(VeterinaryClinic veterinaryClinic);
-
   void deactivate(Long clinicId);
 
-  void registerClinicWithVeterinarian(java.util.Map<String, String> params);
+  void registerClinicWithVeterinarian(RegisterClinicWithVeterinarianCommand command);
 
-  void registerStaff(User owner, User staffUser);
+  void registerStaff(Long ownerId, CreateStaffCommand command);
 
-  void updateClinicData(User veterinarian, VeterinaryClinic updatedClinic);
+  void updateClinicData(Long veterinarianId, UpdateClinicCommand command);
 }

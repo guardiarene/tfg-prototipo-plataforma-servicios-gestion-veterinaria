@@ -1,5 +1,6 @@
 package tfg.psygcv.service.appointment;
 
+import java.time.LocalDate;
 import java.util.List;
 import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.appointment.AppointmentStatus;
@@ -22,14 +23,14 @@ public interface AppointmentService {
   String findVeterinarianName(Appointment appointment);
 
   void createClientAppointment(
-      String dateStr, Long petId, Long serviceId, Long clinicId, User client);
+      LocalDate date, Long petId, Long serviceId, Long clinicId, User client);
 
   void createReceptionistAppointment(
-      Appointment appointment, Long customerId, Long serviceId, Long receptionistId);
+      ScheduleAppointmentCommand command, Long customerId, Long serviceId, Long receptionistId);
 
   void updateStatus(Long appointmentId, AppointmentStatus status);
 
-  void reschedule(Long appointmentId, Appointment updatedAppointment);
+  void reschedule(Long appointmentId, RescheduleAppointmentCommand command);
 
   void cancel(Long appointmentId);
 }

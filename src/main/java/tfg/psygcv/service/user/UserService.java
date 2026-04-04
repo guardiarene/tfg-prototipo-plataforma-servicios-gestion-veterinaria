@@ -17,13 +17,15 @@ public interface UserService {
 
   User save(User user);
 
-  void saveComplete(User user);
+  User registerCustomer(RegisterCustomerCommand command);
 
-  User update(User user);
+  void saveComplete(CreateAdminUserCommand command);
 
-  void updateComplete(Long userId, User updatedUser);
+  void updateComplete(Long userId, UpdateAdminUserCommand command);
 
-  void updateVeterinarianProfile(User currentVeterinarian, User updatedVeterinarian);
+  void updateVeterinarianProfile(Long veterinarianId, UpdateUserProfileCommand command);
 
   void deactivate(Long userId);
+
+  List<User> findActiveByWorkClinicId(Long clinicId);
 }

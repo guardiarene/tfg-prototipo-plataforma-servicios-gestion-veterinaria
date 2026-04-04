@@ -9,9 +9,9 @@ import tfg.psygcv.entity.user.User;
 
 public interface VisitService {
 
-  Visit createVisit(Long medicalRecordId, Visit visit, User veterinarian);
+  Visit createVisit(Long medicalRecordId, CreateVisitCommand command, User veterinarian);
 
-  Visit updateVisit(Long visitId, Visit updatedVisit, User veterinarian);
+  Visit updateVisit(Long visitId, UpdateVisitCommand command, User veterinarian);
 
   Visit findCompleteById(Long visitId);
 
