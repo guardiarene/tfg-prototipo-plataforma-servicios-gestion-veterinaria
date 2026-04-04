@@ -1,4 +1,4 @@
-package tfg.psygcv.service.validator;
+package tfg.psygcv.service.appointment;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -8,6 +8,7 @@ import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.appointment.AppointmentStatus;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.User;
+import tfg.psygcv.service.validation.BaseValidator;
 
 @Component
 public class AppointmentValidator extends BaseValidator {

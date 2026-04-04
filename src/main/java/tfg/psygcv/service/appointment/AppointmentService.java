@@ -1,4 +1,4 @@
-package tfg.psygcv.service.interfaces;
+package tfg.psygcv.service.appointment;
 
 import java.util.List;
 import tfg.psygcv.entity.appointment.Appointment;
@@ -7,7 +7,7 @@ import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
 
-public interface AppointmentServiceInterface {
+public interface AppointmentService {
 
   Appointment findById(Long appointmentId);
 

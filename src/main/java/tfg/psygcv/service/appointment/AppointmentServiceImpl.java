@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.appointment;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -14,26 +14,24 @@ import tfg.psygcv.entity.clinic.MedicalService;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.AppointmentRepository;
-import tfg.psygcv.repository.query.AppointmentQueryRepository;
-import tfg.psygcv.service.interfaces.AppointmentServiceInterface;
-import tfg.psygcv.service.interfaces.MedicalServiceServiceInterface;
-import tfg.psygcv.service.interfaces.PetServiceInterface;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VeterinaryClinicServiceInterface;
-import tfg.psygcv.service.validator.AppointmentValidator;
+import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
+import tfg.psygcv.repository.appointment.AppointmentRepository;
+import tfg.psygcv.service.clinic.MedicalServiceService;
+import tfg.psygcv.service.clinic.VeterinaryClinicService;
+import tfg.psygcv.service.pet.PetService;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class AppointmentServiceImpl implements AppointmentServiceInterface {
+public class AppointmentServiceImpl implements AppointmentService {
 
   private final AppointmentRepository appointmentRepository;
   private final AppointmentQueryRepository appointmentQueryRepository;
-  private final VeterinaryClinicServiceInterface veterinaryClinicService;
-  private final MedicalServiceServiceInterface medicalServiceService;
-  private final PetServiceInterface petService;
-  private final UserServiceInterface userService;
+  private final VeterinaryClinicService veterinaryClinicService;
+  private final MedicalServiceService medicalServiceService;
+  private final PetService petService;
+  private final UserService userService;
   private final AppointmentValidator appointmentValidator;
 
   @Override

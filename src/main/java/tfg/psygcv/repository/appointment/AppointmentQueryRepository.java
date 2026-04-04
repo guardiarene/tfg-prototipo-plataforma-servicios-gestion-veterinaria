@@ -1,4 +1,4 @@
-package tfg.psygcv.repository.query;
+package tfg.psygcv.repository.appointment;
 
 import java.util.Collection;
 import java.util.List;
