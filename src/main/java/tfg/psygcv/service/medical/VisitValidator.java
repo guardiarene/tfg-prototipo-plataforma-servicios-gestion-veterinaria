@@ -1,4 +1,4 @@
-package tfg.psygcv.service.validator;
+package tfg.psygcv.service.medical;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,8 @@ import tfg.psygcv.entity.medical.Visit;
 import tfg.psygcv.entity.medical.VisitType;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.query.AppointmentQueryRepository;
+import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
+import tfg.psygcv.service.validation.BaseValidator;
 
 @Component
 @RequiredArgsConstructor

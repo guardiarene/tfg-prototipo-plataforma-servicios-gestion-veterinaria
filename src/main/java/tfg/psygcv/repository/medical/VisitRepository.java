@@ -1,4 +1,4 @@
-package tfg.psygcv.repository.base;
+package tfg.psygcv.repository.medical;
 
 import java.time.LocalDate;
 import java.util.List;

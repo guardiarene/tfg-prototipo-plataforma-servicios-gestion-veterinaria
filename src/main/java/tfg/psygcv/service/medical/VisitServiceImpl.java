@@ -1,4 +1,4 @@
-package tfg.psygcv.service.impl;
+package tfg.psygcv.service.medical;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -23,21 +23,19 @@ import tfg.psygcv.entity.medical.Vaccine;
 import tfg.psygcv.entity.medical.Visit;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.base.AnamnesisRepository;
-import tfg.psygcv.repository.base.ClinicalExamRepository;
-import tfg.psygcv.repository.base.DiagnosticRepository;
-import tfg.psygcv.repository.base.MedicalRecordRepository;
-import tfg.psygcv.repository.base.TreatmentRepository;
-import tfg.psygcv.repository.base.VaccineRepository;
-import tfg.psygcv.repository.base.VisitRepository;
-import tfg.psygcv.service.interfaces.UserServiceInterface;
-import tfg.psygcv.service.interfaces.VisitServiceInterface;
-import tfg.psygcv.service.validator.VisitValidator;
+import tfg.psygcv.repository.medical.AnamnesisRepository;
+import tfg.psygcv.repository.medical.ClinicalExamRepository;
+import tfg.psygcv.repository.medical.DiagnosticRepository;
+import tfg.psygcv.repository.medical.MedicalRecordRepository;
+import tfg.psygcv.repository.medical.TreatmentRepository;
+import tfg.psygcv.repository.medical.VaccineRepository;
+import tfg.psygcv.repository.medical.VisitRepository;
+import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class VisitServiceImpl implements VisitServiceInterface {
+public class VisitServiceImpl implements VisitService {
 
   private final VisitRepository visitRepository;
   private final MedicalRecordRepository medicalRecordRepository;
@@ -47,7 +45,7 @@ public class VisitServiceImpl implements VisitServiceInterface {
   private final TreatmentRepository treatmentRepository;
   private final VaccineRepository vaccineRepository;
   private final VisitValidator visitValidator;
-  private final UserServiceInterface userService;
+  private final UserService userService;
 
   @Override
   @Transactional

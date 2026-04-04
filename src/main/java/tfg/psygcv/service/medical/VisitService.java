@@ -1,4 +1,4 @@
-package tfg.psygcv.service.interfaces;
+package tfg.psygcv.service.medical;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import tfg.psygcv.entity.medical.Visit;
 import tfg.psygcv.entity.user.User;
 
-public interface VisitServiceInterface {
+public interface VisitService {
 
   Visit createVisit(Long medicalRecordId, Visit visit, User veterinarian);
 
