@@ -11,8 +11,7 @@
                         <div th:if="${error}"
                              th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form data-confirm="¿Estás seguro de actualizar esta mascota?"
-                              method="post" th:action="@{/pets/{id}/edit(id=${pet.id})}" th:object="${pet}">
-                            <input th:field="*{id}" type="hidden">
+                              method="post" th:action="@{/pets/{id}/edit(id=${petId})}" th:object="${pet}">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div th:replace="~{fragments/input-group :: inputGroup('Nombre', 'name', 'bi-person', 'text', 'Ej: Luna', true)}"></div>

@@ -43,14 +43,14 @@
                                             <div class="col-md-6">
                                                 <h5 class="mb-2">
                                                     <i aria-hidden="true" class="bi bi-heart-fill me-2 text-danger"></i>
-                                                    <span th:text="${medicalRecord.pet.name}"></span>
+                                                    <span th:text="${medicalRecord.petName}"></span>
                                                     <small class="text-muted ms-2"
-                                                           th:text="'(' + ${medicalRecord.pet.species.description} + ')'"></small>
+                                                           th:text="'(' + ${medicalRecord.petSpeciesDescription} + ')'"></small>
                                                 </h5>
                                                 <p class="mb-0 text-muted">
                                                     <i aria-hidden="true" class="bi bi-person me-2"></i>
                                                     <strong>Propietario:</strong>
-                                                    <span th:text="${medicalRecord.pet.owner.firstName + ' ' + medicalRecord.pet.owner.lastName}"></span>
+                                                    <span th:text="${medicalRecord.ownerFullName}"></span>
                                                 </p>
                                             </div>
                                             <div class="col-md-6 text-md-end mt-3 mt-md-0">

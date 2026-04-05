@@ -17,7 +17,8 @@
                     <div class="card-body p-4">
                         <div th:if="${error != null and error != ''}"
                              th:replace="~{fragments/alert :: alert('danger', 'bi-exclamation-triangle-fill', ${error}, true)}"></div>
-                        <form method="POST" th:action="@{/clinics/register}">
+                        <form method="POST" th:action="@{/clinics/register}"
+                              th:object="${registerClinicRequest}">
                             <div class="row g-4">
                                 <div class="col-12">
                                     <div class="border p-3 rounded bg-white">
@@ -27,22 +28,22 @@
                                         </h5>
                                         <div class="row g-4">
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Nombre', 'userFirstName', 'bi-person', 'text', 'Ej. Juan', ${userFirstName}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Nombre', 'userFirstName', 'bi-person', 'text', 'Ej. Juan', true)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Apellido', 'userLastName', 'bi-person', 'text', 'Ej. Pérez', ${userLastName}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Apellido', 'userLastName', 'bi-person', 'text', 'Ej. Pérez', true)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Teléfono', 'userPhone', 'bi-telephone', 'text', 'Ej. 123-456-789', ${userPhone}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Teléfono', 'userPhone', 'bi-telephone', 'text', 'Ej. 123-456-789', false)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Email', 'userEmail', 'bi-envelope', 'email', 'Ej. juan@ejemplo.com', ${userEmail}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Email', 'userEmail', 'bi-envelope', 'email', 'Ej. juan@ejemplo.com', true)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Contraseña', 'userPassword', 'bi-lock', 'password', 'Mínimo 8 caracteres', null, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Contraseña', 'userPassword', 'bi-lock', 'password', 'Mínimo 8 caracteres', true)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Confirmar contraseña', 'confirmPassword', 'bi-lock-fill', 'password', 'Repita su contraseña', null, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Confirmar contraseña', 'confirmPassword', 'bi-lock-fill', 'password', 'Repita su contraseña', true)}"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -62,16 +63,16 @@
                                         </h5>
                                         <div class="row g-4">
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Nombre', 'clinicName', 'bi-building', 'text', 'Ej. Clínica Veterinaria San Juan', ${clinicName}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Nombre', 'clinicName', 'bi-building', 'text', 'Ej. Clínica Veterinaria San Juan', true)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Teléfono', 'clinicPhone', 'bi-telephone', 'text', 'Ej. 987-654-321', ${clinicPhone}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Teléfono', 'clinicPhone', 'bi-telephone', 'text', 'Ej. 987-654-321', true)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Dirección', 'clinicAddress', 'bi-geo-alt', 'text', 'Ej. Calle Ficticia 123', ${clinicAddress}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Dirección', 'clinicAddress', 'bi-geo-alt', 'text', 'Ej. Calle Ficticia 123', true)}"></div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div th:replace="~{fragments/input-group :: inputGroupBasic('Email', 'clinicEmail', 'bi-envelope', 'email', 'Ej. info@clinica.com', ${clinicEmail}, true)}"></div>
+                                                <div th:replace="~{fragments/input-group :: inputGroup('Email', 'clinicEmail', 'bi-envelope', 'email', 'Ej. info@clinica.com', true)}"></div>
                                             </div>
                                         </div>
                                     </div>

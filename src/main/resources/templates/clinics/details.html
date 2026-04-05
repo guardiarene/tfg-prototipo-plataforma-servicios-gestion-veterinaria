@@ -65,13 +65,13 @@
                                         <i aria-hidden="true" class="bi bi-person-badge me-2"></i>Veterinario
                                         Responsable (Propietario)
                                     </h5>
-                                    <div th:if="${clinic.owner != null}">
+                                    <div th:if="${clinic.ownerFullName != null}">
                                         <span class="badge bg-primary fs-6">
                                             <i aria-hidden="true" class="bi bi-person me-2"></i>
-                                            <span th:text="${clinic.owner.firstName + ' ' + clinic.owner.lastName}"></span>
+                                            <span th:text="${clinic.ownerFullName}"></span>
                                         </span>
                                     </div>
-                                    <div th:if="${clinic.owner == null}">
+                                    <div th:if="${clinic.ownerFullName == null}">
                                         <div th:replace="~{fragments/alert :: emptyState('No hay veterinario responsable asignado')}"></div>
                                     </div>
                                 </div>

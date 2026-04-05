@@ -19,10 +19,9 @@
                              th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <form data-confirm="Estas seguro de que deseas actualizar este servicio medico?"
                               method="post"
-                              th:action="@{/medical-services/{id}/edit(id=${medicalService.id})}"
+                              th:action="@{/medical-services/{id}/edit(id=${medicalServiceId})}"
                               th:object="${medicalService}">
                             <input name="clinicId" th:value="${clinicId}" type="hidden">
-                            <input th:field="*{id}" type="hidden">
                             <div class="row g-4">
                                 <div class="col-12">
                                     <div th:replace="~{fragments/input-group :: inputGroup('Nombre del Servicio', 'name', 'bi-file-medical', 'text', 'Ej: Vacunacion anual', true)}"></div>

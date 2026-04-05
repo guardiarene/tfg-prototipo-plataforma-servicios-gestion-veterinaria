@@ -25,19 +25,19 @@
                                     <dl class="mb-0">
                                         <dt><i aria-hidden="true" class="bi bi-building me-1 text-muted"></i>Nombre:
                                         </dt>
-                                        <dd class="ms-4" th:text="${appointment.clinic.name}"></dd>
+                                        <dd class="ms-4" th:text="${appointment.clinicName}"></dd>
                                         <dt class="mt-2"><i aria-hidden="true"
                                                             class="bi bi-geo-alt me-1 text-muted"></i>Dirección:
                                         </dt>
-                                        <dd class="ms-4" th:text="${appointment.clinic.address}"></dd>
+                                        <dd class="ms-4" th:text="${appointment.clinicAddress}"></dd>
                                         <dt class="mt-2"><i aria-hidden="true"
                                                             class="bi bi-telephone me-1 text-muted"></i>Teléfono:
                                         </dt>
-                                        <dd class="ms-4" th:text="${appointment.clinic.phone}"></dd>
+                                        <dd class="ms-4" th:text="${appointment.clinicPhone}"></dd>
                                         <dt class="mt-2"><i aria-hidden="true"
                                                             class="bi bi-envelope me-1 text-muted"></i>Email:
                                         </dt>
-                                        <dd class="ms-4" th:text="${appointment.clinic.email}"></dd>
+                                        <dd class="ms-4" th:text="${appointment.clinicEmail}"></dd>
                                     </dl>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                                         <dt class="mt-2"><i aria-hidden="true"
                                                             class="bi bi-heart-pulse me-1 text-muted"></i>Servicio:
                                         </dt>
-                                        <dd class="ms-4" th:text="${appointment.medicalService.name}"></dd>
+                                        <dd class="ms-4" th:text="${appointment.medicalServiceName}"></dd>
                                         <dt class="mt-2"><i aria-hidden="true"
                                                             class="bi bi-info-circle me-1 text-muted"></i>Estado:
                                         </dt>
@@ -86,7 +86,7 @@
                                             </h5>
                                             <p class="mb-1">
                                                 <i aria-hidden="true" class="bi bi-tag me-2 text-muted"></i>
-                                                <span th:text="${appointment.pet.name + ' (' + appointment.pet.species.description + ')'}"></span>
+                                                <span th:text="${appointment.petName + ' (' + appointment.petSpeciesDescription + ')'}"></span>
                                             </p>
                                         </div>
                                     </div>
