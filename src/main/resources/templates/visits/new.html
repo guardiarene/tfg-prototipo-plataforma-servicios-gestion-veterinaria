@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Visita</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layouts/layout :: layout('Nueva Visita', ~{layouts/navbar :: navbar('VETERINARIAN')}, ~{::content}, ~{::pageScripts})}">
+    <div class="container mt-4" th:fragment="content">
+        <div class="card shadow">
+            <div th:replace="~{fragments/card-header :: cardHeader('bi-calendar-plus', 'Nueva Visita — ' + ${medicalRecord.petName}, null)}"></div>
+            <form class="card-body" method="POST"
+                  th:action="@{/visits/new(medicalRecordId=${medicalRecordId})}"
+                  th:object="${visit}">
+                <div th:if="${#fields.hasErrors('*')}"
+                     th:insert="~{fragments/alert :: errorAlert('Corrige los errores del formulario.')}"></div>
+                <div class="mb-4">
+                    <h4 class="mb-3 border-bottom pb-2 text-primary">Datos Básicos</h4>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold" for="date">Fecha de Visita</label>
+                            <input class="form-control" id="date" required th:field="*{date}" type="date">
+                            <div class="text-danger small" th:errors="*{date}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold" for="visitType">Tipo de Visita</label>
+                            <select class="form-select" id="visitType" required th:field="*{visitType}">
+                                <option th:each="type : ${visitTypes}"
+                                        th:text="${type.description}"
+                                        th:value="${type}"></option>
+                            </select>
+                            <div class="text-danger small" th:errors="*{visitType}"></div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold" for="reasonForVisit">Motivo de Consulta</label>
+                            <textarea class="form-control" id="reasonForVisit"
+                                      placeholder="Ingrese el motivo de la consulta..."
+                                      required rows="3" th:field="*{reasonForVisit}"></textarea>
+                            <div class="text-danger small" th:errors="*{reasonForVisit}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold" for="observations">Observaciones</label>
+                            <textarea class="form-control" id="observations"
+                                      placeholder="Observaciones adicionales..."
+                                      rows="2" th:field="*{observations}"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 border p-3 rounded bg-light">
+                    <h4 class="mb-3 border-bottom pb-2 text-primary">Examen Clínico</h4>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Temperatura (°C)</label>
+                            <input class="form-control" placeholder="Ej: 38.5" required
+                                   step="0.1" th:field="*{clinicalExam.temperature}" type="number">
+                            <div class="text-danger small" th:errors="*{clinicalExam.temperature}"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Peso (kg)</label>
+                            <input class="form-control" placeholder="Ej: 10.5" required
+                                   step="0.1" th:field="*{clinicalExam.weight}" type="number">
+                            <div class="text-danger small" th:errors="*{clinicalExam.weight}"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Frec. Cardíaca (lpm)</label>
+                            <input class="form-control" placeholder="Ej: 90" required
+                                   th:field="*{clinicalExam.heartRate}" type="number">
+                            <div class="text-danger small" th:errors="*{clinicalExam.heartRate}"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Frec. Respiratoria (rpm)</label>
+                            <input class="form-control" placeholder="Ej: 25" required
+                                   th:field="*{clinicalExam.respiratoryRate}" type="number">
+                            <div class="text-danger small" th:errors="*{clinicalExam.respiratoryRate}"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Pulso (lpm)</label>
+                            <input class="form-control" placeholder="Ej: 100" required
+                                   th:field="*{clinicalExam.pulse}" type="number">
+                            <div class="text-danger small" th:errors="*{clinicalExam.pulse}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Mucosas</label>
+                            <input class="form-control" placeholder="Ej: Rosadas, húmedas" required
+                                   th:field="*{clinicalExam.mucosalMembranes}" type="text">
+                            <div class="text-danger small" th:errors="*{clinicalExam.mucosalMembranes}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Temperamento</label>
+                            <select class="form-select" required th:field="*{clinicalExam.temperament}">
+                                <option disabled selected value="">Seleccionar temperamento...</option>
+                                <option th:each="temp : ${T(tfg.psygcv.entity.pet.Temperament).values()}"
+                                        th:text="${temp.description}" th:value="${temp}"></option>
+                            </select>
+                            <div class="text-danger small" th:errors="*{clinicalExam.temperament}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Descripción del Examen</label>
+                            <textarea class="form-control" placeholder="Detalles del examen realizado"
+                                      rows="2" th:field="*{clinicalExam.description}"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="mb-3 border-bottom pb-2 text-primary">Anamnesis</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Alergias</label>
+                            <input class="form-control" placeholder="Ej: Penicilina, polen"
+                                   th:field="*{anamnesis.allergies}" type="text">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Enfermedades Previas</label>
+                            <input class="form-control" placeholder="Ej: Parvovirus a los 6 meses"
+                                   th:field="*{anamnesis.previousDiseases}" type="text">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Cirugías</label>
+                            <input class="form-control" placeholder="Ej: Ortopédica de cadera"
+                                   th:field="*{anamnesis.surgeries}" type="text">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Medicación Actual</label>
+                            <input class="form-control" placeholder="Ej: Vitaminas, antibióticos"
+                                   th:field="*{anamnesis.currentMedications}" type="text">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Alimentación</label>
+                            <input class="form-control" placeholder="Ej: Alimento Balanceado X"
+                                   th:field="*{anamnesis.diet}" type="text">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Estado Reproductivo</label>
+                            <select class="form-select" th:field="*{anamnesis.reproductiveStatus}">
+                                <option disabled selected value="">Seleccionar estado...</option>
+                                <option th:each="status : ${T(tfg.psygcv.entity.pet.ReproductiveStatus).values()}"
+                                        th:text="${status.description}" th:value="${status}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Última Desparasitación</label>
+                            <input class="form-control" th:field="*{anamnesis.lastDewormingDate}" type="date">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Último Celo (si aplica)</label>
+                            <input class="form-control" th:field="*{anamnesis.lastHeatDate}" type="date">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Último Parto (si aplica)</label>
+                            <input class="form-control" th:field="*{anamnesis.lastBirthDate}" type="date">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Vacunas Aplicadas</h4>
+                        <button class="btn btn-outline-success btn-sm" onclick="addVaccine()" type="button">
+                            <i aria-hidden="true" class="bi bi-plus-circle me-1"></i>Añadir Vacuna
+                        </button>
+                    </div>
+                    <div id="vaccines-container"></div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Diagnóstico</h4>
+                        <button class="btn btn-outline-success btn-sm" onclick="addDiagnostic()" type="button">
+                            <i aria-hidden="true" class="bi bi-plus-circle me-1"></i>Añadir Diagnóstico
+                        </button>
+                    </div>
+                    <div id="diagnostics-container"></div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="mb-0 text-primary">Tratamiento</h4>
+                        <button class="btn btn-outline-success btn-sm" onclick="addTreatment()" type="button">
+                            <i aria-hidden="true" class="bi bi-plus-circle me-1"></i>Añadir Tratamiento
+                        </button>
+                    </div>
+                    <div id="treatments-container"></div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <button class="btn btn-primary w-100" type="submit">
+                                <i aria-hidden="true" class="bi bi-save me-2"></i>Guardar Visita
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <a class="btn btn-secondary w-100"
+                               th:href="@{/medical-records/{id}(id=${medicalRecordId})}">
+                                <i aria-hidden="true" class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:fragment="pageScripts">
+    <script src="/js/medical-record-dynamic.js"></script>
+</div>
+</body>
+</html>
