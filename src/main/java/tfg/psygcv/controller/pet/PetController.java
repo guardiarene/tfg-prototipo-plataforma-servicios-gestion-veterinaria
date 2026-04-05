@@ -5,6 +5,7 @@ import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_DELETED;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PETS_UPDATED;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -18,8 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.BaseController;
-import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.dto.pet.request.CreatePetRequest;
+import tfg.psygcv.dto.pet.request.UpdatePetRequest;
+import tfg.psygcv.dto.pet.response.PetSummaryResponse;
+import tfg.psygcv.mapper.pet.PetMapper;
+import tfg.psygcv.service.pet.CreatePetCommand;
 import tfg.psygcv.service.pet.PetService;
+import tfg.psygcv.service.pet.UpdatePetCommand;
 
 @RequiredArgsConstructor
 @RequestMapping("/pets")
@@ -31,25 +37,27 @@ public class PetController extends BaseController {
   @GetMapping
   public String listPets(Model model, Authentication authentication) {
     AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-    model.addAttribute("pets", petService.findByOwnerId(currentUser.getId()));
+    List<PetSummaryResponse> pets =
+        petService.findByOwnerId(currentUser.getId()).stream().map(PetMapper::toSummary).toList();
+    model.addAttribute("pets", pets);
     return "pets/list";
   }
 
   @GetMapping("/{id}")
   public String showPetDetails(@PathVariable Long id, Model model) {
-    model.addAttribute("pet", petService.findById(id));
+    model.addAttribute("pet", PetMapper.toResponse(petService.findById(id)));
     return "pets/details";
   }
 
   @GetMapping("/new")
   public String showNewPetForm(Model model) {
-    model.addAttribute("pet", new Pet());
+    model.addAttribute("pet", new CreatePetRequest());
     return "pets/new";
   }
 
   @PostMapping("/new")
   public String savePet(
-      @Valid @ModelAttribute Pet pet,
+      @Valid @ModelAttribute("pet") CreatePetRequest request,
       BindingResult result,
       Authentication authentication,
       Model model) {
@@ -58,7 +66,16 @@ public class PetController extends BaseController {
     }
     try {
       AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-      petService.save(pet, currentUser.getId());
+      petService.save(
+          CreatePetCommand.builder()
+              .name(request.getName())
+              .sex(request.getSex())
+              .breed(request.getBreed())
+              .species(request.getSpecies())
+              .birthDate(request.getBirthDate())
+              .weight(request.getWeight())
+              .ownerId(currentUser.getId())
+              .build());
       return REDIRECT_MY_PETS_CREATED;
     } catch (Exception e) {
       model.addAttribute("error", e.getMessage());
@@ -68,20 +85,35 @@ public class PetController extends BaseController {
 
   @GetMapping("/{id}/edit")
   public String showEditForm(@PathVariable Long id, Model model) {
-    model.addAttribute("pet", petService.findById(id));
+    model.addAttribute("pet", PetMapper.toUpdateRequest(petService.findById(id)));
+    model.addAttribute("petId", id);
     return "pets/edit";
   }
 
   @PostMapping("/{id}/edit")
   public String updatePet(
-      @PathVariable Long id, @Valid @ModelAttribute Pet pet, BindingResult result, Model model) {
+      @PathVariable Long id,
+      @Valid @ModelAttribute("pet") UpdatePetRequest request,
+      BindingResult result,
+      Model model) {
     if (result.hasErrors()) {
+      model.addAttribute("petId", id);
       return "pets/edit";
     }
     try {
-      petService.update(id, pet);
+      petService.update(
+          id,
+          UpdatePetCommand.builder()
+              .name(request.getName())
+              .sex(request.getSex())
+              .breed(request.getBreed())
+              .species(request.getSpecies())
+              .birthDate(request.getBirthDate())
+              .weight(request.getWeight())
+              .build());
       return REDIRECT_MY_PETS_UPDATED;
     } catch (Exception e) {
+      model.addAttribute("petId", id);
       model.addAttribute("error", e.getMessage());
       return "pets/edit";
     }

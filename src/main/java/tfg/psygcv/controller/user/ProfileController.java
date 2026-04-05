@@ -3,6 +3,7 @@ package tfg.psygcv.controller.user;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_LOGIN_LOGOUT;
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_MY_PROFILE;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,9 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.controller.BaseController;
+import tfg.psygcv.dto.user.request.UpdateUserRequest;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
+import tfg.psygcv.mapper.user.UserMapper;
 import tfg.psygcv.service.clinic.VeterinaryClinicService;
+import tfg.psygcv.service.user.UpdateUserProfileCommand;
 import tfg.psygcv.service.user.UserService;
 
 @RequiredArgsConstructor
@@ -30,7 +34,7 @@ public class ProfileController extends BaseController {
   @GetMapping
   public String showProfile(Model model, Authentication authentication) {
     User currentUser = getCurrentUser(authentication, userService);
-    model.addAttribute("user", userService.findById(currentUser.getId()));
+    model.addAttribute("user", UserMapper.toResponse(userService.findById(currentUser.getId())));
     model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
     return "profile/view";
   }
@@ -38,31 +42,33 @@ public class ProfileController extends BaseController {
   @GetMapping("/edit")
   public String showEditForm(Model model, Authentication authentication) {
     User currentUser = getCurrentUser(authentication, userService);
-    model.addAttribute("user", userService.findById(currentUser.getId()));
+    model.addAttribute(
+        "user", UserMapper.toUpdateRequest(userService.findById(currentUser.getId())));
     model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
     return "profile/edit";
   }
 
   @PostMapping("/edit")
   public String updateProfile(
-      @ModelAttribute("user") User user,
+      @Valid @ModelAttribute("user") UpdateUserRequest request,
       BindingResult result,
       Authentication authentication,
       Model model,
       RedirectAttributes ra) {
-    User currentUser = getCurrentUser(authentication, userService);
     if (result.hasErrors()) {
       model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
       return "profile/edit";
     }
     try {
-      User persistedUser = userService.findById(currentUser.getId());
-      persistedUser.setFirstName(user.getFirstName());
-      persistedUser.setLastName(user.getLastName());
-      persistedUser.setEmail(user.getEmail());
-      persistedUser.setPhone(user.getPhone());
-      persistedUser.setRole(currentUser.getRole());
-      userService.update(persistedUser);
+      User currentUser = getCurrentUser(authentication, userService);
+      userService.updateVeterinarianProfile(
+          currentUser.getId(),
+          UpdateUserProfileCommand.builder()
+              .firstName(request.getFirstName())
+              .lastName(request.getLastName())
+              .email(request.getEmail())
+              .phone(request.getPhone())
+              .build());
       ra.addFlashAttribute("success", "Perfil actualizado correctamente.");
       return REDIRECT_MY_PROFILE;
     } catch (Exception e) {

@@ -5,8 +5,10 @@ import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_RECEPTIONIST_DAS
 import static tfg.psygcv.config.constant.RouteConstant.REDIRECT_RECEPTIONIST_RESCHEDULED;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +22,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tfg.psygcv.config.security.AuthenticatedUser;
 import tfg.psygcv.controller.BaseController;
-import tfg.psygcv.entity.appointment.Appointment;
+import tfg.psygcv.dto.appointment.request.RescheduleAppointmentRequest;
+import tfg.psygcv.dto.appointment.request.ScheduleAppointmentRequest;
+import tfg.psygcv.dto.appointment.response.AppointmentSummaryResponse;
 import tfg.psygcv.entity.appointment.AppointmentStatus;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.user.Role;
 import tfg.psygcv.entity.user.User;
+import tfg.psygcv.mapper.appointment.AppointmentMapper;
+import tfg.psygcv.mapper.clinic.MedicalServiceMapper;
+import tfg.psygcv.mapper.clinic.VeterinaryClinicMapper;
+import tfg.psygcv.mapper.pet.PetMapper;
+import tfg.psygcv.mapper.user.UserMapper;
 import tfg.psygcv.service.appointment.AppointmentService;
+import tfg.psygcv.service.appointment.RescheduleAppointmentCommand;
+import tfg.psygcv.service.appointment.ScheduleAppointmentCommand;
 import tfg.psygcv.service.clinic.MedicalServiceService;
 import tfg.psygcv.service.clinic.VeterinaryClinicService;
 import tfg.psygcv.service.pet.PetService;
@@ -45,7 +56,11 @@ public class AppointmentController extends BaseController {
   @GetMapping
   public String listAppointments(Model model, Authentication authentication) {
     AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-    model.addAttribute("appointments", appointmentService.findByCustomerId(currentUser.getId()));
+    List<AppointmentSummaryResponse> appointments =
+        appointmentService.findByCustomerId(currentUser.getId()).stream()
+            .map(AppointmentMapper::toSummary)
+            .toList();
+    model.addAttribute("appointments", appointments);
     return "appointments/list";
   }
 
@@ -53,18 +68,23 @@ public class AppointmentController extends BaseController {
   public String showNewAppointmentForm(
       @RequestParam("clinicId") Long clinicId, Model model, Authentication authentication) {
     AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-    VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
-    model.addAttribute("clinic", clinic);
-    model.addAttribute("services", medicalServiceService.findByClinicId(clinicId));
-    model.addAttribute("pets", petService.findByOwnerId(currentUser.getId()));
-    model.addAttribute("appointment", new Appointment());
+    model.addAttribute(
+        "clinic", VeterinaryClinicMapper.toSummary(veterinaryClinicService.findById(clinicId)));
+    model.addAttribute(
+        "services",
+        medicalServiceService.findByClinicId(clinicId).stream()
+            .map(MedicalServiceMapper::toResponse)
+            .toList());
+    model.addAttribute(
+        "pets",
+        petService.findByOwnerId(currentUser.getId()).stream().map(PetMapper::toSummary).toList());
     return "appointments/new";
   }
 
   @PostMapping("/new")
   public String createAppointment(
       @RequestParam("clinicId") Long clinicId,
-      @RequestParam("date") String date,
+      @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
       @RequestParam("petId") Long petId,
       @RequestParam("serviceId") Long serviceId,
       Authentication authentication,
@@ -83,9 +103,10 @@ public class AppointmentController extends BaseController {
   public String showAppointmentDetails(
       @PathVariable Long id, Model model, Authentication authentication) {
     AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-    Appointment appointment = appointmentService.findWithDetails(id);
-    model.addAttribute("appointment", appointment);
-    model.addAttribute("veterinarianName", appointmentService.findVeterinarianName(appointment));
+    var appointmentEntity = appointmentService.findWithDetails(id);
+    model.addAttribute("appointment", AppointmentMapper.toResponse(appointmentEntity));
+    model.addAttribute(
+        "veterinarianName", appointmentService.findVeterinarianName(appointmentEntity));
     model.addAttribute("role", currentUser.getRole().name());
     return "appointments/details";
   }
@@ -122,25 +143,47 @@ public class AppointmentController extends BaseController {
   public String showRescheduleForm(
       @PathVariable Long id, Model model, Authentication authentication) {
     AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
-    populateRescheduleModel(id, model, receptionist);
+    VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
+    model.addAttribute(
+        "appointment", AppointmentMapper.toResponse(appointmentService.findWithDetails(id)));
+    model.addAttribute(
+        "services",
+        medicalServiceService.findByClinicId(clinic.getId()).stream()
+            .map(MedicalServiceMapper::toResponse)
+            .toList());
+    model.addAttribute("rescheduleRequest", new RescheduleAppointmentRequest());
+    model.addAttribute("role", receptionist.getRole().name());
     return "receptionist/reschedule_appointment";
   }
 
   @PostMapping("/{id}/reschedule")
   public String rescheduleAppointment(
       @PathVariable Long id,
-      @ModelAttribute("appointment") Appointment appointment,
+      @Valid @ModelAttribute("rescheduleRequest") RescheduleAppointmentRequest request,
       BindingResult result,
       Model model,
       Authentication authentication,
       RedirectAttributes redirectAttributes) {
     if (result.hasErrors()) {
       AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
-      populateRescheduleModel(id, model, receptionist);
+      VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
+      model.addAttribute(
+          "appointment", AppointmentMapper.toResponse(appointmentService.findWithDetails(id)));
+      model.addAttribute(
+          "services",
+          medicalServiceService.findByClinicId(clinic.getId()).stream()
+              .map(MedicalServiceMapper::toResponse)
+              .toList());
       return "receptionist/reschedule_appointment";
     }
     try {
-      appointmentService.reschedule(id, appointment);
+      appointmentService.reschedule(
+          id,
+          RescheduleAppointmentCommand.builder()
+              .date(request.getDate())
+              .time(request.getTime())
+              .medicalServiceId(request.getMedicalServiceId())
+              .build());
       return REDIRECT_RECEPTIONIST_RESCHEDULED;
     } catch (Exception e) {
       redirectAttributes.addFlashAttribute(
@@ -149,31 +192,32 @@ public class AppointmentController extends BaseController {
     }
   }
 
-  private void populateRescheduleModel(Long id, Model model, AuthenticatedUser receptionist) {
-    VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
-    model.addAttribute("appointment", appointmentService.findWithDetails(id));
-    model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
-    model.addAttribute("veterinarians", List.of(clinic.getOwner()));
-    model.addAttribute("role", receptionist.getRole().name());
-  }
-
   @GetMapping("/schedule")
   public String showScheduleForm(
       @RequestParam(required = false) Long customerId, Model model, Authentication authentication) {
     AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
     model.addAttribute("customerId", customerId);
-    model.addAttribute("customers", userService.findActiveCustomers());
     model.addAttribute(
-        "pets", customerId != null ? petService.findByOwnerId(customerId) : List.of());
-    model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
-    model.addAttribute("appointment", new Appointment());
+        "customers",
+        userService.findActiveCustomers().stream().map(UserMapper::toSummary).toList());
+    model.addAttribute(
+        "pets",
+        customerId != null
+            ? petService.findByOwnerId(customerId).stream().map(PetMapper::toSummary).toList()
+            : List.of());
+    model.addAttribute(
+        "services",
+        medicalServiceService.findByClinicId(clinic.getId()).stream()
+            .map(MedicalServiceMapper::toResponse)
+            .toList());
+    model.addAttribute("scheduleRequest", new ScheduleAppointmentRequest());
     return "receptionist/schedule_appointment";
   }
 
   @PostMapping("/schedule")
   public String scheduleAppointment(
-      @Valid @ModelAttribute("appointment") Appointment appointment,
+      @Valid @ModelAttribute("scheduleRequest") ScheduleAppointmentRequest request,
       BindingResult result,
       @RequestParam("customerId") Long customerId,
       @RequestParam("serviceId") Long serviceId,
@@ -183,23 +227,44 @@ public class AppointmentController extends BaseController {
       AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
       VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
       model.addAttribute("customerId", customerId);
-      model.addAttribute("customers", userService.findActiveCustomers());
-      model.addAttribute("pets", petService.findByOwnerId(customerId));
-      model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
+      model.addAttribute(
+          "customers",
+          userService.findActiveCustomers().stream().map(UserMapper::toSummary).toList());
+      model.addAttribute(
+          "pets", petService.findByOwnerId(customerId).stream().map(PetMapper::toSummary).toList());
+      model.addAttribute(
+          "services",
+          medicalServiceService.findByClinicId(clinic.getId()).stream()
+              .map(MedicalServiceMapper::toResponse)
+              .toList());
       return "receptionist/schedule_appointment";
     }
     try {
       AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
       appointmentService.createReceptionistAppointment(
-          appointment, customerId, serviceId, receptionist.getId());
+          ScheduleAppointmentCommand.builder()
+              .date(request.getDate())
+              .time(request.getTime())
+              .petId(request.getPetId())
+              .build(),
+          customerId,
+          serviceId,
+          receptionist.getId());
       return REDIRECT_RECEPTIONIST_DASHBOARD;
     } catch (Exception e) {
       AuthenticatedUser receptionist = getAuthenticatedUser(authentication);
       VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionist.getId());
       model.addAttribute("customerId", customerId);
-      model.addAttribute("customers", userService.findActiveCustomers());
-      model.addAttribute("pets", petService.findByOwnerId(customerId));
-      model.addAttribute("services", medicalServiceService.findByClinicId(clinic.getId()));
+      model.addAttribute(
+          "customers",
+          userService.findActiveCustomers().stream().map(UserMapper::toSummary).toList());
+      model.addAttribute(
+          "pets", petService.findByOwnerId(customerId).stream().map(PetMapper::toSummary).toList());
+      model.addAttribute(
+          "services",
+          medicalServiceService.findByClinicId(clinic.getId()).stream()
+              .map(MedicalServiceMapper::toResponse)
+              .toList());
       model.addAttribute("error", e.getMessage());
       return "receptionist/schedule_appointment";
     }
