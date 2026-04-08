@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.medical;
+package tfg.psygcv.enums.visit;
 
 import lombok.Getter;
 

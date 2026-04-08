@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.appointment;
+package tfg.psygcv.enums.appointment;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.user;
+package tfg.psygcv.enums.user;
 
 import lombok.Getter;
 
