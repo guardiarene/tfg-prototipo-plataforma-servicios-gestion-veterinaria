@@ -20,17 +20,17 @@ Referenced by `CLAUDE.md` and `.github/copilot-instructions.md`.
 
 Layered: **Controller -> Service -> Repository**
 
-| Layer      | Responsibility                           | Rules                                                                                                                                                           |
-|------------|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Controller | Receive HTTP requests, delegate, respond | No business logic. No `try/catch`. No entity types in signatures. Always use DTOs. Calls mappers to convert between DTOs and entities/commands.                 |
-| Service    | All business logic                       | `@Transactional`. Returns `Optional<T>` for single lookups. Never returns `null`. Never imports from `dto.*`. Accepts entities, primitives, or command objects. |
-| Repository | Data access via JPA interfaces           | No business logic. No transactions. No service/controller imports.                                                                                              |
-| Entity     | Persistence model                        | No business logic. No presentation logic. No service/controller imports.                                                                                        |
-| DTO        | Transfer objects for controller I/O      | Jakarta Validation annotations. No JPA annotations. No entity imports. Lives in `dto/<domain>/request/` or `dto/<domain>/response/`.                            |
-| Mapper     | Entity <-> DTO conversion                | Non-instantiable utility class. All methods `public static`. Called only from controllers. No framework dependencies.                                           |
-| Command    | Input contract for complex service ops   | Plain POJO in `service/<domain>/`. No validation annotations. No JPA annotations. Used when parameters exceed 3 or map to no single entity.                     |
-| Exception  | Domain-specific error types              | Extend `RuntimeException`. Handled exclusively by `@ControllerAdvice`.                                                                                          |
-| Validator  | Complex business validation              | Called by services. Throws domain exceptions.                                                                                                                   |
+| Layer      | Responsibility                             | Rules                                                                                                                                                           |
+|------------|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Controller | Receive HTTP requests, delegate, respond   | No business logic. No `try/catch`. No entity types in signatures. Always use DTOs. Calls mappers to convert between DTOs and entities/commands.                 |
+| Service    | All business logic                         | `@Transactional`. Returns `Optional<T>` for single lookups. Never returns `null`. Never imports from `dto.*`. Accepts entities, primitives, or command objects. |
+| Repository | Data access via JPA interfaces             | No business logic. No transactions. No service/controller imports.                                                                                              |
+| Entity     | Persistence model                          | No business logic. No presentation logic. No service/controller imports.                                                                                        |
+| DTO        | Transfer objects for controller I/O        | Jakarta Validation annotations. No JPA annotations. No entity imports. Lives in `dto/<domain>/request/` or `dto/<domain>/response/`.                            |
+| Mapper     | DTO/Entity conversion and command building | Non-instantiable utility class. All methods `public static`. Called only from controllers. No framework dependencies.                                           |
+| Command    | Input contract for complex service ops     | Plain POJO in `service/<domain>/`. No validation annotations. No JPA annotations. Used when parameters exceed 3 or map to no single entity.                     |
+| Exception  | Domain-specific error types                | Extend `RuntimeException`. Handled exclusively by `@ControllerAdvice`.                                                                                          |
+| Validator  | Complex business validation                | Called by services. Throws domain exceptions.                                                                                                                   |
 
 ---
 
@@ -78,7 +78,7 @@ tfg.psygcv
 │       ├── request/           #   CreateStaffRequest, UpdateUserRequest
 │       └── response/          #   UserResponse, UserSummaryResponse
 │
-├── entity/                    # JPA entities and enums
+├── entity/                    # JPA entities (no enums — see enums/)
 │   ├── appointment/
 │   ├── audit/                 #   AuditableEntity (shared base)
 │   ├── clinic/
@@ -86,9 +86,15 @@ tfg.psygcv
 │   ├── pet/
 │   └── user/
 │
+├── enums/                     # Domain enums (grouped by domain)
+│   ├── appointment/           #   AppointmentStatus
+│   ├── pet/                   #   Species, Sex
+│   ├── user/                  #   Role
+│   └── visit/                 #   VisitType
+│
 ├── exception/                 # Domain-specific exceptions + GlobalExceptionHandler
 │
-├── mapper/                    # Entity <-> DTO mappers
+├── mapper/                    # DTO/Entity mappers and command builders
 │   ├── appointment/
 │   ├── clinic/
 │   ├── medical/
@@ -136,6 +142,22 @@ tfg.psygcv
 - Max nesting: 3 levels
 - No catch-all packages: `utils/`, `helpers/`, `misc/`, `common/`, `base/`
 
+### Design Principles (SOLID)
+
+The layered architecture is guided by the SOLID principles. The table below maps each principle to where
+it materializes in the codebase:
+
+| Principle                 | Application in the project                                                                                                                                                                                                                              |
+|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Single Responsibility** | Each layer has one reason to change: controllers handle HTTP, services hold business logic, repositories manage persistence, mappers convert between types, validators enforce rules.                                                                   |
+| **Open / Closed**         | Service interfaces (`XService`) define the contract; implementations (`XServiceImpl`) can be swapped or decorated without modifying callers. New domain exceptions extend `RuntimeException` without changing `GlobalExceptionHandler` logic.           |
+| **Liskov Substitution**   | `AuditableEntity` subclasses are usable wherever `AuditableEntity` is expected. `BaseValidator` subclasses honour the base contract. When overriding, never weaken preconditions or strengthen postconditions.                                          |
+| **Interface Segregation** | Repositories are split by intent (`AppointmentRepository`, `AppointmentQueryRepository`, `AppointmentStatisticsRepository`) so consumers depend only on the queries they need. Service interfaces expose only the operations relevant to their callers. |
+| **Dependency Inversion**  | Controllers depend on service interfaces, not implementations. Services never import from `dto.*` — the controller adapts between the presentation layer and the domain. Command objects decouple service input from presentation DTOs.                 |
+
+When adding new code, verify that the change does not violate any of these principles. If a class starts
+accumulating multiple reasons to change, split it.
+
 ---
 
 ## Code Style
@@ -144,6 +166,14 @@ tfg.psygcv
 - Max line length: 120 characters
 - Readability over cleverness
 - No suppressed warnings without a comment explaining why
+
+### Javadoc
+
+- **Mandatory** on all public methods of service interfaces (`XService`) — describe what the method does,
+  its parameters, return value, and exceptions thrown
+- **Optional** on service implementations, mappers, validators, and controllers — add only when the logic
+  is non-obvious
+- Do not add Javadoc to getters, setters, or trivially clear methods
 
 ---
 
@@ -238,6 +268,48 @@ Controllers never accept or return JPA entities. All controller I/O uses DTOs.
 
 **Never:** `XDto`, `XData`, `XBean`, `XInfo`, `XObject`
 
+### Java Records (preferred for new DTOs)
+
+Java records are the preferred way to define DTOs. They provide immutability, compact syntax, and
+auto-generated `equals`/`hashCode`/`toString`. Existing Lombok-based DTOs will be migrated gradually.
+
+**When to use a record:**
+
+- Response DTOs (`XResponse`, `XSummaryResponse`) — always
+- Request DTOs (`CreateXRequest`, `UpdateXRequest`) — when all fields can be set via the canonical constructor
+  and Jakarta Validation annotations on record components are sufficient
+
+**When to keep a class (with Lombok):**
+
+- The DTO requires a builder pattern for complex construction with many optional fields
+- The DTO requires inheritance (records are implicitly `final`)
+
+**Record example:**
+
+```java
+public record PetResponse(
+    Long id,
+    String name,
+    Species species,
+    Sex sex,
+    String breed,
+    LocalDate birthDate,
+    String ownerFullName
+) {}
+```
+
+**Request record with validation:**
+
+```java
+public record CreatePetRequest(
+    @NotBlank String name,
+    @NotNull Species species,
+    @NotNull Sex sex,
+    String breed,
+    @NotNull @PastOrPresent LocalDate birthDate
+) {}
+```
+
 ### Validation
 
 - Jakarta Validation annotations (`@NotBlank`, `@Email`, `@FutureOrPresent`, etc.) on DTO fields
@@ -255,12 +327,13 @@ Controllers never accept or return JPA entities. All controller I/O uses DTOs.
 
 **Standard mapper methods:**
 
-| Method                    | Direction    | Use                                        |
-|---------------------------|--------------|--------------------------------------------|
-| `toEntity(XRequest)`      | DTO → Entity | Before passing to service on create/update |
-| `toResponse(Entity)`      | Entity → DTO | Detail views                               |
-| `toSummary(Entity)`       | Entity → DTO | Lists and selectors                        |
-| `toUpdateRequest(Entity)` | Entity → DTO | Pre-populating edit forms                  |
+| Method                      | Direction     | Use                                 |
+|-----------------------------|---------------|-------------------------------------|
+| `toCreateCommand(XRequest)` | DTO → Command | Before passing to service on create |
+| `toUpdateCommand(XRequest)` | DTO → Command | Before passing to service on update |
+| `toResponse(Entity)`        | Entity → DTO  | Detail views                        |
+| `toSummary(Entity)`         | Entity → DTO  | Lists and selectors                 |
+| `toUpdateRequest(Entity)`   | Entity → DTO  | Pre-populating edit forms           |
 
 ---
 
@@ -307,6 +380,31 @@ direction.
 **Services always return entities.** The controller is responsible for mapping returned entities
 to the appropriate response DTO.
 
+### Pagination
+
+All service methods that return lists of entities must support pagination using Spring Data's `Pageable` /
+`Page<T>`:
+
+- Service methods accept `Pageable` as their last parameter
+- Service methods return `Page<Entity>` — never `List<Entity>` for endpoints with potentially unbounded results
+- Controllers receive pagination parameters automatically via Spring's `Pageable` argument resolver
+- Default page size: 10. Maximum page size: 50. Configure via `@PageableDefault` on controller parameters.
+
+```java
+// Service interface
+Page<Pet> findByOwnerId(Long ownerId, Pageable pageable);
+
+// Controller
+@GetMapping("/pets")
+public String listPets(@PageableDefault(size = 10, sort = "name") Pageable pageable, Model model) {
+    Page<Pet> page = petService.findByOwnerId(currentUserId(), pageable);
+    model.addAttribute("pets", page.map(PetMapper::toSummary));
+    return "pets/list";
+}
+```
+
+Small, bounded collections (e.g., enum lookups, roles for a dropdown) may return `List<T>` directly.
+
 ---
 
 ## Repository Rules
@@ -327,6 +425,29 @@ to the appropriate response DTO.
 - No `try/catch` blocks — exceptions are handled by `@ControllerAdvice`
 - No direct entity manipulation — always go through service layer
 - Use `@PreAuthorize` for method-level security when URL patterns are insufficient
+
+### POST-Redirect-GET
+
+Every write operation (`POST`, `PUT`, `DELETE`) must redirect after success to prevent duplicate submissions
+on browser refresh. Use `RedirectAttributes.addFlashAttribute()` to pass feedback messages to the redirected
+view.
+
+```java
+@PostMapping("/pets")
+public String createPet(@Valid CreatePetRequest request, BindingResult result,
+                        RedirectAttributes flash) {
+    if (result.hasErrors()) {
+        return "pets/create";  // re-render form — no redirect
+    }
+    petService.create(PetMapper.toCreateCommand(request));
+    flash.addFlashAttribute("successMessage", "Pet registered successfully.");
+    return "redirect:/pets";
+}
+```
+
+- On **validation errors**: re-render the form (return view name, not redirect)
+- On **success**: always `return "redirect:/<path>"`
+- Flash attributes survive exactly one redirect and are automatically cleared
 
 ---
 
@@ -447,6 +568,26 @@ No hardcoded credentials in any profile. Never modify `application-prod.yml` unl
 - Constructor injection preferred
 - No mocking entities or value objects
 - Avoid over-mocking — if everything is mocked, the test proves nothing
+
+### Test Naming
+
+Use the pattern `should_expectedBehavior_when_condition`:
+
+```java
+@Test
+void should_throwDuplicateEmailException_when_emailAlreadyExists() { ... }
+
+@Test
+void should_returnPage_when_ownerHasPets() { ... }
+
+@Test
+void should_rejectAccess_when_userIsNotOwner() { ... }
+```
+
+- Start with `should_` — it reads as a specification
+- The `when_` clause describes the scenario under test
+- Use camelCase within each segment
+- No `test` prefix — JUnit 5 does not require it
 
 ### Assertions
 
