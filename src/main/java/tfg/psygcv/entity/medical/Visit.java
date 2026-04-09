@@ -20,6 +20,7 @@ import lombok.Setter;
 import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.audit.AuditableEntity;
 import tfg.psygcv.entity.user.User;
+import tfg.psygcv.enums.visit.VisitType;
 
 @Getter
 @Setter
@@ -100,5 +101,17 @@ public class Visit extends AuditableEntity {
     if (anamnesis != null && anamnesis.getVisit() != this) {
       anamnesis.setVisit(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Visit other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
   }
 }

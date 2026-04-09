@@ -83,6 +83,10 @@ public abstract class AuditableEntity {
     }
   }
 
+  private boolean isBlank(String value) {
+    return value == null || value.isBlank();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -93,9 +97,5 @@ public abstract class AuditableEntity {
   @Override
   public int hashCode() {
     return getClass().hashCode();
-  }
-
-  private boolean isBlank(String value) {
-    return value == null || value.isBlank();
   }
 }

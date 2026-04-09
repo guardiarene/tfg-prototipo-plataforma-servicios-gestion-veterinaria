@@ -21,6 +21,9 @@ import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.audit.AuditableEntity;
 import tfg.psygcv.entity.medical.MedicalRecord;
 import tfg.psygcv.entity.user.User;
+import tfg.psygcv.enums.pet.Breed;
+import tfg.psygcv.enums.pet.Sex;
+import tfg.psygcv.enums.pet.Species;
 
 @Getter
 @Setter
@@ -68,5 +71,17 @@ public class Pet extends AuditableEntity {
     if (medicalRecord != null && medicalRecord.getPet() != this) {
       medicalRecord.setPet(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Pet other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
   }
 }

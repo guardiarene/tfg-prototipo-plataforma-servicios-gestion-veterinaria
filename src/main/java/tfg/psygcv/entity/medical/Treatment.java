@@ -44,4 +44,16 @@ public class Treatment extends AuditableEntity {
       visit.getTreatments().add(this);
     }
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Treatment other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }

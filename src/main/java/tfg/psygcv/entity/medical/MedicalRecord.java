@@ -108,4 +108,16 @@ public class MedicalRecord extends AuditableEntity {
       current.setLastBirthDate(source.getLastBirthDate());
     }
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof MedicalRecord other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }

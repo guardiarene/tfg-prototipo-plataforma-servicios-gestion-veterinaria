@@ -20,6 +20,7 @@ import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.medical.Visit;
 import tfg.psygcv.entity.pet.Pet;
 import tfg.psygcv.entity.user.User;
+import tfg.psygcv.enums.appointment.AppointmentStatus;
 
 @Getter
 @Setter
@@ -63,5 +64,17 @@ public class Appointment extends AuditableEntity {
     if (visit != null && visit.getAppointment() != this) {
       visit.setAppointment(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Appointment other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
   }
 }

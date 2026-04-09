@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tfg.psygcv.entity.audit.AuditableEntity;
-import tfg.psygcv.entity.pet.ReproductiveStatus;
+import tfg.psygcv.enums.pet.ReproductiveStatus;
 
 @Getter
 @Setter
@@ -56,5 +56,17 @@ public class Anamnesis extends AuditableEntity {
     if (visit != null && visit.getAnamnesis() != this) {
       visit.setAnamnesis(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Anamnesis other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
   }
 }

@@ -45,4 +45,16 @@ public class MedicalService extends AuditableEntity {
       veterinaryClinic.getServices().add(this);
     }
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof MedicalService other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }

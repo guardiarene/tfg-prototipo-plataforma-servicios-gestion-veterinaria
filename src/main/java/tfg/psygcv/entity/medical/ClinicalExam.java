@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tfg.psygcv.entity.audit.AuditableEntity;
-import tfg.psygcv.entity.pet.Temperament;
+import tfg.psygcv.enums.pet.Temperament;
 
 @Getter
 @Setter
@@ -52,5 +52,17 @@ public class ClinicalExam extends AuditableEntity {
     if (visit != null && visit.getClinicalExam() != this) {
       visit.setClinicalExam(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof ClinicalExam other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
   }
 }

@@ -21,6 +21,7 @@ import tfg.psygcv.entity.appointment.Appointment;
 import tfg.psygcv.entity.audit.AuditableEntity;
 import tfg.psygcv.entity.clinic.VeterinaryClinic;
 import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.enums.user.Role;
 
 @Getter
 @Setter
@@ -66,4 +67,16 @@ public class User extends AuditableEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "WORK_CLINIC_ID")
   private VeterinaryClinic workClinic;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof User other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }

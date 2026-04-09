@@ -60,4 +60,16 @@ public class VeterinaryClinic extends AuditableEntity {
   @OneToMany(mappedBy = "workClinic", fetch = FetchType.LAZY)
   @SQLRestriction("ROLE = 'RECEPTIONIST'")
   private Set<User> receptionists = new LinkedHashSet<>();
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof VeterinaryClinic other)) return false;
+    return getId() != null && getId().equals(other.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }
