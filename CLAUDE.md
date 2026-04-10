@@ -40,15 +40,16 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
 ### Adding an Entity
 
 1. Read an existing entity — replicate the `equals`/`hashCode` pattern
-2. Create entity in `entity/<domain>/` with JPA annotations
-3. Create repository in `repository/<domain>/`
-4. Create DTOs in `dto/<domain>/`: `CreateXRequest`, `UpdateXRequest`, `XResponse`
-5. Create mapper in `mapper/<domain>/`
-6. Create service interface and implementation in `service/`
-7. Create controller in `controller/<domain>/` using DTOs with `@Valid`
-8. Add domain-specific exceptions in `exception/` if needed
-9. Create Flyway migration in `src/main/resources/db/migration/`
-10. Write tests — run `mvn clean verify`
+2. Create entity in `<domain>/entity/` with JPA annotations
+3. Create repository in `<domain>/repository/`
+4. Create DTOs in `<domain>/dto/`: `CreateXRequest`, `UpdateXRequest`, `XResponse`
+5. Create mapper in `<domain>/mapper/`
+6. Create command objects in `<domain>/command/` if needed
+7. Create service interface and implementation in `<domain>/service/`
+8. Create controller in `<domain>/controller/` using DTOs with `@Valid`
+9. Add domain-specific exceptions in `exception/` if needed
+10. Create Flyway migration in `src/main/resources/db/migration/`
+11. Write tests — run `mvn clean verify`
 
 ### Fixing a Bug
 

@@ -18,7 +18,9 @@ Referenced by `CLAUDE.md` and `.github/copilot-instructions.md`.
 
 ## Architecture
 
-Layered: **Controller -> Service -> Repository**
+Domain-first (vertical slice) with layered sub-packages: **Domain → Controller / Service / Repository**
+
+Each domain owns all its layers. Cross-cutting infrastructure lives in `shared/`.
 
 | Layer      | Responsibility                             | Rules                                                                                                                                                           |
 |------------|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -26,9 +28,9 @@ Layered: **Controller -> Service -> Repository**
 | Service    | All business logic                         | `@Transactional`. Returns `Optional<T>` for single lookups. Never returns `null`. Never imports from `dto.*`. Accepts entities, primitives, or command objects. |
 | Repository | Data access via JPA interfaces             | No business logic. No transactions. No service/controller imports.                                                                                              |
 | Entity     | Persistence model                          | No business logic. No presentation logic. No service/controller imports.                                                                                        |
-| DTO        | Transfer objects for controller I/O        | Jakarta Validation annotations. No JPA annotations. No entity imports. Lives in `dto/<domain>/request/` or `dto/<domain>/response/`.                            |
+| DTO        | Transfer objects for controller I/O        | Jakarta Validation annotations. No JPA annotations. No entity imports. Lives in `<domain>/dto/`.                                                                |
 | Mapper     | DTO/Entity conversion and command building | Non-instantiable utility class. All methods `public static`. Called only from controllers. No framework dependencies.                                           |
-| Command    | Input contract for complex service ops     | Plain POJO in `service/<domain>/`. No validation annotations. No JPA annotations. Used when parameters exceed 3 or map to no single entity.                     |
+| Command    | Input contract for complex service ops     | Plain POJO in `<domain>/command/`. No validation annotations. No JPA annotations. Used when parameters exceed 3 or map to no single entity.                     |
 | Exception  | Domain-specific error types                | Extend `RuntimeException`. Handled exclusively by `@ControllerAdvice`.                                                                                          |
 | Validator  | Complex business validation                | Called by services. Throws domain exceptions.                                                                                                                   |
 
@@ -38,113 +40,131 @@ Layered: **Controller -> Service -> Repository**
 
 ```
 tfg.psygcv
-├── config/                    # Configuration, security, constants, utilities
-│   ├── audit/                 #   JpaAuditConfig
-│   ├── constant/              #   RouteConstant
-│   ├── security/              #   SecurityConfig, AuthenticatedUser, SuccessHandler
-│   └── util/                  #   JsonUtil and other infrastructure utilities
+├── config/                        # Configuration (unchanged — cross-cutting infra)
+│   ├── audit/                     #   JpaAuditConfig
+│   ├── security/                  #   SecurityConfig, AuthenticatedUser, SuccessHandler
+│   └── util/                      #   JsonUtil and other infrastructure utilities
 │
-├── controller/                # Spring MVC controllers
-│   ├── BaseController.java    #   Abstract base (no sub-package for a single class)
-│   ├── PublicController.java  #   Public pages (/, /access_denied)
-│   ├── appointment/           #   AppointmentController
-│   ├── clinic/                #   VeterinaryClinicController, MedicalServiceController
-│   ├── dashboard/             #   AdminController, CustomerController,
-│   │                          #   ReceptionistController, VeterinarianController
-│   ├── medical/               #   MedicalRecordController, VisitController, ReportController
-│   ├── pet/                   #   PetController
-│   └── user/                  #   UserController (registration/login/admin CRUD), ProfileController
+├── shared/                        # Cross-cutting base classes
+│   ├── constant/                  #   RouteConstant
+│   ├── controller/                #   BaseController, PublicController
+│   ├── entity/                    #   AuditableEntity
+│   └── validation/                #   BaseValidator
 │
-├── dto/                       # Request/response DTOs
-│   ├── appointment/
-│   │   ├── request/           #   ScheduleAppointmentRequest, RescheduleAppointmentRequest
-│   │   └── response/          #   AppointmentResponse, AppointmentSummaryResponse
-│   ├── clinic/
-│   │   ├── request/           #   RegisterClinicRequest, UpdateClinicRequest
-│   │   └── response/          #   VeterinaryClinicResponse, VeterinaryClinicSummaryResponse,
-│   │                          #   MedicalServiceResponse
-│   ├── medical/
-│   │   ├── request/           #   CreateMedicalRecordRequest, UpdateMedicalRecordRequest,
-│   │   │                      #   CreateVisitRequest, UpdateVisitRequest,
-│   │   │                      #   ClinicalExamRequest, AnamnesisRequest,
-│   │   │                      #   DiagnosticRequest, TreatmentRequest, VaccineRequest
-│   │   └── response/          #   MedicalRecordResponse, MedicalRecordSummaryResponse,
-│   │                          #   VisitResponse, ClinicalExamResponse, AnamnesisResponse,
-│   │                          #   DiagnosticResponse, TreatmentResponse, VaccineResponse
-│   ├── pet/
-│   │   ├── request/           #   CreatePetRequest, UpdatePetRequest
-│   │   └── response/          #   PetResponse, PetSummaryResponse
-│   └── user/
-│       ├── request/           #   CreateStaffRequest, UpdateUserRequest
-│       └── response/          #   UserResponse, UserSummaryResponse
+├── user/                          # User domain
+│   ├── command/                   #   RegisterCustomerCommand, RegisterVeterinarianCommand,
+│   │                              #   CreateStaffCommand, CreateAdminUserCommand,
+│   │                              #   UpdateAdminUserCommand, UpdateUserProfileCommand
+│   ├── controller/                #   UserController, ProfileController, AdminDashboardController
+│   ├── dto/                       #   CreateUserRequest, CreateStaffRequest, CreateAdminUserRequest,
+│   │                              #   UpdateUserRequest, UpdateAdminUserRequest,
+│   │                              #   UserResponse, UserSummaryResponse
+│   ├── entity/                    #   User, Role
+│   ├── mapper/                    #   UserMapper
+│   ├── repository/                #   UserRepository
+│   └── service/                   #   UserService, UserServiceImpl, UserValidator
 │
-├── entity/                    # JPA entities (no enums — see enums/)
-│   ├── appointment/
-│   ├── audit/                 #   AuditableEntity (shared base)
-│   ├── clinic/
-│   ├── medical/
-│   ├── pet/
-│   └── user/
+├── pet/                           # Pet domain
+│   ├── command/                   #   CreatePetCommand, UpdatePetCommand
+│   ├── controller/                #   PetController
+│   ├── dto/                       #   CreatePetRequest, UpdatePetRequest,
+│   │                              #   PetResponse, PetSummaryResponse
+│   ├── entity/                    #   Pet, Species, Sex, Breed, Temperament, ReproductiveStatus
+│   ├── mapper/                    #   PetMapper
+│   ├── repository/                #   PetRepository
+│   └── service/                   #   PetService, PetServiceImpl, PetValidator
 │
-├── enums/                     # Domain enums (grouped by domain)
-│   ├── appointment/           #   AppointmentStatus
-│   ├── pet/                   #   Species, Sex
-│   ├── user/                  #   Role
-│   └── visit/                 #   VisitType
+├── clinic/                        # Clinic domain
+│   ├── command/                   #   RegisterClinicWithVeterinarianCommand, UpdateClinicCommand,
+│   │                              #   CreateMedicalServiceCommand, UpdateMedicalServiceCommand
+│   ├── controller/                #   VeterinaryClinicController, MedicalServiceController,
+│   │                              #   ClinicManagementController, StaffController,
+│   │                              #   CustomerDashboardController
+│   ├── dto/                       #   RegisterClinicRequest, UpdateClinicRequest,
+│   │                              #   CreateMedicalServiceRequest, UpdateMedicalServiceRequest,
+│   │                              #   VeterinaryClinicResponse, VeterinaryClinicSummaryResponse,
+│   │                              #   MedicalServiceResponse
+│   ├── entity/                    #   VeterinaryClinic, MedicalService
+│   ├── mapper/                    #   VeterinaryClinicMapper, MedicalServiceMapper
+│   ├── repository/                #   VeterinaryClinicRepository, MedicalServiceRepository
+│   └── service/                   #   VeterinaryClinicService, VeterinaryClinicServiceImpl,
+│                                  #   VeterinaryClinicValidator, MedicalServiceService,
+│                                  #   MedicalServiceServiceImpl, MedicalServiceValidator
 │
-├── exception/                 # Domain-specific exceptions + GlobalExceptionHandler
+├── appointment/                   # Appointment domain
+│   ├── command/                   #   ScheduleAppointmentCommand, RescheduleAppointmentCommand
+│   ├── controller/                #   CustomerAppointmentController,
+│   │                              #   ReceptionistAppointmentController,
+│   │                              #   ReceptionistDashboardController
+│   ├── dto/                       #   CreateClientAppointmentRequest, ScheduleAppointmentRequest,
+│   │                              #   RescheduleAppointmentRequest,
+│   │                              #   AppointmentResponse, AppointmentSummaryResponse
+│   ├── entity/                    #   Appointment, AppointmentStatus
+│   ├── mapper/                    #   AppointmentMapper
+│   ├── repository/                #   AppointmentRepository, AppointmentQueryRepository,
+│   │                              #   AppointmentStatisticsRepository
+│   └── service/                   #   AppointmentService, AppointmentServiceImpl,
+│                                  #   AppointmentValidator
 │
-├── mapper/                    # DTO/Entity mappers and command builders
-│   ├── appointment/
-│   ├── clinic/
-│   ├── medical/
-│   ├── pet/
-│   └── user/
+├── medical/                       # Medical domain (two sub-domains)
+│   ├── record/                    #   Medical record sub-domain
+│   │   ├── command/               #     CreateMedicalRecordCommand, UpdateMedicalRecordCommand
+│   │   ├── controller/            #     MedicalRecordController, VeterinarianDashboardController
+│   │   ├── dto/                   #     CreateMedicalRecordRequest, UpdateMedicalRecordRequest,
+│   │   │                          #     MedicalRecordResponse, MedicalRecordSummaryResponse
+│   │   ├── entity/                #     MedicalRecord
+│   │   ├── mapper/                #     MedicalRecordMapper
+│   │   ├── repository/            #     MedicalRecordRepository, MedicalRecordQueryRepository
+│   │   └── service/               #     MedicalRecordService, MedicalRecordServiceImpl,
+│   │                              #     MedicalRecordValidator
+│   └── visit/                     #   Visit sub-domain (Visit + child entities)
+│       ├── command/               #     CreateVisitCommand, UpdateVisitCommand
+│       ├── controller/            #     VisitController
+│       ├── dto/                   #     CreateVisitRequest, UpdateVisitRequest,
+│       │                          #     AnamnesisRequest, ClinicalExamRequest,
+│       │                          #     DiagnosticRequest, TreatmentRequest, VaccineRequest,
+│       │                          #     VisitResponse, AnamnesisResponse, ClinicalExamResponse,
+│       │                          #     DiagnosticResponse, TreatmentResponse, VaccineResponse
+│       ├── entity/                #     Visit, Anamnesis, ClinicalExam, Diagnostic,
+│       │                          #     Treatment, Vaccine, VisitType
+│       ├── mapper/                #     VisitMapper, AnamnesisMapper, ClinicalExamMapper,
+│       │                          #     DiagnosticMapper, TreatmentMapper, VaccineMapper
+│       ├── repository/            #     VisitRepository, AnamnesisRepository,
+│       │                          #     ClinicalExamRepository, DiagnosticRepository,
+│       │                          #     DiagnosticStatisticsRepository, TreatmentRepository,
+│       │                          #     TreatmentStatisticsRepository, VaccineRepository
+│       └── service/               #     VisitService, VisitServiceImpl, VisitValidator
 │
-├── repository/                # JPA repository interfaces (grouped by domain)
-│   ├── appointment/           #   AppointmentRepository, AppointmentQueryRepository,
-│   │                          #   AppointmentStatisticsRepository
-│   ├── clinic/                #   VeterinaryClinicRepository, MedicalServiceRepository
-│   ├── medical/               #   VisitRepository, MedicalRecordRepository,
-│   │                          #   MedicalRecordQueryRepository, DiagnosticRepository,
-│   │                          #   DiagnosticStatisticsRepository, TreatmentRepository,
-│   │                          #   TreatmentStatisticsRepository, AnamnesisRepository,
-│   │                          #   ClinicalExamRepository, VaccineRepository
-│   ├── pet/                   #   PetRepository
-│   └── user/                  #   UserRepository
+├── statistics/                    # Statistics / reporting domain
+│   ├── controller/                #   ReportController
+│   └── service/                   #   StatisticsService, StatisticsServiceImpl,
+│                                  #   StatisticsValidator
 │
-└── service/                   # Business logic (grouped by domain)
-    ├── appointment/           #   AppointmentService, AppointmentServiceImpl,
-    │                          #   AppointmentValidator
-    ├── clinic/                #   VeterinaryClinicService, VeterinaryClinicServiceImpl,
-    │                          #   VeterinaryClinicValidator, MedicalServiceService,
-    │                          #   MedicalServiceServiceImpl, MedicalServiceValidator
-    ├── medical/               #   VisitService, VisitServiceImpl, VisitValidator,
-    │                          #   MedicalRecordService, MedicalRecordServiceImpl,
-    │                          #   MedicalRecordValidator
-    ├── pet/                   #   PetService, PetServiceImpl, PetValidator
-    ├── statistics/            #   StatisticsService, StatisticsServiceImpl,
-    │                          #   StatisticsValidator
-    ├── user/                  #   UserService, UserServiceImpl, UserValidator
-    └── validation/            #   BaseValidator (shared abstract base for all validators)
+└── exception/                     # Domain-specific exceptions + GlobalExceptionHandler
 ```
 
 ### Principles
 
-- Sub-packages group by **domain**: `user/`, `pet/`, `medical/`, `appointment/`, `clinic/`
-- Interface, implementation, validator, and command objects for the same service are **co-located** in the same domain
-  package
-- Cross-cutting base classes live in dedicated shared packages (`entity/audit/`, `service/validation/`)
-- Single classes that serve the entire layer live at the layer root (e.g., `BaseController.java`,
-  `PublicController.java`)
-- DTOs are always split into `request/` and `response/` sub-packages within each domain
-- Command objects (`XCommand`) live in `service/<domain>/`, not in `dto/`
-- Max nesting: 3 levels
+- **Domain-first organization**: each top-level package represents a bounded domain (`user/`, `pet/`,
+  `clinic/`, `appointment/`, `medical/`, `statistics/`), containing all its layers as sub-packages
+- Each domain has a consistent internal structure: `entity/`, `repository/`, `service/`, `command/`,
+  `dto/`, `mapper/`, `controller/`
+- The `medical/` domain is split into two sub-domains (`record/`, `visit/`) because MedicalRecord and
+  Visit are separate aggregate roots with distinct lifecycles
+- Cross-cutting base classes live in `shared/` (`AuditableEntity`, `BaseController`, `BaseValidator`,
+  `RouteConstant`)
+- Domain enums are co-located with their entities in `<domain>/entity/` — no separate `enums/` package
+- DTOs are flat in `<domain>/dto/` — no `request/` / `response/` sub-packages (the naming convention
+  makes the direction clear)
+- Command objects live in `<domain>/command/`, separate from services
+- Controllers follow **single responsibility**: one controller per cohesive set of endpoints (e.g.,
+  `CustomerAppointmentController` vs `ReceptionistAppointmentController`)
+- Max nesting: 4 levels (for `medical/record/` and `medical/visit/`)
 - No catch-all packages: `utils/`, `helpers/`, `misc/`, `common/`, `base/`
 
 ### Design Principles (SOLID)
 
-The layered architecture is guided by the SOLID principles. The table below maps each principle to where
+The domain-first architecture is guided by the SOLID principles. The table below maps each principle to where
 it materializes in the codebase:
 
 | Principle                 | Application in the project                                                                                                                                                                                                                              |
@@ -373,7 +393,7 @@ direction.
 **Command objects (`XCommand`):**
 
 - Plain POJO — no Jakarta Validation annotations, no JPA annotations, no Spring annotations
-- Lives in `service/<domain>/` alongside the service interface and implementation
+- Lives in `<domain>/command/` alongside the domain's other sub-packages
 - Represents the service's own input contract, decoupled from the presentation DTO
 - Use `@Builder` (Lombok) is acceptable here — commands are not JPA entities
 
@@ -410,7 +430,7 @@ Small, bounded collections (e.g., enum lookups, roles for a dropdown) may return
 ## Repository Rules
 
 - JPA repository interfaces only — no implementation classes
-- Organized by domain (`repository/user/`, `repository/pet/`, etc.)
+- Co-located with the domain (`user/repository/`, `pet/repository/`, etc.)
 - Custom queries use `@Query` with JPQL or `@EntityGraph`
 - No business logic in repository methods
 - No duplicate methods — one method per query, one name per intent
