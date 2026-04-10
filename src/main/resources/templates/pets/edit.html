@@ -25,7 +25,7 @@
                                         <select class="form-select form-select-lg" id="species" required
                                                 th:errorclass="is-invalid" th:field="*{species}">
                                             <option disabled value="">Seleccionar especie...</option>
-                                            <option th:each="sp : ${T(tfg.psygcv.entity.pet.Species).values()}"
+                                            <option th:each="sp : ${T(tfg.psygcv.pet.entity.Species).values()}"
                                                     th:text="${sp.description}"
                                                     th:value="${sp}"></option>
                                         </select>
@@ -41,7 +41,7 @@
                                         </span>
                                         <select class="form-select form-select-lg" id="sex" required
                                                 th:errorclass="is-invalid" th:field="*{sex}">
-                                            <option th:each="sexValue : ${T(tfg.psygcv.entity.pet.Sex).values()}"
+                                            <option th:each="sexValue : ${T(tfg.psygcv.pet.entity.Sex).values()}"
                                                     th:text="${sexValue.description}"
                                                     th:value="${sexValue}"></option>
                                         </select>
@@ -65,7 +65,7 @@
                                                 th:errorclass="is-invalid" th:field="*{breed}">
                                             <option disabled value="">Selecciona primero una especie...</option>
                                             <option th:attr="data-species=${br.species}"
-                                                    th:each="br : ${T(tfg.psygcv.entity.pet.Breed).values()}"
+                                                    th:each="br : ${T(tfg.psygcv.pet.entity.Breed).values()}"
                                                     th:text="${br.description}"
                                                     th:value="${br}"></option>
                                         </select>

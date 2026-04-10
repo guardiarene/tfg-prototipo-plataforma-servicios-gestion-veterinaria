@@ -12,8 +12,9 @@
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-calendar-plus', 'Nueva Visita — ' + ${medicalRecord.petName}, null)}"></div>
             <form class="card-body" method="POST"
-                  th:action="@{/visits/new(medicalRecordId=${medicalRecordId})}"
+                  th:action="@{/visits/new}"
                   th:object="${visit}">
+                <input th:field="*{medicalRecordId}" type="hidden">
                 <div th:if="${#fields.hasErrors('*')}"
                      th:insert="~{fragments/alert :: errorAlert('Corrige los errores del formulario.')}"></div>
                 <div class="mb-4">
@@ -92,7 +93,7 @@
                             <label class="form-label fw-bold">Temperamento</label>
                             <select class="form-select" required th:field="*{clinicalExam.temperament}">
                                 <option disabled selected value="">Seleccionar temperamento...</option>
-                                <option th:each="temp : ${T(tfg.psygcv.entity.pet.Temperament).values()}"
+                                <option th:each="temp : ${T(tfg.psygcv.pet.entity.Temperament).values()}"
                                         th:text="${temp.description}" th:value="${temp}"></option>
                             </select>
                             <div class="text-danger small" th:errors="*{clinicalExam.temperament}"></div>
@@ -137,7 +138,7 @@
                             <label class="form-label fw-bold">Estado Reproductivo</label>
                             <select class="form-select" th:field="*{anamnesis.reproductiveStatus}">
                                 <option disabled selected value="">Seleccionar estado...</option>
-                                <option th:each="status : ${T(tfg.psygcv.entity.pet.ReproductiveStatus).values()}"
+                                <option th:each="status : ${T(tfg.psygcv.pet.entity.ReproductiveStatus).values()}"
                                         th:text="${status.description}" th:value="${status}"></option>
                             </select>
                         </div>
@@ -195,7 +196,7 @@
                         </div>
                         <div class="col-md-6">
                             <a class="btn btn-secondary w-100"
-                               th:href="@{/medical-records/{id}(id=${medicalRecordId})}">
+                               th:href="@{/medical-records/{id}(id=${visit.medicalRecordId})}">
                                 <i aria-hidden="true" class="bi bi-x-circle me-2"></i>Cancelar
                             </a>
                         </div>

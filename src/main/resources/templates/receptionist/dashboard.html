@@ -70,7 +70,7 @@
                                                         Estado:</label>
                                                     <select class="form-select form-select-sm" name="status"
                                                             onchange="this.form.submit()">
-                                                        <option th:each="status : ${T(tfg.psygcv.entity.appointment.AppointmentStatus).values()}"
+                                                        <option th:each="status : ${T(tfg.psygcv.appointment.entity.AppointmentStatus).values()}"
                                                                 th:selected="${appointment.appointmentStatus == status}"
                                                                 th:text="${status.description}"
                                                                 th:value="${status}"></option>
