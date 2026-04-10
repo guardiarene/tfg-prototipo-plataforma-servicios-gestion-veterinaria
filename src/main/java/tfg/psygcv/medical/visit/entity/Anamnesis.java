@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.medical;
+package tfg.psygcv.medical.visit.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.entity.audit.AuditableEntity;
-import tfg.psygcv.enums.pet.ReproductiveStatus;
+import tfg.psygcv.pet.entity.ReproductiveStatus;
+import tfg.psygcv.shared.entity.AuditableEntity;
 
 @Getter
 @Setter

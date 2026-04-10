@@ -1,4 +1,4 @@
-package tfg.psygcv.enums.pet;
+package tfg.psygcv.pet.entity;
 
 import lombok.Getter;
 

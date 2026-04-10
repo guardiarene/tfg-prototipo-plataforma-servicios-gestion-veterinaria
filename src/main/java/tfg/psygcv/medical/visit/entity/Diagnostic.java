@@ -1,38 +1,31 @@
-package tfg.psygcv.entity.medical;
+package tfg.psygcv.medical.visit.entity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.entity.audit.AuditableEntity;
+import tfg.psygcv.shared.entity.AuditableEntity;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "TREATMENT")
-public class Treatment extends AuditableEntity {
+@Table(name = "DIAGNOSTIC")
+public class Diagnostic extends AuditableEntity {
 
-  @Column(name = "PRODUCT", nullable = false, length = 100)
-  private String product;
-
-  @Column(name = "ROUTE", nullable = false, length = 50)
-  private String route;
-
-  @Column(name = "FREQUENCY", nullable = false, length = 50)
-  private String frequency;
-
-  @Column(name = "START_DATE", nullable = false)
-  private LocalDate startDate;
-
-  @Column(name = "END_DATE")
-  private LocalDate endDate;
+  @ElementCollection
+  @CollectionTable(name = "DIAGNOSTIC_PROBLEMS", joinColumns = @JoinColumn(name = "DIAGNOSTIC_ID"))
+  @Column(name = "PROBLEM")
+  private List<String> problems = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "VISIT_ID", nullable = false)
@@ -40,15 +33,15 @@ public class Treatment extends AuditableEntity {
 
   public void setVisit(Visit visit) {
     this.visit = visit;
-    if (visit != null && !visit.getTreatments().contains(this)) {
-      visit.getTreatments().add(this);
+    if (visit != null && !visit.getDiagnostics().contains(this)) {
+      visit.getDiagnostics().add(this);
     }
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Treatment other)) return false;
+    if (!(o instanceof Diagnostic other)) return false;
     return getId() != null && getId().equals(other.getId());
   }
 

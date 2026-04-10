@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.appointment;
+package tfg.psygcv.appointment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,13 +14,12 @@ import java.time.LocalTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.entity.audit.AuditableEntity;
-import tfg.psygcv.entity.clinic.MedicalService;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.medical.Visit;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.enums.appointment.AppointmentStatus;
+import tfg.psygcv.clinic.entity.MedicalService;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.medical.visit.entity.Visit;
+import tfg.psygcv.pet.entity.Pet;
+import tfg.psygcv.shared.entity.AuditableEntity;
+import tfg.psygcv.user.entity.User;
 
 @Getter
 @Setter

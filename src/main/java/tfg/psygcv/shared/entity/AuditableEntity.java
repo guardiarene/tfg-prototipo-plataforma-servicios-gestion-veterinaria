@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.audit;
+package tfg.psygcv.shared.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

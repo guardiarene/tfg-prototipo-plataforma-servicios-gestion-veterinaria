@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.pet;
+package tfg.psygcv.pet.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,13 +17,10 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.entity.appointment.Appointment;
-import tfg.psygcv.entity.audit.AuditableEntity;
-import tfg.psygcv.entity.medical.MedicalRecord;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.enums.pet.Breed;
-import tfg.psygcv.enums.pet.Sex;
-import tfg.psygcv.enums.pet.Species;
+import tfg.psygcv.appointment.entity.Appointment;
+import tfg.psygcv.medical.record.entity.MedicalRecord;
+import tfg.psygcv.shared.entity.AuditableEntity;
+import tfg.psygcv.user.entity.User;
 
 @Getter
 @Setter

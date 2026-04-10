@@ -1,4 +1,4 @@
-package tfg.psygcv.entity.user;
+package tfg.psygcv.user.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,11 +17,10 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tfg.psygcv.entity.appointment.Appointment;
-import tfg.psygcv.entity.audit.AuditableEntity;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.enums.user.Role;
+import tfg.psygcv.appointment.entity.Appointment;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.pet.entity.Pet;
+import tfg.psygcv.shared.entity.AuditableEntity;
 
 @Getter
 @Setter
@@ -70,8 +69,12 @@ public class User extends AuditableEntity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof User other)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof User other)) {
+      return false;
+    }
     return getId() != null && getId().equals(other.getId());
   }
 
