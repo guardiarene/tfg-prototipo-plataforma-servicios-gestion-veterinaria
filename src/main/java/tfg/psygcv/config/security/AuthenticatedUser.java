@@ -9,8 +9,8 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import tfg.psygcv.entity.user.Role;
-import tfg.psygcv.entity.user.User;
+import tfg.psygcv.user.entity.Role;
+import tfg.psygcv.user.entity.User;
 
 @Getter
 public final class AuthenticatedUser implements UserDetails, Serializable {
