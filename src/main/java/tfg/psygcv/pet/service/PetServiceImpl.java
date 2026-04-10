@@ -1,4 +1,4 @@
-package tfg.psygcv.service.pet;
+package tfg.psygcv.pet.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.LinkedHashSet;
@@ -7,12 +7,14 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
-import tfg.psygcv.repository.pet.PetRepository;
-import tfg.psygcv.service.user.UserService;
+import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.pet.command.CreatePetCommand;
+import tfg.psygcv.pet.command.UpdatePetCommand;
+import tfg.psygcv.pet.entity.Pet;
+import tfg.psygcv.pet.repository.PetRepository;
+import tfg.psygcv.user.entity.User;
+import tfg.psygcv.user.service.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

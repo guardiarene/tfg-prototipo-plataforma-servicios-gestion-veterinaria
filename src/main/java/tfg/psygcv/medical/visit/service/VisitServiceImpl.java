@@ -1,4 +1,4 @@
-package tfg.psygcv.service.medical;
+package tfg.psygcv.medical.visit.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -14,23 +14,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.entity.medical.Anamnesis;
-import tfg.psygcv.entity.medical.ClinicalExam;
-import tfg.psygcv.entity.medical.Diagnostic;
-import tfg.psygcv.entity.medical.MedicalRecord;
-import tfg.psygcv.entity.medical.Treatment;
-import tfg.psygcv.entity.medical.Vaccine;
-import tfg.psygcv.entity.medical.Visit;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.medical.AnamnesisRepository;
-import tfg.psygcv.repository.medical.ClinicalExamRepository;
-import tfg.psygcv.repository.medical.DiagnosticRepository;
-import tfg.psygcv.repository.medical.MedicalRecordRepository;
-import tfg.psygcv.repository.medical.TreatmentRepository;
-import tfg.psygcv.repository.medical.VaccineRepository;
-import tfg.psygcv.repository.medical.VisitRepository;
-import tfg.psygcv.service.user.UserService;
+import tfg.psygcv.medical.record.entity.MedicalRecord;
+import tfg.psygcv.medical.record.repository.MedicalRecordRepository;
+import tfg.psygcv.medical.visit.command.CreateVisitCommand;
+import tfg.psygcv.medical.visit.command.UpdateVisitCommand;
+import tfg.psygcv.medical.visit.entity.Anamnesis;
+import tfg.psygcv.medical.visit.entity.ClinicalExam;
+import tfg.psygcv.medical.visit.entity.Diagnostic;
+import tfg.psygcv.medical.visit.entity.Treatment;
+import tfg.psygcv.medical.visit.entity.Vaccine;
+import tfg.psygcv.medical.visit.entity.Visit;
+import tfg.psygcv.medical.visit.repository.AnamnesisRepository;
+import tfg.psygcv.medical.visit.repository.ClinicalExamRepository;
+import tfg.psygcv.medical.visit.repository.DiagnosticRepository;
+import tfg.psygcv.medical.visit.repository.TreatmentRepository;
+import tfg.psygcv.medical.visit.repository.VaccineRepository;
+import tfg.psygcv.medical.visit.repository.VisitRepository;
+import tfg.psygcv.pet.entity.Pet;
+import tfg.psygcv.user.entity.User;
+import tfg.psygcv.user.service.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ public class VisitServiceImpl implements VisitService {
 
   @Override
   @Transactional
-  public Visit createVisit(Long medicalRecordId, CreateVisitCommand command, User veterinarian) {
+  public Visit createVisit(Long medicalRecordId, CreateVisitCommand command, Long veterinarianId) {
     MedicalRecord medicalRecord =
         medicalRecordRepository
             .findById(medicalRecordId)
@@ -58,8 +60,7 @@ public class VisitServiceImpl implements VisitService {
                     new EntityNotFoundException(
                         "Medical record not found with ID: " + medicalRecordId));
     Pet pet = medicalRecord.getPet();
-    User veterinarianWithClinicContext =
-        userService.findByIdWithClinicContext(veterinarian.getId());
+    User veterinarianWithClinicContext = userService.findByIdWithClinicContext(veterinarianId);
     visitValidator.validateForCreation(command, veterinarianWithClinicContext, pet);
     Visit visit = buildVisitFromCommand(command);
     setupVisitRelationships(visit, medicalRecord, veterinarianWithClinicContext);
@@ -68,9 +69,8 @@ public class VisitServiceImpl implements VisitService {
 
   @Override
   @Transactional
-  public Visit updateVisit(Long visitId, UpdateVisitCommand command, User veterinarian) {
-    User veterinarianWithClinicContext =
-        userService.findByIdWithClinicContext(veterinarian.getId());
+  public Visit updateVisit(Long visitId, UpdateVisitCommand command, Long veterinarianId) {
+    User veterinarianWithClinicContext = userService.findByIdWithClinicContext(veterinarianId);
     visitValidator.validateForUpdate(visitId, command, veterinarianWithClinicContext);
     Visit existingVisit = findCompleteById(visitId);
     updateVisitFields(existingVisit, command);
@@ -152,7 +152,7 @@ public class VisitServiceImpl implements VisitService {
 
   @Override
   @Transactional
-  public void deleteVisit(Long visitId, User veterinarian) {
+  public Long deleteVisit(Long visitId) {
     visitValidator.validateId(visitId);
     Visit visit =
         visitRepository
@@ -160,6 +160,7 @@ public class VisitServiceImpl implements VisitService {
             .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
     visit.setActive(false);
     visitRepository.save(visit);
+    return visit.getMedicalRecord().getId();
   }
 
   private Visit buildVisitFromCommand(CreateVisitCommand command) {

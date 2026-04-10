@@ -1,7 +1,9 @@
-package tfg.psygcv.service.pet;
+package tfg.psygcv.pet.service;
 
 import java.util.List;
-import tfg.psygcv.entity.pet.Pet;
+import tfg.psygcv.pet.command.CreatePetCommand;
+import tfg.psygcv.pet.command.UpdatePetCommand;
+import tfg.psygcv.pet.entity.Pet;
 
 public interface PetService {
 

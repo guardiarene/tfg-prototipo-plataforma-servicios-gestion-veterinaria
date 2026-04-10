@@ -1,12 +1,13 @@
-package tfg.psygcv.service.appointment;
+package tfg.psygcv.appointment.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import tfg.psygcv.entity.appointment.Appointment;
-import tfg.psygcv.entity.appointment.AppointmentStatus;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
+import tfg.psygcv.appointment.command.RescheduleAppointmentCommand;
+import tfg.psygcv.appointment.command.ScheduleAppointmentCommand;
+import tfg.psygcv.appointment.entity.Appointment;
+import tfg.psygcv.appointment.entity.AppointmentStatus;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.pet.entity.Pet;
 
 public interface AppointmentService {
 
@@ -23,10 +24,9 @@ public interface AppointmentService {
   String findVeterinarianName(Appointment appointment);
 
   void createClientAppointment(
-      LocalDate date, Long petId, Long serviceId, Long clinicId, User client);
+      LocalDate date, Long petId, Long serviceId, Long clinicId, Long clientId);
 
-  void createReceptionistAppointment(
-      ScheduleAppointmentCommand command, Long customerId, Long serviceId, Long receptionistId);
+  void createReceptionistAppointment(ScheduleAppointmentCommand command, Long receptionistId);
 
   void updateStatus(Long appointmentId, AppointmentStatus status);
 

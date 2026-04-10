@@ -1,8 +1,9 @@
-package tfg.psygcv.service.user;
+package tfg.psygcv.user.service;
 
 import org.springframework.stereotype.Component;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.validation.BaseValidator;
+import tfg.psygcv.shared.validation.BaseValidator;
+import tfg.psygcv.user.command.UpdateAdminUserCommand;
+import tfg.psygcv.user.entity.User;
 
 @Component
 public class UserValidator extends BaseValidator {

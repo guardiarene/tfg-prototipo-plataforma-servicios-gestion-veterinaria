@@ -1,7 +1,9 @@
-package tfg.psygcv.service.clinic;
+package tfg.psygcv.clinic.service;
 
 import java.util.List;
-import tfg.psygcv.entity.clinic.MedicalService;
+import tfg.psygcv.clinic.command.CreateMedicalServiceCommand;
+import tfg.psygcv.clinic.command.UpdateMedicalServiceCommand;
+import tfg.psygcv.clinic.entity.MedicalService;
 
 public interface MedicalServiceService {
 

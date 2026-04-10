@@ -1,4 +1,4 @@
-package tfg.psygcv.service.appointment;
+package tfg.psygcv.appointment.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -8,18 +8,20 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.entity.appointment.Appointment;
-import tfg.psygcv.entity.appointment.AppointmentStatus;
-import tfg.psygcv.entity.clinic.MedicalService;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
-import tfg.psygcv.repository.appointment.AppointmentRepository;
-import tfg.psygcv.service.clinic.MedicalServiceService;
-import tfg.psygcv.service.clinic.VeterinaryClinicService;
-import tfg.psygcv.service.pet.PetService;
-import tfg.psygcv.service.user.UserService;
+import tfg.psygcv.appointment.command.RescheduleAppointmentCommand;
+import tfg.psygcv.appointment.command.ScheduleAppointmentCommand;
+import tfg.psygcv.appointment.entity.Appointment;
+import tfg.psygcv.appointment.entity.AppointmentStatus;
+import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
+import tfg.psygcv.appointment.repository.AppointmentRepository;
+import tfg.psygcv.clinic.entity.MedicalService;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.clinic.service.MedicalServiceService;
+import tfg.psygcv.clinic.service.VeterinaryClinicService;
+import tfg.psygcv.pet.entity.Pet;
+import tfg.psygcv.pet.service.PetService;
+import tfg.psygcv.user.entity.User;
+import tfg.psygcv.user.service.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -83,26 +85,26 @@ public class AppointmentServiceImpl implements AppointmentService {
   @Override
   @Transactional
   public void createClientAppointment(
-      LocalDate date, Long petId, Long serviceId, Long clinicId, User client) {
+      LocalDate date, Long petId, Long serviceId, Long clinicId, Long clientId) {
     appointmentValidator.validateClientAppointmentCreation(
-        date, petId, serviceId, clinicId, client);
+        date, petId, serviceId, clinicId, clientId);
+    User customer = userService.findById(clientId);
     Pet pet = petService.findById(petId);
     MedicalService service = medicalServiceService.findById(serviceId);
     VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
-    Appointment appointment = buildClientAppointment(date, pet, service, clinic, client);
+    Appointment appointment = buildClientAppointment(date, pet, service, clinic, customer);
     appointmentRepository.save(appointment);
   }
 
   @Override
   @Transactional
   public void createReceptionistAppointment(
-      ScheduleAppointmentCommand command, Long customerId, Long serviceId, Long receptionistId) {
-    appointmentValidator.validateReceptionistAppointmentCreation(
-        command, serviceId, receptionistId);
-    User customer = userService.findById(customerId);
+      ScheduleAppointmentCommand command, Long receptionistId) {
+    appointmentValidator.validateReceptionistAppointmentCreation(command, receptionistId);
+    User customer = userService.findById(command.getCustomerId());
     Pet pet = petService.findById(command.getPetId());
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionistId);
-    MedicalService service = medicalServiceService.findById(serviceId);
+    MedicalService service = medicalServiceService.findById(command.getServiceId());
     Appointment appointment = new Appointment();
     appointment.setDate(command.getDate());
     appointment.setTime(command.getTime());

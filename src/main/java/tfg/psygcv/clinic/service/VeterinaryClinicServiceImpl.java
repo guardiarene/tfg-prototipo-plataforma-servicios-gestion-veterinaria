@@ -1,15 +1,19 @@
-package tfg.psygcv.service.clinic;
+package tfg.psygcv.clinic.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.user.Role;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.clinic.VeterinaryClinicRepository;
-import tfg.psygcv.service.user.UserService;
+import tfg.psygcv.clinic.command.RegisterClinicWithVeterinarianCommand;
+import tfg.psygcv.clinic.command.UpdateClinicCommand;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.clinic.repository.VeterinaryClinicRepository;
+import tfg.psygcv.user.command.CreateStaffCommand;
+import tfg.psygcv.user.command.RegisterVeterinarianCommand;
+import tfg.psygcv.user.entity.Role;
+import tfg.psygcv.user.entity.User;
+import tfg.psygcv.user.service.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -74,22 +78,23 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
   }
 
   @Override
+  public Long findClinicIdByVeterinarianId(Long veterinarianId) {
+    return findByVeterinarianId(veterinarianId).getId();
+  }
+
+  @Override
+  public Long findClinicIdByReceptionistId(Long receptionistId) {
+    return findByReceptionistId(receptionistId).getId();
+  }
+
+  @Override
   @Transactional
   public void registerStaff(Long ownerId, CreateStaffCommand command) {
     if (command.getRole() != Role.VETERINARIAN && command.getRole() != Role.RECEPTIONIST) {
       throw new IllegalArgumentException("Staff role must be VETERINARIAN or RECEPTIONIST");
     }
     VeterinaryClinic clinic = findByOwnerId(ownerId);
-    User staffUser = new User();
-    staffUser.setFirstName(command.getFirstName());
-    staffUser.setLastName(command.getLastName());
-    staffUser.setEmail(command.getEmail());
-    staffUser.setPassword(command.getPassword());
-    staffUser.setPhone(command.getPhone());
-    staffUser.setRole(command.getRole());
-    staffUser.setActive(true);
-    staffUser.setWorkClinic(clinic);
-    userService.save(staffUser);
+    userService.registerStaffForClinic(command, clinic);
   }
 
   @Override
@@ -106,15 +111,15 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
   @Override
   @Transactional
   public void registerClinicWithVeterinarian(RegisterClinicWithVeterinarianCommand command) {
-    User owner = new User();
-    owner.setFirstName(command.getUserFirstName());
-    owner.setLastName(command.getUserLastName());
-    owner.setEmail(command.getUserEmail());
-    owner.setPassword(command.getUserPassword());
-    owner.setPhone(command.getUserPhone());
-    owner.setRole(Role.VETERINARIAN);
-    owner.setActive(true);
-    userService.save(owner);
+    User owner =
+        userService.registerVeterinarian(
+            RegisterVeterinarianCommand.builder()
+                .firstName(command.getUserFirstName())
+                .lastName(command.getUserLastName())
+                .email(command.getUserEmail())
+                .password(command.getUserPassword())
+                .phone(command.getUserPhone())
+                .build());
 
     VeterinaryClinic clinic = new VeterinaryClinic();
     clinic.setName(command.getClinicName());

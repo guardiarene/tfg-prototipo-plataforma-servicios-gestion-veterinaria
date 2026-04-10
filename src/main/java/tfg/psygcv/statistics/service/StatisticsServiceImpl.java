@@ -1,4 +1,4 @@
-package tfg.psygcv.service.statistics;
+package tfg.psygcv.statistics.service;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -10,12 +10,11 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.appointment.AppointmentStatisticsRepository;
-import tfg.psygcv.repository.clinic.VeterinaryClinicRepository;
-import tfg.psygcv.repository.medical.DiagnosticStatisticsRepository;
-import tfg.psygcv.repository.medical.TreatmentStatisticsRepository;
+import tfg.psygcv.appointment.repository.AppointmentStatisticsRepository;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.clinic.repository.VeterinaryClinicRepository;
+import tfg.psygcv.medical.visit.repository.DiagnosticStatisticsRepository;
+import tfg.psygcv.medical.visit.repository.TreatmentStatisticsRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,10 +28,10 @@ public class StatisticsServiceImpl implements StatisticsService {
   private final StatisticsValidator statisticsValidator;
 
   @Override
-  public Map<String, Long> getCommonDiseases(User user, LocalDate startDate, LocalDate endDate) {
+  public Map<String, Long> getCommonDiseases(Long userId, LocalDate startDate, LocalDate endDate) {
     statisticsValidator.validateDateRange(startDate, endDate);
-    statisticsValidator.validateUser(user);
-    VeterinaryClinic clinic = getClinic(user);
+    statisticsValidator.validateUserId(userId);
+    VeterinaryClinic clinic = getClinic(userId);
     List<String> problems =
         diagnosticStatisticsRepository.getFrequentProblemsByClinicAndDate(
             clinic.getId(), startDate, endDate);
@@ -41,10 +40,10 @@ public class StatisticsServiceImpl implements StatisticsService {
 
   @Override
   public Map<String, Long> getFrequentTreatments(
-      User user, LocalDate startDate, LocalDate endDate) {
+      Long userId, LocalDate startDate, LocalDate endDate) {
     statisticsValidator.validateDateRange(startDate, endDate);
-    statisticsValidator.validateUser(user);
-    VeterinaryClinic clinic = getClinic(user);
+    statisticsValidator.validateUserId(userId);
+    VeterinaryClinic clinic = getClinic(userId);
     List<String> treatments =
         treatmentStatisticsRepository.getFrequentTreatmentsByClinicAndDate(
             clinic.getId(), startDate, endDate);
@@ -53,10 +52,10 @@ public class StatisticsServiceImpl implements StatisticsService {
 
   @Override
   public Map<LocalDate, Long> getAppointmentsByDate(
-      User user, LocalDate startDate, LocalDate endDate) {
+      Long userId, LocalDate startDate, LocalDate endDate) {
     statisticsValidator.validateDateRange(startDate, endDate);
-    statisticsValidator.validateUser(user);
-    VeterinaryClinic clinic = getClinic(user);
+    statisticsValidator.validateUserId(userId);
+    VeterinaryClinic clinic = getClinic(userId);
     return appointmentStatisticsRepository
         .countAppointmentsByDate(clinic.getId(), startDate, endDate)
         .stream()
@@ -69,10 +68,11 @@ public class StatisticsServiceImpl implements StatisticsService {
   }
 
   @Override
-  public Map<String, Long> getRequestedServices(User user, LocalDate startDate, LocalDate endDate) {
+  public Map<String, Long> getRequestedServices(
+      Long userId, LocalDate startDate, LocalDate endDate) {
     statisticsValidator.validateDateRange(startDate, endDate);
-    statisticsValidator.validateUser(user);
-    VeterinaryClinic clinic = getClinic(user);
+    statisticsValidator.validateUserId(userId);
+    VeterinaryClinic clinic = getClinic(userId);
     return appointmentStatisticsRepository
         .countRequestedServices(clinic.getId(), startDate, endDate)
         .stream()
@@ -84,15 +84,13 @@ public class StatisticsServiceImpl implements StatisticsService {
                 LinkedHashMap::new));
   }
 
-  private VeterinaryClinic getClinic(User user) {
+  private VeterinaryClinic getClinic(Long userId) {
     return veterinaryClinicRepository
-        .findByVeterinarianId(user.getId())
-        .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(user.getId()))
-        .or(() -> veterinaryClinicRepository.findByReceptionistId(user.getId()))
+        .findByVeterinarianId(userId)
+        .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(userId))
+        .or(() -> veterinaryClinicRepository.findByReceptionistId(userId))
         .orElseThrow(
-            () ->
-                new IllegalArgumentException(
-                    "No clinic found for dashboard with ID: " + user.getId()));
+            () -> new IllegalArgumentException("No clinic found for dashboard with ID: " + userId));
   }
 
   private Map<String, Long> processProblems(List<String> problems) {

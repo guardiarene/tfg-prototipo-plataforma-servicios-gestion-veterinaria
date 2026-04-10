@@ -1,7 +1,9 @@
-package tfg.psygcv.service.pet;
+package tfg.psygcv.pet.service;
 
 import org.springframework.stereotype.Component;
-import tfg.psygcv.service.validation.BaseValidator;
+import tfg.psygcv.pet.command.CreatePetCommand;
+import tfg.psygcv.pet.command.UpdatePetCommand;
+import tfg.psygcv.shared.validation.BaseValidator;
 
 @Component
 public class PetValidator extends BaseValidator {

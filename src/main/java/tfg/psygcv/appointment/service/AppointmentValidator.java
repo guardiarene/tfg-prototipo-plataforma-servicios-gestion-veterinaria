@@ -1,19 +1,20 @@
-package tfg.psygcv.service.appointment;
+package tfg.psygcv.appointment.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.entity.appointment.Appointment;
-import tfg.psygcv.entity.appointment.AppointmentStatus;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.validation.BaseValidator;
+import tfg.psygcv.appointment.command.RescheduleAppointmentCommand;
+import tfg.psygcv.appointment.command.ScheduleAppointmentCommand;
+import tfg.psygcv.appointment.entity.Appointment;
+import tfg.psygcv.appointment.entity.AppointmentStatus;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.shared.validation.BaseValidator;
 
 @Component
 public class AppointmentValidator extends BaseValidator {
 
   public void validateClientAppointmentCreation(
-      LocalDate date, Long petId, Long serviceId, Long clinicId, User client) {
+      LocalDate date, Long petId, Long serviceId, Long clinicId, Long clientId) {
     validateNotNull(date, "Appointment date cannot be null");
     if (date.isBefore(LocalDate.now())) {
       throw new IllegalArgumentException("Appointment date cannot be in the past");
@@ -21,16 +22,16 @@ public class AppointmentValidator extends BaseValidator {
     validateId(petId);
     validateId(serviceId);
     validateId(clinicId);
-    validateClient(client);
+    validateId(clientId);
   }
 
   public void validateReceptionistAppointmentCreation(
-      ScheduleAppointmentCommand command, Long serviceId, Long receptionistId) {
+      ScheduleAppointmentCommand command, Long receptionistId) {
     validateNotNull(command, "Schedule command cannot be null");
     validateNotNull(command.getDate(), "Appointment date is required");
     validateNotNull(command.getTime(), "Appointment time is required");
     validateNotNull(command.getPetId(), "Pet is required for appointment");
-    validateId(serviceId);
+    validateId(command.getServiceId());
     validateId(receptionistId);
   }
 
@@ -57,10 +58,5 @@ public class AppointmentValidator extends BaseValidator {
     if (clinics == null || clinics.isEmpty()) {
       throw new IllegalArgumentException("Clinics list cannot be null or empty");
     }
-  }
-
-  private void validateClient(User client) {
-    validateNotNull(client, "Client cannot be null");
-    validateNotNull(client.getId(), "Client must have a valid ID");
   }
 }

@@ -1,17 +1,18 @@
-package tfg.psygcv.service.medical;
+package tfg.psygcv.medical.visit.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import tfg.psygcv.entity.medical.Visit;
-import tfg.psygcv.entity.user.User;
+import tfg.psygcv.medical.visit.command.CreateVisitCommand;
+import tfg.psygcv.medical.visit.command.UpdateVisitCommand;
+import tfg.psygcv.medical.visit.entity.Visit;
 
 public interface VisitService {
 
-  Visit createVisit(Long medicalRecordId, CreateVisitCommand command, User veterinarian);
+  Visit createVisit(Long medicalRecordId, CreateVisitCommand command, Long veterinarianId);
 
-  Visit updateVisit(Long visitId, UpdateVisitCommand command, User veterinarian);
+  Visit updateVisit(Long visitId, UpdateVisitCommand command, Long veterinarianId);
 
   Visit findCompleteById(Long visitId);
 
@@ -24,5 +25,5 @@ public interface VisitService {
 
   Visit findLatestVisit(Long medicalRecordId);
 
-  void deleteVisit(Long visitId, User veterinarian);
+  Long deleteVisit(Long visitId);
 }

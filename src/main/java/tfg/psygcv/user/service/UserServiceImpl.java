@@ -1,4 +1,4 @@
-package tfg.psygcv.service.user;
+package tfg.psygcv.user.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -10,10 +10,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.config.security.AuthenticatedUser;
-import tfg.psygcv.entity.user.Role;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.user.UserRepository;
+import tfg.psygcv.user.command.CreateAdminUserCommand;
+import tfg.psygcv.user.command.CreateStaffCommand;
+import tfg.psygcv.user.command.RegisterCustomerCommand;
+import tfg.psygcv.user.command.RegisterVeterinarianCommand;
+import tfg.psygcv.user.command.UpdateAdminUserCommand;
+import tfg.psygcv.user.command.UpdateUserProfileCommand;
+import tfg.psygcv.user.entity.Role;
+import tfg.psygcv.user.entity.User;
+import tfg.psygcv.user.repository.UserRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -150,6 +157,45 @@ public class UserServiceImpl implements UserDetailsService, UserService {
   @Override
   public List<User> findActiveByWorkClinicId(Long clinicId) {
     return userRepository.findByWorkClinicId(clinicId);
+  }
+
+  @Override
+  public List<User> findVeterinariansByClinicId(Long clinicId) {
+    return userRepository.findByWorkClinicIdAndRoleAndActiveTrue(clinicId, Role.VETERINARIAN);
+  }
+
+  @Override
+  public List<User> findReceptionistsByClinicId(Long clinicId) {
+    return userRepository.findByWorkClinicIdAndRoleAndActiveTrue(clinicId, Role.RECEPTIONIST);
+  }
+
+  @Override
+  @Transactional
+  public User registerVeterinarian(RegisterVeterinarianCommand command) {
+    User user = new User();
+    user.setFirstName(command.getFirstName());
+    user.setLastName(command.getLastName());
+    user.setEmail(command.getEmail());
+    user.setPassword(command.getPassword());
+    user.setPhone(command.getPhone());
+    user.setRole(Role.VETERINARIAN);
+    user.setActive(true);
+    return save(user);
+  }
+
+  @Override
+  @Transactional
+  public User registerStaffForClinic(CreateStaffCommand command, VeterinaryClinic clinic) {
+    User user = new User();
+    user.setFirstName(command.getFirstName());
+    user.setLastName(command.getLastName());
+    user.setEmail(command.getEmail());
+    user.setPassword(command.getPassword());
+    user.setPhone(command.getPhone());
+    user.setRole(command.getRole());
+    user.setActive(true);
+    user.setWorkClinic(clinic);
+    return save(user);
   }
 
   private void encodePassword(User user) {

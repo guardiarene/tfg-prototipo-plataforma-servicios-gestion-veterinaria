@@ -1,7 +1,9 @@
-package tfg.psygcv.service.medical;
+package tfg.psygcv.medical.record.service;
 
 import java.util.List;
-import tfg.psygcv.entity.medical.MedicalRecord;
+import tfg.psygcv.medical.record.command.CreateMedicalRecordCommand;
+import tfg.psygcv.medical.record.command.UpdateMedicalRecordCommand;
+import tfg.psygcv.medical.record.entity.MedicalRecord;
 
 public interface MedicalRecordService {
 

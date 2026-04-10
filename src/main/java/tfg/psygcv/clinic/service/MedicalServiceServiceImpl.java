@@ -1,4 +1,4 @@
-package tfg.psygcv.service.clinic;
+package tfg.psygcv.clinic.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.nio.file.AccessDeniedException;
@@ -6,9 +6,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.entity.clinic.MedicalService;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.repository.clinic.MedicalServiceRepository;
+import tfg.psygcv.clinic.command.CreateMedicalServiceCommand;
+import tfg.psygcv.clinic.command.UpdateMedicalServiceCommand;
+import tfg.psygcv.clinic.entity.MedicalService;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.clinic.repository.MedicalServiceRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

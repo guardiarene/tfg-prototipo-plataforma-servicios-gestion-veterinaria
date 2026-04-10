@@ -1,4 +1,4 @@
-package tfg.psygcv.service.medical;
+package tfg.psygcv.medical.record.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -6,17 +6,20 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.medical.MedicalRecord;
-import tfg.psygcv.entity.medical.Visit;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
-import tfg.psygcv.repository.clinic.VeterinaryClinicRepository;
-import tfg.psygcv.repository.medical.MedicalRecordQueryRepository;
-import tfg.psygcv.repository.medical.MedicalRecordRepository;
-import tfg.psygcv.repository.pet.PetRepository;
-import tfg.psygcv.service.user.UserService;
+import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.clinic.repository.VeterinaryClinicRepository;
+import tfg.psygcv.medical.record.command.CreateMedicalRecordCommand;
+import tfg.psygcv.medical.record.command.UpdateMedicalRecordCommand;
+import tfg.psygcv.medical.record.entity.MedicalRecord;
+import tfg.psygcv.medical.record.repository.MedicalRecordQueryRepository;
+import tfg.psygcv.medical.record.repository.MedicalRecordRepository;
+import tfg.psygcv.medical.visit.entity.Visit;
+import tfg.psygcv.medical.visit.service.VisitService;
+import tfg.psygcv.pet.entity.Pet;
+import tfg.psygcv.pet.repository.PetRepository;
+import tfg.psygcv.user.entity.User;
+import tfg.psygcv.user.service.UserService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

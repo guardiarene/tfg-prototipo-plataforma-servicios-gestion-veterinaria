@@ -1,16 +1,14 @@
-package tfg.psygcv.service.statistics;
+package tfg.psygcv.statistics.service;
 
 import java.time.LocalDate;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.service.validation.BaseValidator;
+import tfg.psygcv.shared.validation.BaseValidator;
 
 @Component
 public class StatisticsValidator extends BaseValidator {
 
-  public void validateUser(User user) {
-    validateNotNull(user, "User cannot be null");
-    validateNotNull(user.getId(), "User must have a valid ID");
+  public void validateUserId(Long userId) {
+    validateId(userId);
   }
 
   public void validateDateRange(LocalDate startDate, LocalDate endDate) {

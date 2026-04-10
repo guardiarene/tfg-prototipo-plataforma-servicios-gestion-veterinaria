@@ -1,15 +1,17 @@
-package tfg.psygcv.service.medical;
+package tfg.psygcv.medical.visit.service;
 
 import java.time.LocalDate;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import tfg.psygcv.entity.clinic.VeterinaryClinic;
-import tfg.psygcv.entity.medical.VisitType;
-import tfg.psygcv.entity.pet.Pet;
-import tfg.psygcv.entity.user.User;
-import tfg.psygcv.repository.appointment.AppointmentQueryRepository;
-import tfg.psygcv.service.validation.BaseValidator;
+import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
+import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.medical.visit.command.CreateVisitCommand;
+import tfg.psygcv.medical.visit.command.UpdateVisitCommand;
+import tfg.psygcv.medical.visit.entity.VisitType;
+import tfg.psygcv.pet.entity.Pet;
+import tfg.psygcv.shared.validation.BaseValidator;
+import tfg.psygcv.user.entity.User;
 
 @Component
 @RequiredArgsConstructor
