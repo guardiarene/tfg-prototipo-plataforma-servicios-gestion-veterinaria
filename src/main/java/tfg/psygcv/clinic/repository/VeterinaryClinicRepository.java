@@ -25,11 +25,11 @@ public interface VeterinaryClinicRepository extends JpaRepository<VeterinaryClin
   VeterinaryClinic findByOwnerId(@Param("ownerId") Long ownerId);
 
   @Query(
-      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.veterinarians v LEFT JOIN FETCH vc.receptionists r WHERE vc.owner.id = :ownerId")
+      "SELECT DISTINCT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.owner LEFT JOIN FETCH vc.services WHERE vc.owner.id = :ownerId")
   Optional<VeterinaryClinic> findByOwnerIdOptional(@Param("ownerId") Long ownerId);
 
   @Query(
-      "SELECT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.veterinarians v LEFT JOIN FETCH vc.receptionists r JOIN vc.veterinarians v2 WHERE v2.id = :veterinarianId")
+      "SELECT DISTINCT vc FROM VeterinaryClinic vc LEFT JOIN FETCH vc.owner LEFT JOIN FETCH vc.services JOIN vc.veterinarians v2 WHERE v2.id = :veterinarianId")
   Optional<VeterinaryClinic> findByVeterinarianId(@Param("veterinarianId") Long veterinarianId);
 
   @Query("SELECT vc FROM VeterinaryClinic vc JOIN vc.receptionists r WHERE r.id = :receptionistId")
