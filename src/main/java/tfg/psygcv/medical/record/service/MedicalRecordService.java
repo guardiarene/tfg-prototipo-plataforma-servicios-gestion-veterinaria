@@ -4,8 +4,10 @@ import java.util.List;
 import tfg.psygcv.medical.record.command.CreateMedicalRecordCommand;
 import tfg.psygcv.medical.record.command.UpdateMedicalRecordCommand;
 import tfg.psygcv.medical.record.entity.MedicalRecord;
+import tfg.psygcv.medical.visit.entity.Anamnesis;
 
 public interface MedicalRecordService {
+
 
   MedicalRecord findCompleteById(Long medicalRecordId);
 
@@ -14,4 +16,6 @@ public interface MedicalRecordService {
   MedicalRecord save(CreateMedicalRecordCommand command, Long veterinarianId);
 
   MedicalRecord update(Long id, UpdateMedicalRecordCommand command, Long veterinarianId);
+
+  Anamnesis computeCurrentAnamnesis(MedicalRecord medicalRecord);
 }

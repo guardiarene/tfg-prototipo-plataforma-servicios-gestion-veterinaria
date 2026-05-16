@@ -14,6 +14,7 @@ import tfg.psygcv.medical.record.command.UpdateMedicalRecordCommand;
 import tfg.psygcv.medical.record.entity.MedicalRecord;
 import tfg.psygcv.medical.record.repository.MedicalRecordQueryRepository;
 import tfg.psygcv.medical.record.repository.MedicalRecordRepository;
+import tfg.psygcv.medical.visit.entity.Anamnesis;
 import tfg.psygcv.medical.visit.entity.Visit;
 import tfg.psygcv.medical.visit.service.VisitService;
 import tfg.psygcv.pet.entity.Pet;
@@ -40,12 +41,9 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   public MedicalRecord findCompleteById(Long medicalRecordId) {
     medicalRecordValidator.validateId(medicalRecordId);
     MedicalRecord medicalRecord =
-        medicalRecordQueryRepository
-            .findCompleteForViewing(medicalRecordId)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Medical record not found with ID: " + medicalRecordId));
+        medicalRecordQueryRepository.findCompleteForViewing(medicalRecordId).orElseThrow(
+            () -> new EntityNotFoundException(
+                "Medical record not found with ID: " + medicalRecordId));
     List<Visit> visits = visitService.findByMedicalRecord(medicalRecordId);
     medicalRecord.getVisits().clear();
     medicalRecord.getVisits().addAll(visits);
@@ -57,14 +55,10 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   @Transactional(readOnly = true)
   public List<MedicalRecord> findByVeterinarian(Long veterinarianId) {
     medicalRecordValidator.validateId(veterinarianId);
-    VeterinaryClinic clinic =
-        veterinaryClinicRepository
-            .findByVeterinarianId(veterinarianId)
-            .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarianId))
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        "Veterinary clinic not found for veterinarian ID: " + veterinarianId));
+    VeterinaryClinic clinic = veterinaryClinicRepository.findByVeterinarianId(veterinarianId)
+        .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarianId)).orElseThrow(
+            () -> new EntityNotFoundException(
+                "Veterinary clinic not found for veterinarian ID: " + veterinarianId));
     return medicalRecordRepository.findByClinicId(clinic.getId());
   }
 
@@ -73,10 +67,8 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   public MedicalRecord save(CreateMedicalRecordCommand command, Long veterinarianId) {
     User veterinarianWithClinicContext = userService.findByIdWithClinicContext(veterinarianId);
     medicalRecordValidator.validateForCreation(command, veterinarianId);
-    Pet pet =
-        petRepository
-            .findByIdAndActive(command.getPetId())
-            .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
+    Pet pet = petRepository.findByIdAndActive(command.getPetId())
+        .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
     validatePetAppointments(pet, veterinarianWithClinicContext);
     validateExistingMedicalRecord(pet);
     MedicalRecord newMedicalRecord = createMedicalRecord(pet);
@@ -90,10 +82,8 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   @Transactional
   public MedicalRecord update(Long id, UpdateMedicalRecordCommand command, Long veterinarianId) {
     medicalRecordValidator.validateForUpdate(id, command, veterinarianId);
-    MedicalRecord existingRecord =
-        medicalRecordRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Medical record not found"));
+    MedicalRecord existingRecord = medicalRecordRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Medical record not found"));
     existingRecord.setGeneralObservations(command.getGeneralObservations());
     return medicalRecordRepository.save(existingRecord);
   }
@@ -111,14 +101,13 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     VeterinaryClinic workClinic = veterinarian.getWorkClinic();
     boolean hasAppointments = false;
     if (veterinarianClinics != null && !veterinarianClinics.isEmpty()) {
-      hasAppointments =
-          appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
-              pet, veterinarianClinics, pet.getOwner());
+      hasAppointments = appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(pet,
+          veterinarianClinics, pet.getOwner());
     }
     if (!hasAppointments && workClinic != null) {
       hasAppointments =
-          appointmentQueryRepository.existsAppointmentByPetAndClinicAndCustomer(
-              pet, workClinic, pet.getOwner());
+          appointmentQueryRepository.existsAppointmentByPetAndClinicAndCustomer(pet, workClinic,
+              pet.getOwner());
     }
     if (!hasAppointments) {
       throw new IllegalStateException(
@@ -129,6 +118,60 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   private void validateExistingMedicalRecord(Pet pet) {
     if (pet.getMedicalRecord() != null) {
       throw new IllegalStateException("Pet already has a medical record");
+    }
+  }
+
+  @Override
+  public Anamnesis computeCurrentAnamnesis(MedicalRecord medicalRecord) {
+    Anamnesis current = new Anamnesis();
+    for (Visit visit : medicalRecord.getVisits()) {
+      Anamnesis source = visit.getAnamnesis();
+      if (source != null) {
+        mergeAnamnesis(current, source);
+      }
+    }
+    return current;
+  }
+
+  private void mergeAnamnesis(Anamnesis current, Anamnesis source) {
+    mergeTextFields(current, source);
+    mergeReproductiveField(current, source);
+    mergeDateFields(current, source);
+  }
+
+  private void mergeTextFields(Anamnesis current, Anamnesis source) {
+    if (current.getAllergies() == null && source.getAllergies() != null) {
+      current.setAllergies(source.getAllergies());
+    }
+    if (current.getPreviousDiseases() == null && source.getPreviousDiseases() != null) {
+      current.setPreviousDiseases(source.getPreviousDiseases());
+    }
+    if (current.getSurgeries() == null && source.getSurgeries() != null) {
+      current.setSurgeries(source.getSurgeries());
+    }
+    if (current.getCurrentMedications() == null && source.getCurrentMedications() != null) {
+      current.setCurrentMedications(source.getCurrentMedications());
+    }
+    if (current.getDiet() == null && source.getDiet() != null) {
+      current.setDiet(source.getDiet());
+    }
+  }
+
+  private void mergeReproductiveField(Anamnesis current, Anamnesis source) {
+    if (current.getReproductiveStatus() == null && source.getReproductiveStatus() != null) {
+      current.setReproductiveStatus(source.getReproductiveStatus());
+    }
+  }
+
+  private void mergeDateFields(Anamnesis current, Anamnesis source) {
+    if (current.getLastDewormingDate() == null && source.getLastDewormingDate() != null) {
+      current.setLastDewormingDate(source.getLastDewormingDate());
+    }
+    if (current.getLastHeatDate() == null && source.getLastHeatDate() != null) {
+      current.setLastHeatDate(source.getLastHeatDate());
+    }
+    if (current.getLastBirthDate() == null && source.getLastBirthDate() != null) {
+      current.setLastBirthDate(source.getLastBirthDate());
     }
   }
 }

@@ -7,6 +7,7 @@ import tfg.psygcv.medical.record.dto.request.UpdateMedicalRecordRequest;
 import tfg.psygcv.medical.record.dto.response.MedicalRecordResponse;
 import tfg.psygcv.medical.record.dto.response.MedicalRecordSummaryResponse;
 import tfg.psygcv.medical.record.entity.MedicalRecord;
+import tfg.psygcv.medical.visit.entity.Anamnesis;
 import tfg.psygcv.medical.visit.mapper.AnamnesisMapper;
 import tfg.psygcv.medical.visit.mapper.VaccineMapper;
 import tfg.psygcv.medical.visit.mapper.VisitMapper;
@@ -24,16 +25,15 @@ public class MedicalRecordMapper {
       summary.setPetName(medicalRecord.getPet().getName());
       summary.setPetSpeciesDescription(medicalRecord.getPet().getSpecies().getDescription());
       if (medicalRecord.getPet().getOwner() != null) {
-        summary.setOwnerFullName(
-            medicalRecord.getPet().getOwner().getFirstName()
-                + " "
-                + medicalRecord.getPet().getOwner().getLastName());
+        summary.setOwnerFullName(medicalRecord.getPet().getOwner().getFirstName() + " "
+            + medicalRecord.getPet().getOwner().getLastName());
       }
     }
     return summary;
   }
 
-  public static MedicalRecordResponse toResponse(MedicalRecord medicalRecord) {
+  public static MedicalRecordResponse toResponse(MedicalRecord medicalRecord,
+                                                 Anamnesis currentAnamnesis) {
     MedicalRecordResponse response = new MedicalRecordResponse();
     response.setId(medicalRecord.getId());
     response.setGeneralObservations(medicalRecord.getGeneralObservations());
@@ -42,13 +42,11 @@ public class MedicalRecordMapper {
       response.setPetSpeciesDescription(medicalRecord.getPet().getSpecies().getDescription());
       response.setPetBreedDescription(medicalRecord.getPet().getBreed().getDescription());
       if (medicalRecord.getPet().getOwner() != null) {
-        response.setOwnerFullName(
-            medicalRecord.getPet().getOwner().getFirstName()
-                + " "
-                + medicalRecord.getPet().getOwner().getLastName());
+        response.setOwnerFullName(medicalRecord.getPet().getOwner().getFirstName() + " "
+            + medicalRecord.getPet().getOwner().getLastName());
       }
     }
-    response.setCurrentAnamnesis(AnamnesisMapper.toResponse(medicalRecord.getCurrentAnamnesis()));
+    response.setCurrentAnamnesis(AnamnesisMapper.toResponse(currentAnamnesis));
     response.setVaccines(
         medicalRecord.getVaccines().stream().map(VaccineMapper::toResponse).toList());
     response.setVisits(medicalRecord.getVisits().stream().map(VisitMapper::toResponse).toList());
@@ -56,16 +54,13 @@ public class MedicalRecordMapper {
   }
 
   public static CreateMedicalRecordCommand toCreateCommand(CreateMedicalRecordRequest request) {
-    return CreateMedicalRecordCommand.builder()
-        .petId(request.getPetId())
-        .generalObservations(request.getGeneralObservations())
-        .build();
+    return CreateMedicalRecordCommand.builder().petId(request.getPetId())
+        .generalObservations(request.getGeneralObservations()).build();
   }
 
   public static UpdateMedicalRecordCommand toUpdateCommand(UpdateMedicalRecordRequest request) {
     return UpdateMedicalRecordCommand.builder()
-        .generalObservations(request.getGeneralObservations())
-        .build();
+        .generalObservations(request.getGeneralObservations()).build();
   }
 
   public static UpdateMedicalRecordRequest toUpdateRequest(MedicalRecord medicalRecord) {
