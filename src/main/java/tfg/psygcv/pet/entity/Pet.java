@@ -57,10 +57,8 @@ public class Pet extends AuditableEntity {
   @OneToOne(mappedBy = "pet", cascade = CascadeType.ALL)
   private MedicalRecord medicalRecord;
 
-  @OneToMany(
-      mappedBy = "pet",
-      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-      fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "pet", cascade = {CascadeType.PERSIST,
+      CascadeType.MERGE}, fetch = FetchType.LAZY)
   private List<Appointment> appointments = new ArrayList<>();
 
   public void setMedicalRecord(MedicalRecord medicalRecord) {
@@ -72,8 +70,12 @@ public class Pet extends AuditableEntity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Pet other)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Pet other)) {
+      return false;
+    }
     return getId() != null && getId().equals(other.getId());
   }
 

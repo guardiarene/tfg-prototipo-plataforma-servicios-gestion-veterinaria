@@ -48,8 +48,12 @@ public class MedicalService extends AuditableEntity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof MedicalService other)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof MedicalService other)) {
+      return false;
+    }
     return getId() != null && getId().equals(other.getId());
   }
 

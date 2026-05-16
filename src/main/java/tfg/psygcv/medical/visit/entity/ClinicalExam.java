@@ -56,8 +56,12 @@ public class ClinicalExam extends AuditableEntity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ClinicalExam other)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ClinicalExam other)) {
+      return false;
+    }
     return getId() != null && getId().equals(other.getId());
   }
 

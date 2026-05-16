@@ -67,8 +67,12 @@ public class Appointment extends AuditableEntity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Appointment other)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Appointment other)) {
+      return false;
+    }
     return getId() != null && getId().equals(other.getId());
   }
 
