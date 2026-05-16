@@ -15,7 +15,8 @@ import tfg.psygcv.user.entity.User;
 @Getter
 public final class AuthenticatedUser implements UserDetails, Serializable {
 
-  @Serial private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
   private final Long id;
   private final String email;
   private final String password;
