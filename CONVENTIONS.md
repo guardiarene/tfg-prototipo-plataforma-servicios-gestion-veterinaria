@@ -28,7 +28,7 @@ Each domain owns all its layers. Cross-cutting infrastructure lives in `shared/`
 | Service    | All business logic                         | `@Transactional`. Returns `Optional<T>` for single lookups. Never returns `null`. Never imports from `dto.*`. Accepts entities, primitives, or command objects. |
 | Repository | Data access via JPA interfaces             | No business logic. No transactions. No service/controller imports.                                                                                              |
 | Entity     | Persistence model                          | No business logic. No presentation logic. No service/controller imports.                                                                                        |
-| DTO        | Transfer objects for controller I/O        | Jakarta Validation annotations. No JPA annotations. No entity imports. Lives in `<domain>/dto/`.                                                                |
+| DTO        | Transfer objects for controller I/O        | Jakarta Validation annotations. No JPA annotations. No entity imports. Input DTOs in `<domain>/dto/request/`, output DTOs in `<domain>/dto/response/`.          |
 | Mapper     | DTO/Entity conversion and command building | Non-instantiable utility class. All methods `public static`. Called only from controllers. No framework dependencies.                                           |
 | Command    | Input contract for complex service ops     | Plain POJO in `<domain>/command/`. No validation annotations. No JPA annotations. Used when parameters exceed 3 or map to no single entity.                     |
 | Exception  | Domain-specific error types                | Extend `RuntimeException`. Handled exclusively by `@ControllerAdvice`.                                                                                          |
@@ -56,9 +56,10 @@ tfg.psygcv
 │   │                              #   CreateStaffCommand, CreateAdminUserCommand,
 │   │                              #   UpdateAdminUserCommand, UpdateUserProfileCommand
 │   ├── controller/                #   UserController, ProfileController, AdminDashboardController
-│   ├── dto/                       #   CreateUserRequest, CreateStaffRequest, CreateAdminUserRequest,
-│   │                              #   UpdateUserRequest, UpdateAdminUserRequest,
-│   │                              #   UserResponse, UserSummaryResponse
+│   ├── dto/
+│   │   ├── request/               #   CreateUserRequest, CreateStaffRequest, CreateAdminUserRequest,
+│   │   │                          #   UpdateUserRequest, UpdateAdminUserRequest
+│   │   └── response/              #   UserResponse, UserSummaryResponse
 │   ├── entity/                    #   User, Role
 │   ├── mapper/                    #   UserMapper
 │   ├── repository/                #   UserRepository
@@ -67,8 +68,9 @@ tfg.psygcv
 ├── pet/                           # Pet domain
 │   ├── command/                   #   CreatePetCommand, UpdatePetCommand
 │   ├── controller/                #   PetController
-│   ├── dto/                       #   CreatePetRequest, UpdatePetRequest,
-│   │                              #   PetResponse, PetSummaryResponse
+│   ├── dto/
+│   │   ├── request/               #   CreatePetRequest, UpdatePetRequest
+│   │   └── response/              #   PetResponse, PetSummaryResponse
 │   ├── entity/                    #   Pet, Species, Sex, Breed, Temperament, ReproductiveStatus
 │   ├── mapper/                    #   PetMapper
 │   ├── repository/                #   PetRepository
@@ -80,9 +82,10 @@ tfg.psygcv
 │   ├── controller/                #   VeterinaryClinicController, MedicalServiceController,
 │   │                              #   ClinicManagementController, StaffController,
 │   │                              #   CustomerDashboardController
-│   ├── dto/                       #   RegisterClinicRequest, UpdateClinicRequest,
-│   │                              #   CreateMedicalServiceRequest, UpdateMedicalServiceRequest,
-│   │                              #   VeterinaryClinicResponse, VeterinaryClinicSummaryResponse,
+│   ├── dto/
+│   │   ├── request/               #   RegisterClinicRequest, UpdateClinicRequest,
+│   │   │                          #   CreateMedicalServiceRequest, UpdateMedicalServiceRequest
+│   │   └── response/              #   VeterinaryClinicResponse, VeterinaryClinicSummaryResponse,
 │   │                              #   MedicalServiceResponse
 │   ├── entity/                    #   VeterinaryClinic, MedicalService
 │   ├── mapper/                    #   VeterinaryClinicMapper, MedicalServiceMapper
@@ -96,9 +99,10 @@ tfg.psygcv
 │   ├── controller/                #   CustomerAppointmentController,
 │   │                              #   ReceptionistAppointmentController,
 │   │                              #   ReceptionistDashboardController
-│   ├── dto/                       #   CreateClientAppointmentRequest, ScheduleAppointmentRequest,
-│   │                              #   RescheduleAppointmentRequest,
-│   │                              #   AppointmentResponse, AppointmentSummaryResponse
+│   ├── dto/
+│   │   ├── request/               #   CreateClientAppointmentRequest, ScheduleAppointmentRequest,
+│   │   │                          #   RescheduleAppointmentRequest
+│   │   └── response/              #   AppointmentResponse, AppointmentSummaryResponse
 │   ├── entity/                    #   Appointment, AppointmentStatus
 │   ├── mapper/                    #   AppointmentMapper
 │   ├── repository/                #   AppointmentRepository, AppointmentQueryRepository,
@@ -110,8 +114,9 @@ tfg.psygcv
 │   ├── record/                    #   Medical record sub-domain
 │   │   ├── command/               #     CreateMedicalRecordCommand, UpdateMedicalRecordCommand
 │   │   ├── controller/            #     MedicalRecordController, VeterinarianDashboardController
-│   │   ├── dto/                   #     CreateMedicalRecordRequest, UpdateMedicalRecordRequest,
-│   │   │                          #     MedicalRecordResponse, MedicalRecordSummaryResponse
+│   │   ├── dto/
+│   │   │   ├── request/           #     CreateMedicalRecordRequest, UpdateMedicalRecordRequest
+│   │   │   └── response/          #     MedicalRecordResponse, MedicalRecordSummaryResponse
 │   │   ├── entity/                #     MedicalRecord
 │   │   ├── mapper/                #     MedicalRecordMapper
 │   │   ├── repository/            #     MedicalRecordRepository, MedicalRecordQueryRepository
@@ -120,10 +125,11 @@ tfg.psygcv
 │   └── visit/                     #   Visit sub-domain (Visit + child entities)
 │       ├── command/               #     CreateVisitCommand, UpdateVisitCommand
 │       ├── controller/            #     VisitController
-│       ├── dto/                   #     CreateVisitRequest, UpdateVisitRequest,
-│       │                          #     AnamnesisRequest, ClinicalExamRequest,
-│       │                          #     DiagnosticRequest, TreatmentRequest, VaccineRequest,
-│       │                          #     VisitResponse, AnamnesisResponse, ClinicalExamResponse,
+│       ├── dto/
+│       │   ├── request/           #     CreateVisitRequest, UpdateVisitRequest,
+│       │   │                      #     AnamnesisRequest, ClinicalExamRequest,
+│       │   │                      #     DiagnosticRequest, TreatmentRequest, VaccineRequest
+│       │   └── response/          #     VisitResponse, AnamnesisResponse, ClinicalExamResponse,
 │       │                          #     DiagnosticResponse, TreatmentResponse, VaccineResponse
 │       ├── entity/                #     Visit, Anamnesis, ClinicalExam, Diagnostic,
 │       │                          #     Treatment, Vaccine, VisitType
@@ -154,12 +160,12 @@ tfg.psygcv
 - Cross-cutting base classes live in `shared/` (`AuditableEntity`, `BaseController`, `BaseValidator`,
   `RouteConstant`)
 - Domain enums are co-located with their entities in `<domain>/entity/` — no separate `enums/` package
-- DTOs are flat in `<domain>/dto/` — no `request/` / `response/` sub-packages (the naming convention
-  makes the direction clear)
+- DTOs are split by direction inside `<domain>/dto/`: input DTOs in `dto/request/`, output DTOs in
+  `dto/response/` — this makes the data flow explicit and keeps large domains navigable
 - Command objects live in `<domain>/command/`, separate from services
 - Controllers follow **single responsibility**: one controller per cohesive set of endpoints (e.g.,
   `CustomerAppointmentController` vs `ReceptionistAppointmentController`)
-- Max nesting: 4 levels (for `medical/record/` and `medical/visit/`)
+- Max nesting: 5 levels (for `medical/record/dto/request/` and `medical/visit/dto/response/`)
 - No catch-all packages: `utils/`, `helpers/`, `misc/`, `common/`, `base/`
 
 ### Design Principles (SOLID)
@@ -288,46 +294,56 @@ Controllers never accept or return JPA entities. All controller I/O uses DTOs.
 
 **Never:** `XDto`, `XData`, `XBean`, `XInfo`, `XObject`
 
-### Java Records (preferred for new DTOs)
+### Structure
 
-Java records are the preferred way to define DTOs. They provide immutability, compact syntax, and
-auto-generated `equals`/`hashCode`/`toString`. Existing Lombok-based DTOs will be migrated gradually.
+- Input DTOs live in `<domain>/dto/request/`
+- Output DTOs live in `<domain>/dto/response/`
+
+### Lombok vs Java Records
+
+**Request DTOs use Lombok** (`@Getter @Setter @NoArgsConstructor`). Thymeleaf's `@ModelAttribute`
+binding requires a mutable bean with a no-arg constructor and setter methods — Java records are
+immutable and incompatible with form binding.
+
+**Response DTOs may use records** when they are only read in templates (no form binding). In practice,
+Lombok classes are also acceptable for response DTOs to keep the codebase consistent.
 
 **When to use a record:**
 
-- Response DTOs (`XResponse`, `XSummaryResponse`) — always
-- Request DTOs (`CreateXRequest`, `UpdateXRequest`) — when all fields can be set via the canonical constructor
-  and Jakarta Validation annotations on record components are sufficient
+- Response-only DTOs that are never used as `@ModelAttribute` targets
 
-**When to keep a class (with Lombok):**
+**When to use a Lombok class:**
 
-- The DTO requires a builder pattern for complex construction with many optional fields
+- All request DTOs (required for Thymeleaf form binding)
+- Response DTOs that embed nested mutable objects
 - The DTO requires inheritance (records are implicitly `final`)
 
 **Record example:**
 
 ```java
 public record PetResponse(
-    Long id,
-    String name,
-    Species species,
-    Sex sex,
-    String breed,
-    LocalDate birthDate,
-    String ownerFullName
-) {}
+        Long id,
+        String name,
+        Species species,
+        Sex sex,
+        String breed,
+        LocalDate birthDate,
+        String ownerFullName
+) {
+}
 ```
 
 **Request record with validation:**
 
 ```java
 public record CreatePetRequest(
-    @NotBlank String name,
-    @NotNull Species species,
-    @NotNull Sex sex,
-    String breed,
-    @NotNull @PastOrPresent LocalDate birthDate
-) {}
+        @NotBlank String name,
+        @NotNull Species species,
+        @NotNull Sex sex,
+        String breed,
+        @NotNull @PastOrPresent LocalDate birthDate
+) {
+}
 ```
 
 ### Validation
@@ -453,6 +469,7 @@ on browser refresh. Use `RedirectAttributes.addFlashAttribute()` to pass feedbac
 view.
 
 ```java
+
 @PostMapping("/pets")
 public String createPet(@Valid CreatePetRequest request, BindingResult result,
                         RedirectAttributes flash) {
@@ -594,14 +611,15 @@ No hardcoded credentials in any profile. Never modify `application-prod.yml` unl
 Use the pattern `should_expectedBehavior_when_condition`:
 
 ```java
-@Test
-void should_throwDuplicateEmailException_when_emailAlreadyExists() { ... }
 
 @Test
-void should_returnPage_when_ownerHasPets() { ... }
+void should_throwDuplicateEmailException_when_emailAlreadyExists() { ...}
 
 @Test
-void should_rejectAccess_when_userIsNotOwner() { ... }
+void should_returnPage_when_ownerHasPets() { ...}
+
+@Test
+void should_rejectAccess_when_userIsNotOwner() { ...}
 ```
 
 - Start with `should_` — it reads as a specification
