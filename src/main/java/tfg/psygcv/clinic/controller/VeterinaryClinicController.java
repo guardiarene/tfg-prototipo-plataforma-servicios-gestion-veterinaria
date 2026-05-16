@@ -65,11 +65,11 @@ public class VeterinaryClinicController extends BaseController {
     List<VeterinaryClinicSummaryResponse> clinics =
         (query != null && !query.trim().isEmpty())
             ? veterinaryClinicService.searchByName(query).stream()
-                .map(VeterinaryClinicMapper::toSummary)
-                .toList()
+            .map(VeterinaryClinicMapper::toSummary)
+            .toList()
             : veterinaryClinicService.findAll().stream()
-                .map(VeterinaryClinicMapper::toSummary)
-                .toList();
+            .map(VeterinaryClinicMapper::toSummary)
+            .toList();
     model.addAttribute("veterinaryClinics", clinics);
     model.addAttribute("searchQuery", query);
     return "clinics/search_results";

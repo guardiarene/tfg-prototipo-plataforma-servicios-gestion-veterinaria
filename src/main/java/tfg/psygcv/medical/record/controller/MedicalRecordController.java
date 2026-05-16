@@ -32,10 +32,11 @@ public class MedicalRecordController extends BaseController {
   private final PetService petService;
 
   @GetMapping("/{id}")
-  public String showMedicalRecordDetails(
-      @PathVariable Long id, Model model, Authentication authentication) {
-    MedicalRecordResponse medicalRecord =
-        MedicalRecordMapper.toResponse(medicalRecordService.findCompleteById(id));
+  public String showMedicalRecordDetails(@PathVariable Long id, Model model,
+                                         Authentication authentication) {
+    var entity = medicalRecordService.findCompleteById(id);
+    MedicalRecordResponse medicalRecord = MedicalRecordMapper.toResponse(entity,
+        medicalRecordService.computeCurrentAnamnesis(entity));
     model.addAttribute("medicalRecord", medicalRecord);
     model.addAttribute("role", getAuthenticatedUser(authentication).getRole().name());
     return "medical_records/details";
@@ -45,28 +46,20 @@ public class MedicalRecordController extends BaseController {
   public String showNewMedicalRecordForm(Model model, Authentication authentication) {
     Long veterinarianId = getAuthenticatedUser(authentication).getId();
     model.addAttribute("medicalRecord", new CreateMedicalRecordRequest());
-    model.addAttribute(
-        "pets",
-        petService.findPetsWithAppointmentsInClinics(veterinarianId).stream()
-            .map(PetMapper::toSummary)
-            .toList());
+    model.addAttribute("pets", petService.findPetsWithAppointmentsInClinics(veterinarianId).stream()
+        .map(PetMapper::toSummary).toList());
     return "medical_records/new";
   }
 
   @PostMapping("/new")
   public String saveMedicalRecord(
       @Valid @ModelAttribute("medicalRecord") CreateMedicalRecordRequest request,
-      BindingResult result,
-      Authentication authentication,
-      Model model,
-      RedirectAttributes ra) {
+      BindingResult result, Authentication authentication, Model model, RedirectAttributes ra) {
     Long veterinarianId = getAuthenticatedUser(authentication).getId();
     if (result.hasErrors()) {
-      model.addAttribute(
-          "pets",
+      model.addAttribute("pets",
           petService.findPetsWithAppointmentsInClinics(veterinarianId).stream()
-              .map(PetMapper::toSummary)
-              .toList());
+              .map(PetMapper::toSummary).toList());
       return "medical_records/new";
     }
     try {
@@ -74,11 +67,9 @@ public class MedicalRecordController extends BaseController {
       ra.addFlashAttribute("success", "Historia clínica creada correctamente.");
       return REDIRECT_VETERINARIAN_DASHBOARD;
     } catch (Exception e) {
-      model.addAttribute(
-          "pets",
+      model.addAttribute("pets",
           petService.findPetsWithAppointmentsInClinics(veterinarianId).stream()
-              .map(PetMapper::toSummary)
-              .toList());
+              .map(PetMapper::toSummary).toList());
       model.addAttribute("error", e.getMessage());
       return "medical_records/new";
     }
@@ -90,25 +81,17 @@ public class MedicalRecordController extends BaseController {
     var summary = MedicalRecordMapper.toSummary(entity);
     model.addAttribute("medicalRecord", MedicalRecordMapper.toUpdateRequest(entity));
     model.addAttribute("medicalRecordId", id);
-    model.addAttribute(
-        "petName",
-        summary.getPetName() != null
-            ? summary.getPetName()
-                + (summary.getOwnerFullName() != null
-                    ? " (" + summary.getOwnerFullName() + ")"
-                    : "")
-            : "");
+    String petName = summary.getPetName() != null ? summary.getPetName() : "";
+    String owner =
+        summary.getOwnerFullName() != null ? " (" + summary.getOwnerFullName() + ")" : "";
+    model.addAttribute("petName", petName + owner);
     return "medical_records/edit";
   }
 
   @PostMapping("/{id}/edit")
-  public String updateMedicalRecord(
-      @PathVariable Long id,
-      @Valid @ModelAttribute("medicalRecord") UpdateMedicalRecordRequest request,
-      BindingResult result,
-      Authentication authentication,
-      Model model,
-      RedirectAttributes ra) {
+  public String updateMedicalRecord(@PathVariable Long id, @Valid @ModelAttribute("medicalRecord")
+                                    UpdateMedicalRecordRequest request, BindingResult result, Authentication authentication,
+                                    Model model, RedirectAttributes ra) {
     if (result.hasErrors()) {
       model.addAttribute("medicalRecordId", id);
       return "medical_records/edit";
