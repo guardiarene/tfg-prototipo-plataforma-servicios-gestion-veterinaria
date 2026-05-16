@@ -50,12 +50,12 @@
                                             <div class="col-md-5">
                                                 <h5 class="mb-2">
                                                     <i aria-hidden="true" class="bi bi-person me-2 text-muted"></i>
-                                                    <span th:text="${appointment.customer.firstName + ' ' + appointment.customer.lastName}"></span>
+                                                    <span th:text="${appointment.customerFullName}"></span>
                                                 </h5>
                                                 <p class="mb-2">
                                                     <i aria-hidden="true" class="bi bi-heart me-2 text-muted"></i>
                                                     <strong>Mascota:</strong>
-                                                    <span th:text="${appointment.pet.name + ' (' + appointment.pet.species.description + ')'}"></span>
+                                                    <span th:text="${appointment.petName + ' (' + appointment.petSpeciesDescription + ')'}"></span>
                                                 </p>
                                                 <p class="mb-0">
                                                     <i aria-hidden="true" class="bi bi-clock me-2 text-muted"></i>
@@ -70,7 +70,7 @@
                                                         Estado:</label>
                                                     <select class="form-select form-select-sm" name="status"
                                                             onchange="this.form.submit()">
-                                                        <option th:each="status : ${T(tfg.psygcv.entity.appointment.AppointmentStatus).values()}"
+                                                        <option th:each="status : ${T(tfg.psygcv.appointment.entity.AppointmentStatus).values()}"
                                                                 th:selected="${appointment.appointmentStatus == status}"
                                                                 th:text="${status.description}"
                                                                 th:value="${status}"></option>

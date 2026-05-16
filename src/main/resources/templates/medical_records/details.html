@@ -10,7 +10,7 @@
 <div th:replace="~{layouts/layout :: layout('Detalle Historia Clínica', ~{layouts/navbar :: navbar(${role})}, ~{::content}, ~{})}">
     <div class="container mt-4" th:fragment="content">
         <div class="card shadow">
-            <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica de ' + medicalRecord.pet.name, null)}"></div>
+            <div th:replace="~{fragments/card-header :: cardHeader('bi-file-medical', 'Historia Clínica de ' + medicalRecord.petName, null)}"></div>
             <div class="card-body">
                 <div th:if="${success}"
                      th:insert="~{fragments/alert :: successAlert(${success})}"></div>
@@ -18,17 +18,16 @@
                     <h4 class="mb-3 border-bottom pb-2 text-primary">Información de la Mascota</h4>
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <strong>Nombre:</strong> <span th:text="${medicalRecord.pet.name}"></span>
+                            <strong>Nombre:</strong> <span th:text="${medicalRecord.petName}"></span>
                         </div>
                         <div class="col-md-3">
-                            <strong>Especie:</strong> <span th:text="${medicalRecord.pet.species.description}"></span>
+                            <strong>Especie:</strong> <span th:text="${medicalRecord.petSpeciesDescription}"></span>
                         </div>
                         <div class="col-md-3">
-                            <strong>Raza:</strong> <span th:text="${medicalRecord.pet.breed.description}"></span>
+                            <strong>Raza:</strong> <span th:text="${medicalRecord.petBreedDescription}"></span>
                         </div>
                         <div class="col-md-3">
-                            <strong>Propietario:</strong> <span
-                                th:text="${medicalRecord.pet.owner.firstName + ' ' + medicalRecord.pet.owner.lastName}"></span>
+                            <strong>Propietario:</strong> <span th:text="${medicalRecord.ownerFullName}"></span>
                         </div>
                     </div>
                 </div>
@@ -43,7 +42,7 @@
                             <h4 class="mb-3 border-bottom pb-2 text-primary">Anamnesis Actual</h4>
                             <div class="card bg-white border-0 shadow-sm">
                                 <div class="card-body">
-                                    <div class="row g-3" th:with="anamnesis=${medicalRecord.getCurrentAnamnesis()}">
+                                    <div class="row g-3" th:with="anamnesis=${medicalRecord.currentAnamnesis}">
                                         <div class="col-md-6">
                                             <strong>Alergias:</strong> <span
                                                 th:text="${anamnesis.allergies ?: 'Ninguna'}"></span>
@@ -124,7 +123,7 @@
                                         </span>
                                         <span class="text-muted small">
                                             Veterinario: <span
-                                                th:text="${visit.veterinarian.firstName + ' ' + visit.veterinarian.lastName}"></span>
+                                                th:text="${visit.veterinarianFullName}"></span>
                                         </span>
                                     </div>
                                 </button>

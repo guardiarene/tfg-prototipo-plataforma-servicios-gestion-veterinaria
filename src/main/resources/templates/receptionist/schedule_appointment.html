@@ -16,17 +16,17 @@
                     <div class="card-body p-4">
                         <div th:if="${error}"
                              th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
-                        <form method="post" th:action="@{/appointments/schedule}" th:object="${appointment}">
+                        <form method="post" th:action="@{/appointments/schedule}" th:object="${scheduleRequest}">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Cliente</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i aria-hidden="true"
                                                                                    class="bi bi-person"></i></span>
-                                        <select class="form-select" id="customerId" name="customerId" required>
+                                        <select class="form-select" id="customerId" required
+                                                th:field="*{customerId}">
                                             <option disabled selected value="">Seleccione un cliente...</option>
                                             <option th:each="customer : ${customers}"
-                                                    th:selected="${customer.id == customerId}"
                                                     th:text="${customer.firstName + ' ' + customer.lastName}"
                                                     th:value="${customer.id}"></option>
                                         </select>
@@ -38,7 +38,7 @@
                                         <span class="input-group-text bg-light"><i aria-hidden="true"
                                                                                    class="bi bi-heart"></i></span>
                                         <select class="form-select" id="petId" required
-                                                th:field="*{pet.id}">
+                                                th:field="*{petId}">
                                             <option disabled selected value="">Seleccione una mascota...</option>
                                             <option th:each="pet : ${pets}"
                                                     th:text="${pet.name + ' (' + pet.species.description + ')'}"
@@ -75,9 +75,11 @@
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i
                                                 class="bi bi-clipboard2-pulse"></i></span>
-                                        <select class="form-select" id="serviceId" name="serviceId" required>
+                                        <select class="form-select" id="serviceId" required
+                                                th:field="*{serviceId}">
                                             <option disabled selected value="">Seleccione un servicio...</option>
-                                            <option th:each="service : ${services}" th:text="${service.name}"
+                                            <option th:each="service : ${services}"
+                                                    th:text="${service.name}"
                                                     th:value="${service.id}"></option>
                                         </select>
                                     </div>

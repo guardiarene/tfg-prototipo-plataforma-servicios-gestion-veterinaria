@@ -17,8 +17,7 @@
                     <div class="card-body p-4">
                         <form data-confirm="¿Está seguro de que desea confirmar los cambios en la programación de este turno?"
                               method="POST" th:action="@{/appointments/{id}/reschedule(id=${appointment.id})}"
-                              th:object="${appointment}">
-                            <input th:field="*{id}" type="hidden"/>
+                              th:object="${rescheduleRequest}">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold" for="customerName">Cliente</label>
@@ -26,7 +25,7 @@
                                         <span class="input-group-text bg-light"><i aria-hidden="true"
                                                                                    class="bi bi-person"></i></span>
                                         <input class="form-control bg-light" id="customerName" readonly
-                                               th:value="${appointment.customer.firstName + ' ' + appointment.customer.lastName}"
+                                               th:value="${appointment.customerFullName}"
                                                type="text">
                                     </div>
                                 </div>
@@ -36,7 +35,7 @@
                                         <span class="input-group-text bg-light"><i aria-hidden="true"
                                                                                    class="bi bi-heart"></i></span>
                                         <input class="form-control bg-light" id="petName" readonly
-                                               th:value="${appointment.pet.name}"
+                                               th:value="${appointment.petName}"
                                                type="text">
                                     </div>
                                 </div>
@@ -65,13 +64,13 @@
                                         <select class="form-select"
                                                 id="medicalService" required
                                                 th:errorclass="is-invalid"
-                                                th:field="*{medicalService.id}">
+                                                th:field="*{medicalServiceId}">
                                             <option th:each="service : ${services}"
                                                     th:text="${service.name}"
                                                     th:value="${service.id}"></option>
                                         </select>
-                                        <div class="invalid-feedback" th:errors="*{medicalService}"
-                                             th:if="${#fields.hasErrors('medicalService')}"></div>
+                                        <div class="invalid-feedback" th:errors="*{medicalServiceId}"
+                                             th:if="${#fields.hasErrors('medicalServiceId')}"></div>
                                     </div>
                                 </div>
                             </div>

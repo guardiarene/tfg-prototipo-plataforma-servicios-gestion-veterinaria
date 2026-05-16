@@ -9,5 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 class PSyGCVApplicationTests {
 
   @Test
-  void contextLoads() {}
+  void contextLoads() {
+  }
 }

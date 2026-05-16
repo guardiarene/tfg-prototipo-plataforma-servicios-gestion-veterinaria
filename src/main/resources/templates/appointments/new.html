@@ -27,7 +27,7 @@
 
                         <form data-confirm="¿Está seguro de que desea solicitar este turno?"
                               method="POST"
-                              th:action="@{/appointments/new(clinicId=${clinic.id})}">
+                              th:action="@{/appointments/new}">
                             <input name="clinicId" th:value="${clinic.id}" type="hidden">
 
                             <div class="mb-4 border-bottom pb-3">

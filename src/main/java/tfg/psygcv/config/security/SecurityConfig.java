@@ -3,6 +3,7 @@ package tfg.psygcv.config.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +22,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
     httpSecurity
+        .csrf(Customizer.withDefaults())
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
@@ -46,7 +48,9 @@ public class SecurityConfig {
                     .hasAnyRole("CUSTOMER", "VETERINARIAN", "RECEPTIONIST")
                     .requestMatchers("/medical-services/**")
                     .hasRole("VETERINARIAN")
-                    .requestMatchers("/medical_records/**")
+                    .requestMatchers("/medical-records/**")
+                    .hasAnyRole("CUSTOMER", "VETERINARIAN")
+                    .requestMatchers("/visits/**")
                     .hasAnyRole("CUSTOMER", "VETERINARIAN")
                     .requestMatchers("/reports/**")
                     .hasAnyRole("RECEPTIONIST", "VETERINARIAN")

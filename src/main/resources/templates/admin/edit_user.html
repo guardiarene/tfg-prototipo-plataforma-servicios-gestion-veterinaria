@@ -16,7 +16,7 @@
                     <div class="card-body p-4">
                         <div th:if="${error}"
                              th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
-                        <form method="POST" th:action="@{/users/edit/{id}(id=${user.id})}" th:object="${user}">
+                        <form method="POST" th:action="@{/users/edit/{id}(id=${userId})}" th:object="${user}">
                             <div class="row g-4">
                                 <div class="col-12">
                                     <h5 class="mb-3 border-bottom pb-2 text-primary">
