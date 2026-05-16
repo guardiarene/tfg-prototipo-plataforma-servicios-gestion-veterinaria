@@ -35,13 +35,18 @@ public class CreateVisitRequest {
 
   private String observations;
 
-  @Valid private ClinicalExamRequest clinicalExam;
+  @Valid
+  private ClinicalExamRequest clinicalExam;
 
-  @Valid private AnamnesisRequest anamnesis;
+  @Valid
+  private AnamnesisRequest anamnesis;
 
-  @Valid private List<DiagnosticRequest> diagnostics = new ArrayList<>();
+  @Valid
+  private List<DiagnosticRequest> diagnostics = new ArrayList<>();
 
-  @Valid private List<TreatmentRequest> treatments = new ArrayList<>();
+  @Valid
+  private List<TreatmentRequest> treatments = new ArrayList<>();
 
-  @Valid private List<VaccineRequest> vaccines = new ArrayList<>();
+  @Valid
+  private List<VaccineRequest> vaccines = new ArrayList<>();
 }

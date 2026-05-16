@@ -49,5 +49,6 @@ public class RegisterClinicRequest {
   @Size(max = 254, message = "El email no puede superar 254 caracteres")
   private String clinicEmail;
 
+  @NotBlank(message = "La confirmación de contraseña es obligatoria")
   private String confirmPassword;
 }
