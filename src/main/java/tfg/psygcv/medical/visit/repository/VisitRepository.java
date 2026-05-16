@@ -24,7 +24,8 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
           + "LEFT JOIN FETCH v.clinicalExam "
           + "LEFT JOIN FETCH v.anamnesis a "
           + "LEFT JOIN FETCH v.veterinarian "
-          + "WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true ORDER BY v.date DESC, v.createdAt DESC")
+          + "WHERE v.medicalRecord.id = :medicalRecordId AND v.active = true "
+          + "ORDER BY v.date DESC, v.createdAt DESC")
   List<Visit> findCompleteByMedicalRecordId(@Param("medicalRecordId") Long medicalRecordId);
 
   @Query("SELECT DISTINCT v FROM Visit v LEFT JOIN FETCH v.diagnostics WHERE v.id IN :ids")

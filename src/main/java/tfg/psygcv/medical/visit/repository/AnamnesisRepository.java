@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import tfg.psygcv.medical.visit.entity.Anamnesis;
 
 @Repository
-public interface AnamnesisRepository extends JpaRepository<Anamnesis, Long> {}
+public interface AnamnesisRepository extends JpaRepository<Anamnesis, Long> {
+}
