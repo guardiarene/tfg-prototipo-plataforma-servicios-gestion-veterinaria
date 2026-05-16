@@ -1,159 +1,155 @@
-# Prototipo de Plataforma de Servicios y Gestión de Clínicas Veterinarias
+# PSyGCV — Plataforma de servicios y gestión de clínicas veterinarias
 
-Este proyecto es un prototipo desarrollado como parte del Trabajo de Fin de Grado (TFG) titulado  
-**“Plataforma de Servicios y Gestión de Clínicas Veterinarias”**.
+![Java](https://img.shields.io/badge/Java-25-orange?style=for-the-badge&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.5-brightgreen?style=for-the-badge&logo=springboot)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf%20%2B%20Bootstrap-5-005F0F?style=for-the-badge&logo=thymeleaf)
 
-El objetivo principal es permitir la creación, mantenimiento y acceso compartido a historias clínicas unificadas entre
-diferentes clínicas veterinarias, facilitando la gestión integral de pacientes, citas, servicios médicos y usuarios.
+Prototipo desarrollado como Trabajo de Fin de Grado (TFG). PSyGCV es una aplicación web para la gestión integral de
+clínicas veterinarias: administración de mascotas, historias clínicas unificadas, citas médicas y personal, con acceso
+diferenciado por rol.
 
 ---
 
-## Tecnologías utilizadas
+## Características principales
+
+### Autenticación y roles
+
+El sistema define cuatro roles con acceso y vistas diferenciados:
+
+| Rol                       | Descripción                                                              |
+|---------------------------|--------------------------------------------------------------------------|
+| Administrador del sistema | Gestión global de usuarios y configuración de la plataforma.             |
+| Veterinario               | Acceso a historias clínicas, visitas y gestión de su clínica y personal. |
+| Recepcionista             | Programación, reprogramación y seguimiento del estado de las citas.      |
+| Cliente                   | Consulta de clínicas disponibles, mascotas e historial de citas propias. |
+
+Tras el inicio de sesión, cada usuario es redirigido automáticamente al dashboard correspondiente a su rol.
+
+### Módulos implementados
+
+- **Clínicas veterinarias:** registro, búsqueda, gestión de personal y catálogo de servicios médicos.
+- **Mascotas:** alta, edición y eliminación con atributos de especie, raza, sexo, estado reproductivo y temperamento.
+- **Historia clínica:** creación y edición de historias clínicas con registro de visitas, anamnesis, examen clínico,
+  diagnósticos, tratamientos y vacunas.
+- **Citas:** reserva por el cliente y programación por la recepcionista, con estados pendiente, confirmada y cancelada,
+  y soporte para reprogramación.
+- **Estadísticas y reportes:** paneles con datos de diagnósticos, tratamientos y actividad de citas para veterinarios y
+  recepcionistas.
+- **Administración de usuarios:** creación, edición y desactivación de cuentas desde el panel de administración.
+
+---
+
+## Tecnologías
 
 ### Backend
 
-- Java 25
-- Spring Boot 4
-- Spring Security
-- Spring Data JPA
-- Hibernate
+| Tecnología                  | Versión | Uso                                          |
+|-----------------------------|---------|----------------------------------------------|
+| Java                        | 25      | Lenguaje principal                           |
+| Spring Boot                 | 4.0.5   | Framework de aplicación                      |
+| Spring Security             | 6       | Autenticación y autorización basada en roles |
+| Spring Data JPA + Hibernate | —       | Persistencia y ORM                           |
+| Jakarta Bean Validation     | —       | Validación de datos de entrada               |
+| Lombok                      | 1.18.44 | Reducción de código boilerplate              |
 
 ### Frontend
 
-- Thymeleaf
-- Bootstrap
+| Tecnología  | Uso                                       |
+|-------------|-------------------------------------------|
+| Thymeleaf   | Motor de plantillas del lado del servidor |
+| Bootstrap 5 | Estilos y componentes de interfaz         |
+| JavaScript  | Confirmaciones e interactividad básica    |
 
-### Base de datos
+### Infraestructura
 
-- MySQL (desarrollo / producción)
-- H2 (tests)
-
-### Testing
-
-- JUnit 5
-- Mockito
-
-### Herramientas y calidad
-
-- Maven
-- Checkstyle (Google Java Style)
-- Google Java Formatter
-- GitHub Actions (CI)
+| Herramienta    | Uso                                                  |
+|----------------|------------------------------------------------------|
+| MySQL 8.0      | Base de datos en entornos de desarrollo y producción |
+| H2             | Base de datos en memoria para el entorno de tests    |
+| Maven          | Gestión de dependencias y ciclo de build             |
+| Checkstyle     | Verificación de estilo (Google Java Style Guide)     |
+| GitHub Actions | Pipeline de integración continua (CI)                |
 
 ---
 
-## Requisitos previos
+## Arquitectura del sistema
 
-- **Java JDK 25**
-- **Apache Maven**
-- **MySQL Server**
+La aplicación sigue una arquitectura en capas con separación estricta de responsabilidades:
 
----
-
-## Instalación y ejecución
-
-### 1. Clonar el repositorio
-
-```bash
- git clone https://github.com/guardiarene/tfg-prototipo-plataforma-servicios-gestion-veterinaria.git
- cd tfg-prototipo-plataforma-servicios-gestion-vet
+```
+controller   →   Recibe peticiones HTTP, delega al servicio y devuelve la vista
+service      →   Toda la lógica de negocio y gestión de transacciones
+repository   →   Acceso a datos mediante interfaces de Spring Data JPA
+entity       →   Modelo de dominio y entidades JPA
+config       →   Seguridad, auditoría y configuración de la aplicación
+dto / mapper →   (En proceso) Desacoplamiento entre la API y el modelo interno
 ```
 
-### 2. Configurar la base de datos
-
-Crear la base de datos en MySQL:
-
-```sql
-CREATE
-DATABASE prototipo.bd;
-```
-
-Configurar las credenciales en el archivo correspondiente al perfil activo
-(ejemplo: `application-dev.yaml`):
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/veterinaria
-    username: tu_usuario
-    password: tu_contraseña
-```
-
-### 3. Compilar y ejecutar
-
-```bash
-mvn clean verify
-mvn spring-boot:run
-```
-
-### 4. Acceso a la aplicación
-
-Abrir el navegador y visitar:
-`http://localhost:8080`
+Los perfiles de entorno (`dev`, `test`, `prod`) permiten aislar la configuración de base de datos y logging sin
+modificar el código fuente.
 
 ---
 
-## Arquitectura general
+## Instalación y configuración
 
-El proyecto sigue una arquitectura en capas:
+### Requisitos previos
 
-* **Controller**: manejo de solicitudes HTTP y validación de entrada.
-* **Service**: lógica de negocio y control transaccional.
-* **Repository**: acceso a datos mediante Spring Data JPA.
-* **Entity**: modelo de dominio persistente.
-* **DTO**: objetos de transferencia para entrada y salida. *(Actualmente no implementados, priorizar su creación)*
-* **Mapper**: conversión explícita entre entidades y DTOs. *(Actualmente no implementados, priorizar su creación)*
-* **Exception**: excepciones de dominio y manejo global. *(Actualmente no implementadas, priorizar su creación)*
-* **Config**: configuración de seguridad, perfiles y beans.
+- Java JDK 25
+- Apache Maven 3.9+
+- MySQL 8.0
+
+### Pasos
+
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/guardiarene/tfg-prototipo-plataforma-servicios-gestion-veterinaria.git
+   cd tfg-prototipo-plataforma-servicios-gestion-veterinaria
+   ```
+
+2. **Crear la base de datos:**
+   ```sql
+   CREATE DATABASE psygcs_dev;
+   ```
+
+3. **Configurar credenciales** en `src/main/resources/application-dev.yaml`:
+   ```yaml
+   spring:
+     datasource:
+       url: jdbc:mysql://localhost:3306/psygcs_dev
+       username: tu_usuario
+       password: tu_contraseña
+   ```
+
+4. **Compilar y verificar:**
+   ```bash
+   mvn clean verify
+   ```
+
+5. **Ejecutar la aplicación:**
+   ```bash
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev
+   ```
+
+La aplicación estará disponible en [http://localhost:8080](http://localhost:8080).
 
 ---
 
-## Calidad y buenas prácticas aplicadas
+## Futuras implementaciones
 
-* Separación clara de responsabilidades.
-* Uso de perfiles (`dev`, `test`, `prod`).
-* Checkstyle con **Google Java Style**.
-* Formateo consistente del código.
-* Pipeline de CI con GitHub Actions.
-* Tests ejecutados automáticamente en cada push.
-* Uso controlado de Lombok.
-* Transacciones declaradas solo en la capa de servicio.
+### Arquitectura y calidad
 
----
+- [ ] Capa de DTOs y mappers para desacoplar la API del modelo interno.
+- [ ] Manejo global de excepciones con `@ControllerAdvice`.
+- [ ] Cobertura de tests: unitarios de servicio, integración y controladores.
 
-## Pendientes y mejoras planificadas
+### Infraestructura y despliegue
 
-Estas tareas representan **mejoras progresivas**, alineadas con un nivel junior profesional y el estado actual del
-proyecto:
+- [ ] Pipeline de despliegue continuo (CD) en GitHub Actions.
+- [ ] Dockerización de la aplicación y la base de datos.
+- [ ] Orquestación con Docker Compose.
+- [ ] Despliegue en Oracle Cloud Infrastructure (OCI).
 
-### Arquitectura y código
+### Frontend
 
-* [ ] Crear los paquetes/folders `dto`, `mapper` y `exception`.
-* [ ] Implementar DTOs para todas las operaciones públicas (no exponer entidades en controladores).
-* [ ] Implementar mappers explícitos entre entidades y DTOs.
-* [ ] Añadir validaciones con `jakarta.validation` en DTOs de entrada.
-* [ ] Refactorizar controladores para eliminar cualquier lógica de negocio.
-* [ ] Revisar nombres de clases, métodos y endpoints para mayor claridad.
-
-### Manejo de errores
-
-* [ ] Definir excepciones de dominio específicas.
-* [ ] Centralizar el manejo de errores con `@ControllerAdvice`.
-* [ ] Garantizar respuestas HTTP claras y coherentes.
-* [ ] Evitar exposición de trazas internas.
-
-### Testing
-
-* [ ] Ampliar tests unitarios de servicios.
-* [ ] Añadir tests de controladores con `@WebMvcTest`.
-* [ ] Añadir tests de repositorios con `@DataJpaTest`.
-* [ ] Aumentar cobertura en flujos críticos.
-
-### Calidad y mantenimiento
-
-* [ ] Revisar logs para evitar información sensible.
-* [ ] Documentar lógica no trivial.
-* [ ] Mantener el cumplimiento de Checkstyle en todo el código.
-* [ ] No añadir dependencias sin justificación clara.
-* [ ] Mantener commits siguiendo **Conventional Commits**.
-
+- [ ] Migración a React (SPA) con API REST como backend.
