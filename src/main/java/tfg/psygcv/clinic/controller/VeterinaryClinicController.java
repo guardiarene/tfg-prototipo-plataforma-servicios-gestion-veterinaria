@@ -48,15 +48,10 @@ public class VeterinaryClinicController extends BaseController {
       model.addAttribute("error", "Las contraseñas no coinciden.");
       return "clinics/register";
     }
-    try {
-      veterinaryClinicService.registerClinicWithVeterinarian(
-          VeterinaryClinicMapper.toRegisterCommand(request));
-      redirectAttributes.addAttribute("success", true);
-      return REDIRECT_LOGIN;
-    } catch (Exception e) {
-      model.addAttribute("error", "Error al registrar: " + e.getMessage());
-      return "clinics/register";
-    }
+    veterinaryClinicService.registerClinicWithVeterinarian(
+        VeterinaryClinicMapper.toRegisterCommand(request));
+    redirectAttributes.addAttribute("success", true);
+    return REDIRECT_LOGIN;
   }
 
   @GetMapping("/search")

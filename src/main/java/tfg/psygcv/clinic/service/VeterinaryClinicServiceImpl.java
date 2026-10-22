@@ -1,20 +1,23 @@
 package tfg.psygcv.clinic.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.clinic.command.RegisterClinicWithVeterinarianCommand;
 import tfg.psygcv.clinic.command.UpdateClinicCommand;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.clinic.repository.VeterinaryClinicRepository;
+import tfg.psygcv.exception.domain.ResourceNotFoundException;
+import tfg.psygcv.exception.domain.UnauthorizedClinicAccessException;
 import tfg.psygcv.user.command.CreateStaffCommand;
 import tfg.psygcv.user.command.RegisterVeterinarianCommand;
 import tfg.psygcv.user.entity.Role;
 import tfg.psygcv.user.entity.User;
 import tfg.psygcv.user.service.UserService;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -35,7 +38,8 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
     return veterinaryClinicRepository
         .findByIdWithDetails(clinicId)
         .orElseThrow(
-            () -> new EntityNotFoundException("Veterinary clinic not found with ID: " + clinicId));
+            () -> new ResourceNotFoundException(
+                "Veterinary clinic not found with ID: " + clinicId));
   }
 
   @Override
@@ -49,7 +53,7 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
     veterinaryClinicValidator.validateId(ownerId);
     VeterinaryClinic clinic = veterinaryClinicRepository.findByOwnerId(ownerId);
     if (clinic == null) {
-      throw new EntityNotFoundException("Veterinary clinic not found for owner ID: " + ownerId);
+      throw new ResourceNotFoundException("Veterinary clinic not found for owner ID: " + ownerId);
     }
     return clinic;
   }
@@ -62,7 +66,7 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
         .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarianId))
         .orElseThrow(
             () ->
-                new EntityNotFoundException(
+                new ResourceNotFoundException(
                     "Veterinary clinic not found for veterinarian ID: " + veterinarianId));
   }
 
@@ -73,7 +77,7 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
         .findByReceptionistId(receptionistId)
         .orElseThrow(
             () ->
-                new EntityNotFoundException(
+                new ResourceNotFoundException(
                     "Veterinary clinic not found for receptionist ID: " + receptionistId));
   }
 
@@ -91,7 +95,8 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
   @Transactional
   public void registerStaff(Long ownerId, CreateStaffCommand command) {
     if (command.getRole() != Role.VETERINARIAN && command.getRole() != Role.RECEPTIONIST) {
-      throw new IllegalArgumentException("Staff role must be VETERINARIAN or RECEPTIONIST");
+      throw new UnauthorizedClinicAccessException(
+          "Staff role must be VETERINARIAN or RECEPTIONIST");
     }
     VeterinaryClinic clinic = findByOwnerId(ownerId);
     userService.registerStaffForClinic(command, clinic);
@@ -106,6 +111,7 @@ public class VeterinaryClinicServiceImpl implements VeterinaryClinicService {
     userService
         .findActiveByWorkClinicId(clinicId)
         .forEach(staff -> userService.deactivate(staff.getId()));
+    log.info("Clinic deactivated and staff deactivated [clinicId={}]", clinicId);
   }
 
   @Override

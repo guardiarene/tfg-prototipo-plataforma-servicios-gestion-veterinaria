@@ -34,4 +34,13 @@ public interface VeterinaryClinicRepository extends JpaRepository<VeterinaryClin
 
   @Query("SELECT vc FROM VeterinaryClinic vc JOIN vc.receptionists r WHERE r.id = :receptionistId")
   Optional<VeterinaryClinic> findByReceptionistId(@Param("receptionistId") Long receptionistId);
+
+  @Query("SELECT vc.id FROM VeterinaryClinic vc WHERE vc.owner.id = :ownerId")
+  Optional<Long> findClinicIdByOwnerId(@Param("ownerId") Long ownerId);
+
+  @Query("SELECT vc.id FROM VeterinaryClinic vc JOIN vc.veterinarians v WHERE v.id = :vetId")
+  Optional<Long> findClinicIdByVeterinarianId(@Param("vetId") Long vetId);
+
+  @Query("SELECT vc.id FROM VeterinaryClinic vc JOIN vc.receptionists r WHERE r.id = :receptionistId")
+  Optional<Long> findClinicIdByReceptionistId(@Param("receptionistId") Long receptionistId);
 }
