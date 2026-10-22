@@ -1,8 +1,8 @@
 package tfg.psygcv.user.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.config.security.AuthenticatedUser;
+import tfg.psygcv.exception.domain.DuplicateEmailException;
+import tfg.psygcv.exception.domain.ResourceNotFoundException;
 import tfg.psygcv.user.command.CreateAdminUserCommand;
 import tfg.psygcv.user.command.CreateStaffCommand;
 import tfg.psygcv.user.command.RegisterCustomerCommand;
@@ -22,6 +24,7 @@ import tfg.psygcv.user.entity.Role;
 import tfg.psygcv.user.entity.User;
 import tfg.psygcv.user.repository.UserRepository;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -57,7 +60,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     userValidator.validateId(userId);
     return userRepository
         .findById(userId)
-        .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+        .orElseThrow(() -> new ResourceNotFoundException("User not found", userId));
   }
 
   @Override
@@ -65,7 +68,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     userValidator.validateId(userId);
     return userRepository
         .findByIdWithClinicContext(userId)
-        .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+        .orElseThrow(() -> new ResourceNotFoundException("User not found", userId));
   }
 
   @Override
@@ -81,7 +84,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
   public User save(User user) {
     userValidator.validateForCreation(user);
     if (userRepository.findByEmailAndActiveTrue(user.getEmail()).isPresent()) {
-      throw new IllegalArgumentException("Ya existe un usuario con este email: " + user.getEmail());
+      log.warn("Duplicate email registration attempt [email={}]", user.getEmail());
+      throw new DuplicateEmailException("Ya existe un usuario con este email: " + user.getEmail());
     }
     encodePassword(user);
     return userRepository.save(user);
@@ -152,6 +156,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     User user = findById(userId);
     user.setActive(false);
     userRepository.save(user);
+    log.info("User deactivated [userId={}]", userId);
   }
 
   @Override
