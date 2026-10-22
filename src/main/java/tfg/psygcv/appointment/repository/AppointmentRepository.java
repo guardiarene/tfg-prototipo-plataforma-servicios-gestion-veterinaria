@@ -40,4 +40,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
           + "LEFT JOIN FETCH a.medicalService "
           + "WHERE a.id = :id")
   Optional<Appointment> findByIdWithDetails(@Param("id") Long id);
+
+  boolean existsByIdAndCustomer_Id(Long id, Long customerId);
+
+  boolean existsByIdAndClinic_Id(Long id, Long clinicId);
 }

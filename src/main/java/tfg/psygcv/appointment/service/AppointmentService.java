@@ -2,6 +2,7 @@ package tfg.psygcv.appointment.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 import tfg.psygcv.appointment.command.RescheduleAppointmentCommand;
 import tfg.psygcv.appointment.command.ScheduleAppointmentCommand;
 import tfg.psygcv.appointment.entity.Appointment;
@@ -13,6 +14,7 @@ public interface AppointmentService {
 
   Appointment findById(Long appointmentId);
 
+  @PreAuthorize("@authz.canAccessAppointment(authentication, #appointmentId)")
   Appointment findWithDetails(Long appointmentId);
 
   List<Appointment> findByCustomerId(Long clientId);
@@ -28,9 +30,12 @@ public interface AppointmentService {
 
   void createReceptionistAppointment(ScheduleAppointmentCommand command, Long receptionistId);
 
+  @PreAuthorize("@authz.canAccessAppointment(authentication, #appointmentId)")
   void updateStatus(Long appointmentId, AppointmentStatus status);
 
+  @PreAuthorize("@authz.canAccessAppointment(authentication, #appointmentId)")
   void reschedule(Long appointmentId, RescheduleAppointmentCommand command);
 
+  @PreAuthorize("@authz.canAccessAppointment(authentication, #appointmentId)")
   void cancel(Long appointmentId);
 }

@@ -8,6 +8,7 @@ import tfg.psygcv.appointment.command.ScheduleAppointmentCommand;
 import tfg.psygcv.appointment.entity.Appointment;
 import tfg.psygcv.appointment.entity.AppointmentStatus;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.exception.domain.InvalidAppointmentStateException;
 import tfg.psygcv.shared.validation.BaseValidator;
 
 @Component
@@ -17,7 +18,7 @@ public class AppointmentValidator extends BaseValidator {
       LocalDate date, Long petId, Long serviceId, Long clinicId, Long clientId) {
     validateNotNull(date, "Appointment date cannot be null");
     if (date.isBefore(LocalDate.now())) {
-      throw new IllegalArgumentException("Appointment date cannot be in the past");
+      throw new InvalidAppointmentStateException("La fecha del turno no puede ser en el pasado");
     }
     validateId(petId);
     validateId(serviceId);
@@ -41,7 +42,8 @@ public class AppointmentValidator extends BaseValidator {
     validateNotNull(command.getDate(), "New appointment date is required");
     validateNotNull(command.getTime(), "New appointment time is required");
     if (command.getDate().isBefore(LocalDate.now())) {
-      throw new IllegalArgumentException("New appointment date cannot be in the past");
+      throw new InvalidAppointmentStateException(
+          "La nueva fecha del turno no puede ser en el pasado");
     }
     validateNotNull(command.getMedicalServiceId(), "Medical service is required for rescheduling");
   }
