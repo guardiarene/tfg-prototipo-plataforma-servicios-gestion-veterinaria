@@ -1,6 +1,5 @@
 package tfg.psygcv.medical.visit.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +9,12 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tfg.psygcv.exception.domain.ResourceNotFoundException;
 import tfg.psygcv.medical.record.entity.MedicalRecord;
 import tfg.psygcv.medical.record.repository.MedicalRecordRepository;
 import tfg.psygcv.medical.visit.command.CreateVisitCommand;
@@ -34,6 +35,7 @@ import tfg.psygcv.pet.entity.Pet;
 import tfg.psygcv.user.entity.User;
 import tfg.psygcv.user.service.UserService;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -57,7 +59,7 @@ public class VisitServiceImpl implements VisitService {
             .findById(medicalRecordId)
             .orElseThrow(
                 () ->
-                    new EntityNotFoundException(
+                    new ResourceNotFoundException(
                         "Medical record not found with ID: " + medicalRecordId));
     Pet pet = medicalRecord.getPet();
     User veterinarianWithClinicContext = userService.findByIdWithClinicContext(veterinarianId);
@@ -85,7 +87,8 @@ public class VisitServiceImpl implements VisitService {
     Visit visit =
         visitRepository
             .findCompleteById(visitId)
-            .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Visit not found with ID: " + visitId));
     visitRepository.findWithDiagnostics(visitId);
     visitRepository.findWithTreatments(visitId);
     visitRepository.findWithVaccines(visitId);
@@ -157,9 +160,11 @@ public class VisitServiceImpl implements VisitService {
     Visit visit =
         visitRepository
             .findById(visitId)
-            .orElseThrow(() -> new EntityNotFoundException("Visit not found with ID: " + visitId));
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Visit not found with ID: " + visitId));
     visit.setActive(false);
     visitRepository.save(visit);
+    log.info("Visit deleted [visitId={}]", visitId);
     return visit.getMedicalRecord().getId();
   }
 
@@ -372,7 +377,7 @@ public class VisitServiceImpl implements VisitService {
             visit.getDiagnostics().stream()
                 .filter(d -> d.getId().equals(data.getId()))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Diagnostic not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Diagnostic not found"));
         diag.setProblems(
             data.getProblems() != null ? new ArrayList<>(data.getProblems()) : new ArrayList<>());
       }
@@ -405,7 +410,7 @@ public class VisitServiceImpl implements VisitService {
             visit.getTreatments().stream()
                 .filter(t -> t.getId().equals(data.getId()))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Treatment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Treatment not found"));
         treatment.setProduct(data.getProduct());
         treatment.setRoute(data.getRoute());
         treatment.setFrequency(data.getFrequency());
@@ -451,7 +456,8 @@ public class VisitServiceImpl implements VisitService {
             Optional.ofNullable(existingVaccinesMap.get(data.getId()))
                 .orElseThrow(
                     () ->
-                        new EntityNotFoundException("Vaccine not found with ID: " + data.getId()));
+                        new ResourceNotFoundException(
+                            "Vaccine not found with ID: " + data.getId()));
         vaccine.setApplicationDate(data.getApplicationDate());
         vaccine.setBrand(data.getBrand());
         vaccine.setDose(data.getDose());
