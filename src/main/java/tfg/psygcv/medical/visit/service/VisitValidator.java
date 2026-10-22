@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.exception.domain.InvalidAppointmentStateException;
 import tfg.psygcv.medical.visit.command.CreateVisitCommand;
 import tfg.psygcv.medical.visit.command.UpdateVisitCommand;
 import tfg.psygcv.medical.visit.entity.VisitType;
@@ -50,7 +51,8 @@ public class VisitValidator extends BaseValidator {
 
   private void validateVeterinarianClinicAccess(User veterinarian, Pet pet) {
     if (hasVeterinarianAccessToPet(veterinarian, pet)) {
-      throw new IllegalStateException("Pet is not registered in any of the veterinarian's clinics");
+      throw new InvalidAppointmentStateException(
+          "La mascota no tiene turnos registrados en ninguna clínica del veterinario");
     }
   }
 
@@ -59,9 +61,9 @@ public class VisitValidator extends BaseValidator {
       return;
     }
     if (hasVeterinarianAccessToPet(veterinarian, pet)) {
-      throw new IllegalStateException(
-          "Pet has no registered appointments in veterinarian's clinics."
-              + " Emergency visits can be created without appointments.");
+      throw new InvalidAppointmentStateException(
+          "La mascota no tiene turnos en las clínicas del veterinario."
+              + " Las visitas de emergencia pueden crearse sin turno previo.");
     }
   }
 
@@ -69,7 +71,8 @@ public class VisitValidator extends BaseValidator {
     Set<VeterinaryClinic> veterinarianClinics = veterinarian.getClinicsOwned();
     VeterinaryClinic workClinic = veterinarian.getWorkClinic();
     if ((veterinarianClinics == null || veterinarianClinics.isEmpty()) && workClinic == null) {
-      throw new IllegalStateException("Veterinarian has no registered clinics or work clinic");
+      throw new InvalidAppointmentStateException(
+          "El veterinario no tiene clínicas registradas ni clínica de trabajo asignada");
     }
     if (veterinarianClinics != null && !veterinarianClinics.isEmpty()) {
       if (appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(

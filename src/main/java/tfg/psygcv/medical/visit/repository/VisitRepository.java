@@ -68,4 +68,17 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
   @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.vaccines WHERE v.id = :id")
   List<Visit> findWithVaccines(@Param("id") Long id);
+
+  @Query(
+      "SELECT CASE WHEN COUNT(v) > 0 THEN TRUE ELSE FALSE END FROM Visit v"
+          + " WHERE v.id = :visitId AND v.medicalRecord.pet.owner.id = :ownerId")
+  boolean existsByIdAndPetOwnerId(
+      @Param("visitId") Long visitId, @Param("ownerId") Long ownerId);
+
+  @Query(
+      "SELECT CASE WHEN COUNT(v) > 0 THEN TRUE ELSE FALSE END FROM Visit v"
+          + " JOIN v.medicalRecord mr JOIN mr.pet p JOIN p.appointments a"
+          + " WHERE v.id = :visitId AND a.clinic.id = :clinicId")
+  boolean existsByIdAndClinicId(
+      @Param("visitId") Long visitId, @Param("clinicId") Long clinicId);
 }
