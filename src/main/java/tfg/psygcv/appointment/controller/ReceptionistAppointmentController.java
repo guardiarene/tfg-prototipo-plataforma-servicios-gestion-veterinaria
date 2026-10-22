@@ -80,16 +80,9 @@ public class ReceptionistAppointmentController extends BaseController {
       populateScheduleModel(model, request.getCustomerId(), clinicId);
       return "receptionist/schedule_appointment";
     }
-    try {
-      appointmentService.createReceptionistAppointment(
-          AppointmentMapper.toScheduleCommand(request), receptionist.getId());
-      return REDIRECT_RECEPTIONIST_DASHBOARD;
-    } catch (Exception e) {
-      Long clinicId = veterinaryClinicService.findClinicIdByReceptionistId(receptionist.getId());
-      populateScheduleModel(model, request.getCustomerId(), clinicId);
-      model.addAttribute("error", e.getMessage());
-      return "receptionist/schedule_appointment";
-    }
+    appointmentService.createReceptionistAppointment(
+        AppointmentMapper.toScheduleCommand(request), receptionist.getId());
+    return REDIRECT_RECEPTIONIST_DASHBOARD;
   }
 
   @GetMapping("/{id}/reschedule")
@@ -115,8 +108,7 @@ public class ReceptionistAppointmentController extends BaseController {
       @Valid @ModelAttribute("rescheduleRequest") RescheduleAppointmentRequest request,
       BindingResult result,
       Model model,
-      Authentication authentication,
-      RedirectAttributes redirectAttributes) {
+      Authentication authentication) {
     if (result.hasErrors()) {
       Long clinicId =
           veterinaryClinicService.findClinicIdByReceptionistId(
@@ -130,14 +122,8 @@ public class ReceptionistAppointmentController extends BaseController {
               .toList());
       return "receptionist/reschedule_appointment";
     }
-    try {
-      appointmentService.reschedule(id, AppointmentMapper.toRescheduleCommand(request));
-      return REDIRECT_RECEPTIONIST_RESCHEDULED;
-    } catch (Exception e) {
-      redirectAttributes.addFlashAttribute(
-          "error", "Error al reprogramar el turno: " + e.getMessage());
-      return REDIRECT_RECEPTIONIST_DASHBOARD;
-    }
+    appointmentService.reschedule(id, AppointmentMapper.toRescheduleCommand(request));
+    return REDIRECT_RECEPTIONIST_RESCHEDULED;
   }
 
   @PostMapping("/{id}/update-status")
@@ -145,11 +131,8 @@ public class ReceptionistAppointmentController extends BaseController {
       @PathVariable Long id,
       @RequestParam("status") AppointmentStatus status,
       RedirectAttributes ra) {
-    try {
-      appointmentService.updateStatus(id, status);
-    } catch (Exception e) {
-      ra.addFlashAttribute("error", e.getMessage());
-    }
+    appointmentService.updateStatus(id, status);
+    ra.addFlashAttribute("success", "Estado del turno actualizado correctamente.");
     return REDIRECT_RECEPTIONIST_DASHBOARD;
   }
 
