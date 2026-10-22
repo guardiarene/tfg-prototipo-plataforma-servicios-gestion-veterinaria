@@ -16,4 +16,6 @@ public interface MedicalServiceRepository extends JpaRepository<MedicalService, 
 
   @Query("SELECT ms FROM MedicalService ms WHERE ms.clinic.id = :clinicId AND ms.active = true")
   List<MedicalService> findByClinicId(@Param("clinicId") Long clinicId);
+
+  boolean existsByIdAndClinic_Id(Long id, Long clinicId);
 }
