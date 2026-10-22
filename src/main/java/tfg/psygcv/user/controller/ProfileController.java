@@ -60,31 +60,20 @@ public class ProfileController extends BaseController {
       model.addAttribute("role", authUser.getRole().name());
       return "profile/edit";
     }
-    try {
-      userService.updateVeterinarianProfile(
-          authUser.getId(), UserMapper.toUpdateProfileCommand(request));
-      ra.addFlashAttribute("success", "Perfil actualizado correctamente.");
-      return REDIRECT_MY_PROFILE;
-    } catch (Exception e) {
-      model.addAttribute("role", authUser.getRole().name());
-      model.addAttribute("error", e.getMessage());
-      return "profile/edit";
-    }
+    userService.updateVeterinarianProfile(
+        authUser.getId(), UserMapper.toUpdateProfileCommand(request));
+    ra.addFlashAttribute("success", "Perfil actualizado correctamente.");
+    return REDIRECT_MY_PROFILE;
   }
 
   @PostMapping("/deactivate")
-  public String deactivateAccount(Authentication authentication, RedirectAttributes ra) {
-    try {
-      var authUser = getAuthenticatedUser(authentication);
-      if (authUser.getRole() == Role.VETERINARIAN) {
-        veterinaryClinicService.deactivate(
-            veterinaryClinicService.findClinicIdByVeterinarianId(authUser.getId()));
-      }
-      userService.deactivate(authUser.getId());
-      return REDIRECT_LOGIN_LOGOUT;
-    } catch (Exception e) {
-      ra.addFlashAttribute("error", e.getMessage());
-      return REDIRECT_MY_PROFILE;
+  public String deactivateAccount(Authentication authentication) {
+    var authUser = getAuthenticatedUser(authentication);
+    if (authUser.getRole() == Role.VETERINARIAN) {
+      veterinaryClinicService.deactivate(
+          veterinaryClinicService.findClinicIdByVeterinarianId(authUser.getId()));
     }
+    userService.deactivate(authUser.getId());
+    return REDIRECT_LOGIN_LOGOUT;
   }
 }

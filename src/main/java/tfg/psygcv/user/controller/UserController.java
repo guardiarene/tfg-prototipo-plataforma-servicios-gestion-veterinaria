@@ -51,13 +51,8 @@ public class UserController extends BaseController {
       model.addAttribute("error", "Las contraseñas no coinciden.");
       return VIEW_USER_REGISTER;
     }
-    try {
-      userService.registerCustomer(UserMapper.toRegisterCustomerCommand(request));
-      return REDIRECT_LOGIN_REGISTERED;
-    } catch (Exception e) {
-      model.addAttribute("error", e.getMessage());
-      return VIEW_USER_REGISTER;
-    }
+    userService.registerCustomer(UserMapper.toRegisterCustomerCommand(request));
+    return REDIRECT_LOGIN_REGISTERED;
   }
 
   @GetMapping("/login")
@@ -82,15 +77,9 @@ public class UserController extends BaseController {
       model.addAttribute("roles", Role.values());
       return VIEW_ADMIN_NEW_USER;
     }
-    try {
-      userService.saveComplete(UserMapper.toCreateAdminCommand(request));
-      ra.addFlashAttribute("success", "Usuario registrado correctamente.");
-      return REDIRECT_ADMIN_DASHBOARD;
-    } catch (Exception e) {
-      model.addAttribute("roles", Role.values());
-      model.addAttribute("error", e.getMessage());
-      return VIEW_ADMIN_NEW_USER;
-    }
+    userService.saveComplete(UserMapper.toCreateAdminCommand(request));
+    ra.addFlashAttribute("success", "Usuario registrado correctamente.");
+    return REDIRECT_ADMIN_DASHBOARD;
   }
 
   @GetMapping("/edit/{id}")
@@ -113,25 +102,15 @@ public class UserController extends BaseController {
       model.addAttribute("roles", Role.values());
       return VIEW_ADMIN_EDIT_USER;
     }
-    try {
-      userService.updateComplete(id, UserMapper.toUpdateAdminCommand(request));
-      ra.addFlashAttribute("success", "Usuario actualizado correctamente.");
-      return REDIRECT_ADMIN_DASHBOARD;
-    } catch (Exception e) {
-      model.addAttribute("userId", id);
-      model.addAttribute("roles", Role.values());
-      model.addAttribute("error", e.getMessage());
-      return VIEW_ADMIN_EDIT_USER;
-    }
+    userService.updateComplete(id, UserMapper.toUpdateAdminCommand(request));
+    ra.addFlashAttribute("success", "Usuario actualizado correctamente.");
+    return REDIRECT_ADMIN_DASHBOARD;
   }
 
   @PostMapping("/delete/{id}")
   public String deleteUser(@PathVariable Long id, RedirectAttributes ra) {
-    try {
-      userService.deactivate(id);
-    } catch (Exception e) {
-      ra.addFlashAttribute("error", e.getMessage());
-    }
+    userService.deactivate(id);
+    ra.addFlashAttribute("success", "Usuario desactivado correctamente.");
     return REDIRECT_ADMIN_DASHBOARD;
   }
 }

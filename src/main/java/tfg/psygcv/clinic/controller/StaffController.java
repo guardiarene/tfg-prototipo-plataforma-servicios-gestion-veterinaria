@@ -59,12 +59,7 @@ public class StaffController extends BaseController {
       return "veterinarian/new_staff";
     }
     Long ownerId = getAuthenticatedUser(authentication).getId();
-    try {
-      veterinaryClinicService.registerStaff(ownerId, UserMapper.toCreateStaffCommand(request));
-      return "redirect:/veterinarian/staff?created";
-    } catch (Exception e) {
-      model.addAttribute("error", "Error al registrar el personal: " + e.getMessage());
-      return "veterinarian/new_staff";
-    }
+    veterinaryClinicService.registerStaff(ownerId, UserMapper.toCreateStaffCommand(request));
+    return "redirect:/veterinarian/staff?created";
   }
 }
