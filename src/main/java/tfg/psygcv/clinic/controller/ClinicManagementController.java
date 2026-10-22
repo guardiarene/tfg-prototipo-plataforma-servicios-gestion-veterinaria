@@ -62,17 +62,9 @@ public class ClinicManagementController extends BaseController {
       model.addAttribute("clinic", VeterinaryClinicMapper.toUpdateRequest(clinic));
       return "veterinarian/edit_clinic";
     }
-    try {
-      userService.updateVeterinarianProfile(
-          veterinarianId, UserMapper.toUpdateProfileCommand(request));
-      return REDIRECT_MY_CLINIC_UPDATED;
-    } catch (Exception e) {
-      VeterinaryClinic clinic = veterinaryClinicService.findByVeterinarianId(veterinarianId);
-      model.addAttribute("clinic", VeterinaryClinicMapper.toUpdateRequest(clinic));
-      model.addAttribute(
-          "errorProfile", "Error al actualizar el perfil profesional: " + e.getMessage());
-      return "veterinarian/edit_clinic";
-    }
+    userService.updateVeterinarianProfile(
+        veterinarianId, UserMapper.toUpdateProfileCommand(request));
+    return REDIRECT_MY_CLINIC_UPDATED;
   }
 
   @PostMapping("/clinic/update")
@@ -87,15 +79,8 @@ public class ClinicManagementController extends BaseController {
       model.addAttribute("veterinarian", UserMapper.toUpdateRequest(owner));
       return "veterinarian/edit_clinic";
     }
-    try {
-      veterinaryClinicService.updateClinicData(
-          ownerId, VeterinaryClinicMapper.toUpdateClinicCommand(request));
-      return REDIRECT_MY_CLINIC_UPDATED;
-    } catch (Exception e) {
-      model.addAttribute("veterinarian", UserMapper.toUpdateRequest(owner));
-      model.addAttribute(
-          "errorClinic", "Error al actualizar los datos de la clínica: " + e.getMessage());
-      return "veterinarian/edit_clinic";
-    }
+    veterinaryClinicService.updateClinicData(
+        ownerId, VeterinaryClinicMapper.toUpdateClinicCommand(request));
+    return REDIRECT_MY_CLINIC_UPDATED;
   }
 }
