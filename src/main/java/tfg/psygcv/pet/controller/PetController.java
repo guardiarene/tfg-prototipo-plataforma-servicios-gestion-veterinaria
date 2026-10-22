@@ -62,14 +62,9 @@ public class PetController extends BaseController {
     if (result.hasErrors()) {
       return "pets/new";
     }
-    try {
-      AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-      petService.save(PetMapper.toCreateCommand(request, currentUser.getId()));
-      return REDIRECT_MY_PETS_CREATED;
-    } catch (Exception e) {
-      model.addAttribute("error", e.getMessage());
-      return "pets/new";
-    }
+    AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
+    petService.save(PetMapper.toCreateCommand(request, currentUser.getId()));
+    return REDIRECT_MY_PETS_CREATED;
   }
 
   @GetMapping("/{id}/edit")
@@ -89,24 +84,14 @@ public class PetController extends BaseController {
       model.addAttribute("petId", id);
       return "pets/edit";
     }
-    try {
-      petService.update(id, PetMapper.toUpdateCommand(request));
-      return REDIRECT_MY_PETS_UPDATED;
-    } catch (Exception e) {
-      model.addAttribute("petId", id);
-      model.addAttribute("error", e.getMessage());
-      return "pets/edit";
-    }
+    petService.update(id, PetMapper.toUpdateCommand(request));
+    return REDIRECT_MY_PETS_UPDATED;
   }
 
   @PostMapping("/{id}/delete")
   public String deletePet(@PathVariable Long id, RedirectAttributes ra) {
-    try {
-      petService.deactivate(id);
-      return REDIRECT_MY_PETS_DELETED;
-    } catch (Exception e) {
-      ra.addFlashAttribute("error", e.getMessage());
-      return "redirect:/pets";
-    }
+    petService.deactivate(id);
+    ra.addFlashAttribute("success", "Mascota eliminada correctamente.");
+    return REDIRECT_MY_PETS_DELETED;
   }
 }

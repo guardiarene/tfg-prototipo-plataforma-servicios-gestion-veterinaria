@@ -1,14 +1,15 @@
 package tfg.psygcv.pet.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
+import tfg.psygcv.exception.domain.ResourceNotFoundException;
 import tfg.psygcv.pet.command.CreatePetCommand;
 import tfg.psygcv.pet.command.UpdatePetCommand;
 import tfg.psygcv.pet.entity.Pet;
@@ -16,6 +17,7 @@ import tfg.psygcv.pet.repository.PetRepository;
 import tfg.psygcv.user.entity.User;
 import tfg.psygcv.user.service.UserService;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -31,7 +33,7 @@ public class PetServiceImpl implements PetService {
     petValidator.validateId(petId);
     return petRepository
         .findByIdAndActive(petId)
-        .orElseThrow(() -> new EntityNotFoundException("Pet not found with ID: " + petId));
+        .orElseThrow(() -> new ResourceNotFoundException("Pet not found", petId));
   }
 
   @Override
@@ -66,7 +68,9 @@ public class PetServiceImpl implements PetService {
     pet.setBirthDate(command.getBirthDate());
     pet.setWeight(command.getWeight());
     pet.setOwner(owner);
-    return petRepository.save(pet);
+    Pet saved = petRepository.save(pet);
+    log.info("Pet registered [petId={}, ownerId={}]", saved.getId(), command.getOwnerId());
+    return saved;
   }
 
   @Override
@@ -90,5 +94,6 @@ public class PetServiceImpl implements PetService {
     Pet existingPet = findById(petId);
     existingPet.setActive(false);
     petRepository.save(existingPet);
+    log.info("Pet deactivated [petId={}]", petId);
   }
 }
