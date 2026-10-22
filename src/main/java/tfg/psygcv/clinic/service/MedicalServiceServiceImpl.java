@@ -1,9 +1,8 @@
 package tfg.psygcv.clinic.service;
 
-import jakarta.persistence.EntityNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.clinic.command.CreateMedicalServiceCommand;
@@ -11,7 +10,10 @@ import tfg.psygcv.clinic.command.UpdateMedicalServiceCommand;
 import tfg.psygcv.clinic.entity.MedicalService;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.clinic.repository.MedicalServiceRepository;
+import tfg.psygcv.exception.domain.ResourceNotFoundException;
+import tfg.psygcv.exception.domain.UnauthorizedClinicAccessException;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -26,8 +28,7 @@ public class MedicalServiceServiceImpl implements MedicalServiceService {
     medicalServiceValidator.validateId(serviceId);
     return medicalServiceRepository
         .findByIdAndActive(serviceId)
-        .orElseThrow(
-            () -> new EntityNotFoundException("Medical service not found with ID: " + serviceId));
+        .orElseThrow(() -> new ResourceNotFoundException("Medical service not found", serviceId));
   }
 
   @Override
@@ -46,11 +47,7 @@ public class MedicalServiceServiceImpl implements MedicalServiceService {
   @Override
   public MedicalService findByIdAndValidateClinic(Long serviceId, Long clinicId) {
     MedicalService service = findById(serviceId);
-    try {
-      validateServiceBelongsToClinic(service, clinicId);
-    } catch (AccessDeniedException ex) {
-      throw new RuntimeException(ex.getMessage());
-    }
+    validateServiceBelongsToClinic(service, clinicId);
     return service;
   }
 
@@ -63,7 +60,10 @@ public class MedicalServiceServiceImpl implements MedicalServiceService {
     service.setName(command.getName());
     service.setDescription(command.getDescription());
     service.setClinic(clinic);
-    return medicalServiceRepository.save(service);
+    MedicalService saved = medicalServiceRepository.save(service);
+    log.info("Medical service created [serviceId={}, clinicId={}]",
+        saved.getId(), command.getClinicId());
+    return saved;
   }
 
   @Override
@@ -82,12 +82,15 @@ public class MedicalServiceServiceImpl implements MedicalServiceService {
     MedicalService service = findByIdAndValidateClinic(serviceId, clinicId);
     service.setActive(false);
     medicalServiceRepository.save(service);
+    log.info("Medical service deactivated [serviceId={}, clinicId={}]", serviceId, clinicId);
   }
 
-  private void validateServiceBelongsToClinic(MedicalService service, Long clinicId)
-      throws AccessDeniedException {
+  private void validateServiceBelongsToClinic(MedicalService service, Long clinicId) {
     if (!service.getClinic().getId().equals(clinicId)) {
-      throw new AccessDeniedException("Medical service does not belong to the specified clinic");
+      log.warn("Unauthorized clinic access attempt [serviceId={}, expectedClinicId={}]",
+          service.getId(), clinicId);
+      throw new UnauthorizedClinicAccessException(
+          "Medical service does not belong to the specified clinic");
     }
   }
 }

@@ -60,18 +60,12 @@ public class MedicalServiceController extends BaseController {
       BindingResult result,
       @RequestParam("clinicId") Long clinicId,
       Model model) {
-    try {
-      if (result.hasErrors()) {
-        model.addAttribute("clinicId", clinicId);
-        return "medical_services/new";
-      }
-      medicalServiceService.save(MedicalServiceMapper.toCreateCommand(request, clinicId));
-      return REDIRECT_MY_SERVICES_CREATED;
-    } catch (Exception e) {
-      model.addAttribute("error", "Error al guardar el servicio: " + e.getMessage());
+    if (result.hasErrors()) {
       model.addAttribute("clinicId", clinicId);
       return "medical_services/new";
     }
+    medicalServiceService.save(MedicalServiceMapper.toCreateCommand(request, clinicId));
+    return REDIRECT_MY_SERVICES_CREATED;
   }
 
   @GetMapping("/{id}/edit")
@@ -94,33 +88,22 @@ public class MedicalServiceController extends BaseController {
       BindingResult result,
       @RequestParam("clinicId") Long clinicId,
       Model model) {
-    try {
-      if (result.hasErrors()) {
-        model.addAttribute("medicalServiceId", id);
-        model.addAttribute("clinicId", clinicId);
-        return "medical_services/edit";
-      }
-      medicalServiceService.update(id, MedicalServiceMapper.toUpdateCommand(request), clinicId);
-      return REDIRECT_MY_SERVICES_UPDATED;
-    } catch (Exception e) {
-      model.addAttribute("error", "Error al actualizar el servicio: " + e.getMessage());
+    if (result.hasErrors()) {
       model.addAttribute("medicalServiceId", id);
       model.addAttribute("clinicId", clinicId);
       return "medical_services/edit";
     }
+    medicalServiceService.update(id, MedicalServiceMapper.toUpdateCommand(request), clinicId);
+    return REDIRECT_MY_SERVICES_UPDATED;
   }
 
   @PostMapping("/{id}/delete")
   public String deleteService(
       @PathVariable Long id, Authentication authentication, RedirectAttributes ra) {
-    try {
-      Long veterinarianId = getAuthenticatedUser(authentication).getId();
-      Long clinicId = veterinaryClinicService.findClinicIdByVeterinarianId(veterinarianId);
-      medicalServiceService.deactivate(id, clinicId);
-      return REDIRECT_MY_SERVICES_DELETED;
-    } catch (Exception e) {
-      ra.addFlashAttribute("error", e.getMessage());
-      return "redirect:/medical-services";
-    }
+    Long veterinarianId = getAuthenticatedUser(authentication).getId();
+    Long clinicId = veterinaryClinicService.findClinicIdByVeterinarianId(veterinarianId);
+    medicalServiceService.deactivate(id, clinicId);
+    ra.addFlashAttribute("success", "Servicio eliminado correctamente.");
+    return REDIRECT_MY_SERVICES_DELETED;
   }
 }
