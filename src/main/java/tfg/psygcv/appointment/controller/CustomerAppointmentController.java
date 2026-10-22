@@ -79,19 +79,14 @@ public class CustomerAppointmentController extends BaseController {
       ra.addFlashAttribute("error", "Datos inválidos. Verifique los campos.");
       return "redirect:/appointments/new?clinicId=" + request.getClinicId();
     }
-    try {
-      Long currentUserId = getAuthenticatedUser(authentication).getId();
-      appointmentService.createClientAppointment(
-          request.getDate(),
-          request.getPetId(),
-          request.getServiceId(),
-          request.getClinicId(),
-          currentUserId);
-      return REDIRECT_MY_APPOINTMENTS;
-    } catch (Exception e) {
-      ra.addFlashAttribute("error", e.getMessage());
-      return "redirect:/appointments/new?clinicId=" + request.getClinicId();
-    }
+    Long currentUserId = getAuthenticatedUser(authentication).getId();
+    appointmentService.createClientAppointment(
+        request.getDate(),
+        request.getPetId(),
+        request.getServiceId(),
+        request.getClinicId(),
+        currentUserId);
+    return REDIRECT_MY_APPOINTMENTS;
   }
 
   @GetMapping("/{id}")
@@ -108,13 +103,9 @@ public class CustomerAppointmentController extends BaseController {
 
   @PostMapping("/{id}/cancel")
   public String cancelAppointment(
-      @PathVariable Long id, Authentication authentication, RedirectAttributes ra) {
+      @PathVariable Long id, Authentication authentication) {
     AuthenticatedUser currentUser = getAuthenticatedUser(authentication);
-    try {
-      appointmentService.cancel(id);
-    } catch (Exception e) {
-      ra.addFlashAttribute("error", e.getMessage());
-    }
+    appointmentService.cancel(id);
     if (currentUser.getRole() == Role.RECEPTIONIST) {
       return REDIRECT_RECEPTIONIST_DASHBOARD;
     }
