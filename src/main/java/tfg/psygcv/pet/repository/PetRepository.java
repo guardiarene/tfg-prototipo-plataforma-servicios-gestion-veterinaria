@@ -18,4 +18,12 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
       "SELECT p FROM Pet p JOIN FETCH p.owner LEFT JOIN FETCH p.medicalRecord"
           + " WHERE p.owner.id = :ownerId AND p.active = TRUE")
   List<Pet> findByOwnerId(@Param("ownerId") Long ownerId);
+
+  boolean existsByIdAndOwner_Id(Long id, Long ownerId);
+
+  @Query(
+      "SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Pet p"
+          + " JOIN p.appointments a WHERE p.id = :petId AND a.clinic.id = :clinicId")
+  boolean hasAppointmentAtClinic(
+      @Param("petId") Long petId, @Param("clinicId") Long clinicId);
 }
