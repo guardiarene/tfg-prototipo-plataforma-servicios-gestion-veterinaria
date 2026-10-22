@@ -1,14 +1,16 @@
 package tfg.psygcv.medical.record.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.clinic.repository.VeterinaryClinicRepository;
+import tfg.psygcv.exception.domain.InvalidAppointmentStateException;
+import tfg.psygcv.exception.domain.ResourceNotFoundException;
 import tfg.psygcv.medical.record.command.CreateMedicalRecordCommand;
 import tfg.psygcv.medical.record.command.UpdateMedicalRecordCommand;
 import tfg.psygcv.medical.record.entity.MedicalRecord;
@@ -22,6 +24,7 @@ import tfg.psygcv.pet.repository.PetRepository;
 import tfg.psygcv.user.entity.User;
 import tfg.psygcv.user.service.UserService;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -42,7 +45,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     medicalRecordValidator.validateId(medicalRecordId);
     MedicalRecord medicalRecord =
         medicalRecordQueryRepository.findCompleteForViewing(medicalRecordId).orElseThrow(
-            () -> new EntityNotFoundException(
+            () -> new ResourceNotFoundException(
                 "Medical record not found with ID: " + medicalRecordId));
     List<Visit> visits = visitService.findByMedicalRecord(medicalRecordId);
     medicalRecord.getVisits().clear();
@@ -57,7 +60,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     medicalRecordValidator.validateId(veterinarianId);
     VeterinaryClinic clinic = veterinaryClinicRepository.findByVeterinarianId(veterinarianId)
         .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(veterinarianId)).orElseThrow(
-            () -> new EntityNotFoundException(
+            () -> new ResourceNotFoundException(
                 "Veterinary clinic not found for veterinarian ID: " + veterinarianId));
     return medicalRecordRepository.findByClinicId(clinic.getId());
   }
@@ -68,14 +71,17 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     User veterinarianWithClinicContext = userService.findByIdWithClinicContext(veterinarianId);
     medicalRecordValidator.validateForCreation(command, veterinarianId);
     Pet pet = petRepository.findByIdAndActive(command.getPetId())
-        .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
     validatePetAppointments(pet, veterinarianWithClinicContext);
     validateExistingMedicalRecord(pet);
     MedicalRecord newMedicalRecord = createMedicalRecord(pet);
     if (command.getGeneralObservations() != null) {
       newMedicalRecord.setGeneralObservations(command.getGeneralObservations());
     }
-    return medicalRecordRepository.save(newMedicalRecord);
+    MedicalRecord saved = medicalRecordRepository.save(newMedicalRecord);
+    log.info("Medical record created [recordId={}, petId={}]",
+        saved.getId(), command.getPetId());
+    return saved;
   }
 
   @Override
@@ -83,7 +89,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   public MedicalRecord update(Long id, UpdateMedicalRecordCommand command, Long veterinarianId) {
     medicalRecordValidator.validateForUpdate(id, command, veterinarianId);
     MedicalRecord existingRecord = medicalRecordRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Medical record not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Medical record not found"));
     existingRecord.setGeneralObservations(command.getGeneralObservations());
     return medicalRecordRepository.save(existingRecord);
   }
@@ -110,14 +116,15 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
               pet.getOwner());
     }
     if (!hasAppointments) {
-      throw new IllegalStateException(
+      throw new InvalidAppointmentStateException(
           "Pet has no registered appointments in veterinarian's clinics");
     }
   }
 
   private void validateExistingMedicalRecord(Pet pet) {
     if (pet.getMedicalRecord() != null) {
-      throw new IllegalStateException("Pet already has a medical record");
+      throw new InvalidAppointmentStateException(
+          "Esta mascota ya tiene una historia clínica registrada");
     }
   }
 

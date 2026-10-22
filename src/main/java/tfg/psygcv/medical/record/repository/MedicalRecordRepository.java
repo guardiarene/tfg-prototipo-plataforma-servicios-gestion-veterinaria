@@ -13,4 +13,17 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Lo
   @Query(
       "SELECT DISTINCT mr FROM MedicalRecord mr JOIN FETCH mr.pet p JOIN FETCH p.owner WHERE mr.pet IN (SELECT a.pet FROM Appointment a WHERE a.clinic.id = :clinicId) AND mr.pet.active = true ORDER BY mr.createdAt ASC")
   List<MedicalRecord> findByClinicId(@Param("clinicId") Long clinicId);
+
+  @Query(
+      "SELECT CASE WHEN COUNT(mr) > 0 THEN TRUE ELSE FALSE END FROM MedicalRecord mr"
+          + " WHERE mr.id = :recordId AND mr.pet.owner.id = :ownerId")
+  boolean existsByIdAndPetOwnerId(
+      @Param("recordId") Long recordId, @Param("ownerId") Long ownerId);
+
+  @Query(
+      "SELECT CASE WHEN COUNT(mr) > 0 THEN TRUE ELSE FALSE END FROM MedicalRecord mr"
+          + " JOIN mr.pet p JOIN p.appointments a"
+          + " WHERE mr.id = :recordId AND a.clinic.id = :clinicId")
+  boolean existsByIdAndClinicId(
+      @Param("recordId") Long recordId, @Param("clinicId") Long clinicId);
 }

@@ -62,17 +62,9 @@ public class MedicalRecordController extends BaseController {
               .map(PetMapper::toSummary).toList());
       return "medical_records/new";
     }
-    try {
-      medicalRecordService.save(MedicalRecordMapper.toCreateCommand(request), veterinarianId);
-      ra.addFlashAttribute("success", "Historia clínica creada correctamente.");
-      return REDIRECT_VETERINARIAN_DASHBOARD;
-    } catch (Exception e) {
-      model.addAttribute("pets",
-          petService.findPetsWithAppointmentsInClinics(veterinarianId).stream()
-              .map(PetMapper::toSummary).toList());
-      model.addAttribute("error", e.getMessage());
-      return "medical_records/new";
-    }
+    medicalRecordService.save(MedicalRecordMapper.toCreateCommand(request), veterinarianId);
+    ra.addFlashAttribute("success", "Historia clínica creada correctamente.");
+    return REDIRECT_VETERINARIAN_DASHBOARD;
   }
 
   @GetMapping("/{id}/edit")
@@ -96,15 +88,9 @@ public class MedicalRecordController extends BaseController {
       model.addAttribute("medicalRecordId", id);
       return "medical_records/edit";
     }
-    try {
-      Long veterinarianId = getAuthenticatedUser(authentication).getId();
-      medicalRecordService.update(id, MedicalRecordMapper.toUpdateCommand(request), veterinarianId);
-      ra.addFlashAttribute("success", "Historia clínica actualizada correctamente.");
-      return "redirect:/medical-records/" + id;
-    } catch (Exception e) {
-      model.addAttribute("medicalRecordId", id);
-      model.addAttribute("error", e.getMessage());
-      return "medical_records/edit";
-    }
+    Long veterinarianId = getAuthenticatedUser(authentication).getId();
+    medicalRecordService.update(id, MedicalRecordMapper.toUpdateCommand(request), veterinarianId);
+    ra.addFlashAttribute("success", "Historia clínica actualizada correctamente.");
+    return "redirect:/medical-records/" + id;
   }
 }
