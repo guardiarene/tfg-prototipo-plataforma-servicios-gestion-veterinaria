@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.appointment.repository.AppointmentStatisticsRepository;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.clinic.repository.VeterinaryClinicRepository;
+import tfg.psygcv.exception.domain.BusinessRuleException;
 import tfg.psygcv.medical.visit.repository.DiagnosticStatisticsRepository;
 import tfg.psygcv.medical.visit.repository.TreatmentStatisticsRepository;
 
@@ -90,7 +91,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         .or(() -> veterinaryClinicRepository.findByOwnerIdOptional(userId))
         .or(() -> veterinaryClinicRepository.findByReceptionistId(userId))
         .orElseThrow(
-            () -> new IllegalArgumentException("No clinic found for dashboard with ID: " + userId));
+            () -> new BusinessRuleException("No tenés una clínica asociada"));
   }
 
   private Map<String, Long> processProblems(List<String> problems) {
