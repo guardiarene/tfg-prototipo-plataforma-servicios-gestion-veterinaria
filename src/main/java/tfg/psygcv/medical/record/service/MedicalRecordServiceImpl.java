@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tfg.psygcv.appointment.repository.AppointmentQueryRepository;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.clinic.repository.VeterinaryClinicRepository;
-import tfg.psygcv.exception.domain.InvalidAppointmentStateException;
+import tfg.psygcv.exception.domain.BusinessRuleException;
 import tfg.psygcv.exception.domain.ResourceNotFoundException;
 import tfg.psygcv.medical.record.command.CreateMedicalRecordCommand;
 import tfg.psygcv.medical.record.command.UpdateMedicalRecordCommand;
@@ -116,14 +116,14 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
               pet.getOwner());
     }
     if (!hasAppointments) {
-      throw new InvalidAppointmentStateException(
-          "Pet has no registered appointments in veterinarian's clinics");
+      throw new BusinessRuleException(
+          "La mascota no tiene turnos registrados en las clínicas del veterinario");
     }
   }
 
   private void validateExistingMedicalRecord(Pet pet) {
     if (pet.getMedicalRecord() != null) {
-      throw new InvalidAppointmentStateException(
+      throw new BusinessRuleException(
           "Esta mascota ya tiene una historia clínica registrada");
     }
   }
