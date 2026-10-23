@@ -18,9 +18,9 @@ public interface MedicalServiceService {
 
   MedicalService save(CreateMedicalServiceCommand command);
 
-  @PreAuthorize("@authz.canAccessMedicalService(authentication, #serviceId)")
+  @PreAuthorize("@authz.canManageMedicalService(authentication, #serviceId)")
   MedicalService update(Long serviceId, UpdateMedicalServiceCommand command, Long clinicId);
 
-  @PreAuthorize("@authz.canAccessMedicalService(authentication, #serviceId)")
+  @PreAuthorize("@authz.canManageMedicalService(authentication, #serviceId)")
   void deactivate(Long serviceId, Long clinicId);
 }
