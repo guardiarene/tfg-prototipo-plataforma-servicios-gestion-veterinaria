@@ -16,9 +16,9 @@ public class AppointmentValidator extends BaseValidator {
 
   public void validateClientAppointmentCreation(
       LocalDate date, Long petId, Long serviceId, Long clinicId, Long clientId) {
-    validateNotNull(date, "La fecha del turno es obligatoria");
+    validateNotNull(date, "Appointment date cannot be null");
     if (date.isBefore(LocalDate.now())) {
-      throw new BusinessRuleException("La fecha del turno no puede ser en el pasado");
+      throw new BusinessRuleException("Appointment date cannot be in the past");
     }
     validateId(petId);
     validateId(serviceId);
@@ -28,37 +28,36 @@ public class AppointmentValidator extends BaseValidator {
 
   public void validateReceptionistAppointmentCreation(
       ScheduleAppointmentCommand command, Long receptionistId) {
-    validateNotNull(command, "El comando de agendamiento no puede ser nulo");
-    validateNotNull(command.getDate(), "La fecha del turno es obligatoria");
-    validateNotNull(command.getTime(), "La hora del turno es obligatoria");
-    validateNotNull(command.getPetId(), "La mascota es obligatoria para el turno");
+    validateNotNull(command, "Schedule command cannot be null");
+    validateNotNull(command.getDate(), "Appointment date is required");
+    validateNotNull(command.getTime(), "Appointment time is required");
+    validateNotNull(command.getPetId(), "Pet is required for appointment");
     validateId(command.getServiceId());
     validateId(receptionistId);
   }
 
   public void validateReschedule(Long appointmentId, RescheduleAppointmentCommand command) {
     validateId(appointmentId);
-    validateNotNull(command, "El comando de reprogramación no puede ser nulo");
-    validateNotNull(command.getDate(), "La nueva fecha del turno es obligatoria");
-    validateNotNull(command.getTime(), "La nueva hora del turno es obligatoria");
+    validateNotNull(command, "Reschedule command cannot be null");
+    validateNotNull(command.getDate(), "New appointment date is required");
+    validateNotNull(command.getTime(), "New appointment time is required");
     if (command.getDate().isBefore(LocalDate.now())) {
-      throw new BusinessRuleException("La nueva fecha del turno no puede ser en el pasado");
+      throw new BusinessRuleException("New appointment date cannot be in the past");
     }
-    validateNotNull(
-        command.getMedicalServiceId(), "El servicio médico es obligatorio para reprogramar");
+    validateNotNull(command.getMedicalServiceId(), "Medical service is required for rescheduling");
   }
 
   public void validateAppointment(Appointment appointment) {
-    validateNotNull(appointment, "El turno no puede ser nulo");
+    validateNotNull(appointment, "Appointment cannot be null");
   }
 
   public void validateStatus(AppointmentStatus status) {
-    validateNotNull(status, "El estado del turno no puede ser nulo");
+    validateNotNull(status, "Appointment status cannot be null");
   }
 
   public void validateClinics(List<VeterinaryClinic> clinics) {
     if (clinics == null || clinics.isEmpty()) {
-      throw new BusinessRuleException("La lista de clínicas no puede estar vacía");
+      throw new BusinessRuleException("Clinics list cannot be null or empty");
     }
   }
 }

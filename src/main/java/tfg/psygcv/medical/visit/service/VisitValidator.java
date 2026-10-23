@@ -21,9 +21,9 @@ public class VisitValidator extends BaseValidator {
   private final AppointmentQueryRepository appointmentQueryRepository;
 
   public void validateForCreation(CreateVisitCommand command, User veterinarian, Pet pet) {
-    validateNotNull(command, "El comando de la visita no puede ser nulo");
-    validateNotNull(veterinarian, "El veterinario no puede ser nulo");
-    validateNotNull(pet, "La mascota no puede ser nula");
+    validateNotNull(command, "Visit command cannot be null");
+    validateNotNull(veterinarian, "Veterinarian cannot be null");
+    validateNotNull(pet, "Pet cannot be null");
     validateVisitFields(command.getDate(), command.getReasonForVisit(), command.getVisitType());
     validateVeterinarianClinicAccess(veterinarian, pet);
     validateAppointmentRequirement(command.getVisitType(), veterinarian, pet);
@@ -31,28 +31,28 @@ public class VisitValidator extends BaseValidator {
 
   public void validateForUpdate(Long id, UpdateVisitCommand command, User veterinarian) {
     validateId(id);
-    validateNotNull(command, "El comando de la visita no puede ser nulo");
-    validateNotNull(veterinarian, "El veterinario no puede ser nulo");
+    validateNotNull(command, "Visit command cannot be null");
+    validateNotNull(veterinarian, "Veterinarian cannot be null");
     validateVisitFields(command.getDate(), command.getReasonForVisit(), command.getVisitType());
   }
 
   @Override
   public void validateId(Long id) {
     if (id == null || id <= 0) {
-      throw new BusinessRuleException("El identificador de la visita no es válido");
+      throw new BusinessRuleException("Visit ID must be a positive number");
     }
   }
 
   private void validateVisitFields(LocalDate date, String reasonForVisit, VisitType visitType) {
-    validateNotNull(date, "La fecha de la visita es obligatoria");
-    validateStringNotBlank(reasonForVisit, "El motivo de la visita");
-    validateNotNull(visitType, "El tipo de visita es obligatorio");
+    validateNotNull(date, "Visit date cannot be null");
+    validateStringNotBlank(reasonForVisit, "Reason for visit");
+    validateNotNull(visitType, "Visit type cannot be null");
   }
 
   private void validateVeterinarianClinicAccess(User veterinarian, Pet pet) {
     if (hasVeterinarianAccessToPet(veterinarian, pet)) {
       throw new BusinessRuleException(
-          "La mascota no tiene turnos registrados en ninguna clínica del veterinario");
+          "Pet has no registered appointments in any of the veterinarian's clinics");
     }
   }
 
@@ -62,8 +62,8 @@ public class VisitValidator extends BaseValidator {
     }
     if (hasVeterinarianAccessToPet(veterinarian, pet)) {
       throw new BusinessRuleException(
-          "La mascota no tiene turnos en las clínicas del veterinario."
-              + " Las visitas de emergencia pueden crearse sin turno previo.");
+          "Pet has no appointments in the veterinarian's clinics."
+              + " Emergency visits can be created without a prior appointment.");
     }
   }
 
@@ -72,7 +72,7 @@ public class VisitValidator extends BaseValidator {
     VeterinaryClinic workClinic = veterinarian.getWorkClinic();
     if ((veterinarianClinics == null || veterinarianClinics.isEmpty()) && workClinic == null) {
       throw new BusinessRuleException(
-          "El veterinario no tiene clínicas registradas ni clínica de trabajo asignada");
+          "The veterinarian has no registered clinics or assigned work clinic");
     }
     if (veterinarianClinics != null && !veterinarianClinics.isEmpty()) {
       if (appointmentQueryRepository.existsAppointmentByPetAndClinicsAndCustomer(
