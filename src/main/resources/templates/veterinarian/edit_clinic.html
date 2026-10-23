@@ -14,6 +14,8 @@
                 <div class="card shadow">
                     <div th:replace="~{fragments/card-header :: cardHeader('bi-pencil-square', 'Actualizar Datos del Establecimiento', null)}"></div>
                     <div class="card-body p-4">
+                        <div th:if="${error}"
+                             th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                         <div th:if="${errorProfile}"
                              th:insert="~{fragments/alert :: errorAlert(${errorProfile})}"></div>
                         <form class="mb-5" data-confirm="Estas seguro de que deseas actualizar tu perfil profesional?"

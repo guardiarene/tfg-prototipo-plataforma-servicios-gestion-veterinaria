@@ -14,6 +14,8 @@
             <form class="card-body" method="POST"
                   th:action="@{/visits/{id}/edit(id=${visitId})}"
                   th:object="${visit}">
+                <div th:if="${error}"
+                     th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                 <div th:if="${#fields.hasErrors('*')}"
                      th:insert="~{fragments/alert :: errorAlert('Corrige los errores del formulario.')}"></div>
                 <div class="mb-4">
