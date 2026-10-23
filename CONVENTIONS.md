@@ -46,6 +46,7 @@ tfg.psygcv
 │   └── util/                      #   JsonUtil and other infrastructure utilities
 │
 ├── shared/                        # Cross-cutting base classes
+│   ├── authorization/             #   ResourceAuthorizationService (@Component("authz"))
 │   ├── constant/                  #   RouteConstant
 │   ├── controller/                #   BaseController, PublicController
 │   ├── entity/                    #   AuditableEntity
@@ -146,7 +147,10 @@ tfg.psygcv
 │   └── service/                   #   StatisticsService, StatisticsServiceImpl,
 │                                  #   StatisticsValidator
 │
-└── exception/                     # Domain-specific exceptions + GlobalExceptionHandler
+└── exception/                     # Global exception handling
+    ├── GlobalExceptionHandler     #   @ControllerAdvice for all exceptions
+    └── domain/                    #   BusinessRuleException, DuplicateEmailException,
+                                   #   ResourceNotFoundException, UnauthorizedClinicAccessException
 ```
 
 ### Principles
@@ -384,7 +388,7 @@ public record CreatePetRequest(
 ### Return Types
 
 - Single-entity lookups return `Optional<T>` — never return `null`
-- Use `orElseThrow(() -> new EntityNotFoundException(...))` for mandatory lookups
+- Use `orElseThrow(() -> new ResourceNotFoundException(...))` for mandatory lookups
 - Never call `.get()` on `Optional` without checking
 
 ### Ownership Verification
@@ -492,21 +496,47 @@ public String createPet(@Valid CreatePetRequest request, BindingResult result,
 
 ### Domain Exceptions
 
-All business errors use domain-specific exception types. Never throw:
+All business errors use domain-specific exception types in `exception/domain/`. Never throw:
 
 - Raw `RuntimeException`
-- `IllegalArgumentException` for business rule violations (use a domain exception)
-- `jakarta.persistence.EntityNotFoundException` (use the project's own)
-- `java.nio.file.AccessDeniedException` (use Spring Security's or a domain exception)
+- `IllegalArgumentException` for business rule violations (use `BusinessRuleException`)
+- `jakarta.persistence.EntityNotFoundException` (use `ResourceNotFoundException`)
+- `java.nio.file.AccessDeniedException` (use Spring Security's or `UnauthorizedClinicAccessException`)
+
+The domain exceptions and their hierarchy:
+
+- `ResourceNotFoundException` — a mandatory lookup found nothing.
+- `BusinessRuleException` — a business rule or input precondition was violated. Base type for:
+    - `DuplicateEmailException` — registering/updating with an email already in use.
+- `UnauthorizedClinicAccessException` — access to a resource outside the user's clinic.
+
+All extend `RuntimeException`. Validators (`BaseValidator` and its subclasses) throw
+`BusinessRuleException`; adding a new business rule does not require touching
+`GlobalExceptionHandler`.
 
 ### Global Handler
 
-A single `@ControllerAdvice` (`GlobalExceptionHandler`) handles all exceptions:
+A single `@ControllerAdvice` (`GlobalExceptionHandler`) handles all exceptions. Handlers that
+always render a view carry `@ResponseStatus`; handlers that branch on the HTTP method set the
+status manually (via `HttpServletResponse`) only on the GET branch, so the POST redirect keeps
+its 302.
 
-- `EntityNotFoundException` -> 404 error page
-- `UnauthorizedClinicAccessException` -> 403 error page
-- `DuplicateEmailException` -> re-render form with error message
-- Unhandled `Exception` -> 500 generic error page with no stack trace exposed
+| Exception                                                       | POST                                        | GET                                   |
+|-----------------------------------------------------------------|---------------------------------------------|---------------------------------------|
+| `ResourceNotFoundException`                                     | flash `error` + redirect to `Referer` (302) | `error/404` view, **404**             |
+| `BusinessRuleException` (incl. `DuplicateEmailException`)        | flash `error` + redirect to `Referer` (302) | `error/400` view, **400**             |
+| `UnauthorizedClinicAccessException`, `AccessDeniedException`     | `error/access_denied` view, **403**         | `error/access_denied` view, **403**   |
+| `NoResourceFoundException`, `MethodArgumentTypeMismatchException`| `error/404` view, **404**                   | `error/404` view, **404**             |
+| Unhandled `Exception`                                           | `error/500` view, **500**                   | `error/500` view, **500**             |
+
+- On **POST**, business/not-found errors redirect to the `Referer` (or `/`) with the message in a
+  flash attribute named `error`. This follows Post-Redirect-GET and **intentionally discards the
+  submitted form data** — the user re-enters the form. This trade-off is accepted: it keeps the
+  handler uniform and avoids re-populating forms from the advice layer.
+- The destination view must render the `error` flash via the `errorAlert` fragment
+  (`fragments/alert.html`).
+- On **GET**, the message is shown on the dedicated `error/400` or `error/404` page.
+- The `Exception` handler logs a correlation UUID and never exposes a stack trace to the user.
 
 Controllers must not catch exceptions manually. If a controller needs to re-render a form on
 validation errors, use `BindingResult` — not `try/catch`.
@@ -526,6 +556,26 @@ Explicitly configure CSRF with `.csrf(Customizer.withDefaults())`.
 
 - Ownership verification (user can only access their own resources)
 - Role-based access that is too granular for URL patterns
+
+### Resource Ownership Authorization
+
+Ownership and clinic-scoped checks live in `shared/authorization/ResourceAuthorizationService`,
+registered as `@Component("authz")`. The checks are declared with `@PreAuthorize` on the
+**service interface** methods, referencing the bean by name:
+
+```java
+@PreAuthorize("@authz.canManageMedicalService(authentication, #serviceId)")
+MedicalService update(Long serviceId, UpdateMedicalServiceCommand command, Long clinicId);
+```
+
+- Each `canXxx` method returns a `boolean` (never throws to hide existence). A `false` result
+  makes Spring Security raise `AccessDeniedException`, which the handler renders as a **403**.
+- `SYSTEM_ADMINISTRATOR` passes every check.
+- `canManageMedicalService` returns `true` only for an administrator or a veterinarian whose own
+  or work clinic owns the service — `CUSTOMER` and `RECEPTIONIST` are rejected.
+- For pets, medical records and visits, **any appointment at the veterinarian's clinic grants the
+  veterinarian access — including a cancelled one. This is intentional**, not an oversight: a
+  veterinarian who has ever had the pet booked at their clinic keeps clinical read access.
 
 ### Authentication
 
