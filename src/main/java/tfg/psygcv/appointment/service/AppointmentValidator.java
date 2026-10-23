@@ -8,7 +8,7 @@ import tfg.psygcv.appointment.command.ScheduleAppointmentCommand;
 import tfg.psygcv.appointment.entity.Appointment;
 import tfg.psygcv.appointment.entity.AppointmentStatus;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
-import tfg.psygcv.exception.domain.InvalidAppointmentStateException;
+import tfg.psygcv.exception.domain.BusinessRuleException;
 import tfg.psygcv.shared.validation.BaseValidator;
 
 @Component
@@ -16,9 +16,9 @@ public class AppointmentValidator extends BaseValidator {
 
   public void validateClientAppointmentCreation(
       LocalDate date, Long petId, Long serviceId, Long clinicId, Long clientId) {
-    validateNotNull(date, "Appointment date cannot be null");
+    validateNotNull(date, "La fecha del turno es obligatoria");
     if (date.isBefore(LocalDate.now())) {
-      throw new InvalidAppointmentStateException("La fecha del turno no puede ser en el pasado");
+      throw new BusinessRuleException("La fecha del turno no puede ser en el pasado");
     }
     validateId(petId);
     validateId(serviceId);
@@ -28,37 +28,37 @@ public class AppointmentValidator extends BaseValidator {
 
   public void validateReceptionistAppointmentCreation(
       ScheduleAppointmentCommand command, Long receptionistId) {
-    validateNotNull(command, "Schedule command cannot be null");
-    validateNotNull(command.getDate(), "Appointment date is required");
-    validateNotNull(command.getTime(), "Appointment time is required");
-    validateNotNull(command.getPetId(), "Pet is required for appointment");
+    validateNotNull(command, "El comando de agendamiento no puede ser nulo");
+    validateNotNull(command.getDate(), "La fecha del turno es obligatoria");
+    validateNotNull(command.getTime(), "La hora del turno es obligatoria");
+    validateNotNull(command.getPetId(), "La mascota es obligatoria para el turno");
     validateId(command.getServiceId());
     validateId(receptionistId);
   }
 
   public void validateReschedule(Long appointmentId, RescheduleAppointmentCommand command) {
     validateId(appointmentId);
-    validateNotNull(command, "Reschedule command cannot be null");
-    validateNotNull(command.getDate(), "New appointment date is required");
-    validateNotNull(command.getTime(), "New appointment time is required");
+    validateNotNull(command, "El comando de reprogramación no puede ser nulo");
+    validateNotNull(command.getDate(), "La nueva fecha del turno es obligatoria");
+    validateNotNull(command.getTime(), "La nueva hora del turno es obligatoria");
     if (command.getDate().isBefore(LocalDate.now())) {
-      throw new InvalidAppointmentStateException(
-          "La nueva fecha del turno no puede ser en el pasado");
+      throw new BusinessRuleException("La nueva fecha del turno no puede ser en el pasado");
     }
-    validateNotNull(command.getMedicalServiceId(), "Medical service is required for rescheduling");
+    validateNotNull(
+        command.getMedicalServiceId(), "El servicio médico es obligatorio para reprogramar");
   }
 
   public void validateAppointment(Appointment appointment) {
-    validateNotNull(appointment, "Appointment cannot be null");
+    validateNotNull(appointment, "El turno no puede ser nulo");
   }
 
   public void validateStatus(AppointmentStatus status) {
-    validateNotNull(status, "Appointment status cannot be null");
+    validateNotNull(status, "El estado del turno no puede ser nulo");
   }
 
   public void validateClinics(List<VeterinaryClinic> clinics) {
     if (clinics == null || clinics.isEmpty()) {
-      throw new IllegalArgumentException("Clinics list cannot be null or empty");
+      throw new BusinessRuleException("La lista de clínicas no puede estar vacía");
     }
   }
 }
