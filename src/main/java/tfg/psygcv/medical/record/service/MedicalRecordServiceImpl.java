@@ -117,14 +117,14 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     }
     if (!hasAppointments) {
       throw new BusinessRuleException(
-          "La mascota no tiene turnos registrados en las clínicas del veterinario");
+          "Pet has no registered appointments in veterinarian's clinics");
     }
   }
 
   private void validateExistingMedicalRecord(Pet pet) {
     if (pet.getMedicalRecord() != null) {
       throw new BusinessRuleException(
-          "Esta mascota ya tiene una historia clínica registrada");
+          "This pet already has a registered medical record");
     }
   }
 

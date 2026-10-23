@@ -1,6 +1,7 @@
 package tfg.psygcv.user.service;
 
 import org.springframework.stereotype.Component;
+import tfg.psygcv.exception.domain.BusinessRuleException;
 import tfg.psygcv.shared.validation.BaseValidator;
 import tfg.psygcv.user.command.UpdateAdminUserCommand;
 import tfg.psygcv.user.entity.User;
@@ -35,8 +36,8 @@ public class UserValidator extends BaseValidator {
   }
 
   private void validatePassword(String password) {
-    if (password == null || password.length() < 6) {
-      throw new IllegalArgumentException("Password must be at least 6 characters long");
+    if (password == null || password.length() < 8) {
+      throw new BusinessRuleException("Password must be at least 8 characters long");
     }
   }
 }

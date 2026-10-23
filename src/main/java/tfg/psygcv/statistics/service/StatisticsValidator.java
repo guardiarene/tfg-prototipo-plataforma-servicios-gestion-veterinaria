@@ -13,17 +13,16 @@ public class StatisticsValidator extends BaseValidator {
   }
 
   public void validateDateRange(LocalDate startDate, LocalDate endDate) {
-    validateNotNull(startDate, "La fecha de inicio es obligatoria");
-    validateNotNull(endDate, "La fecha de fin es obligatoria");
+    validateNotNull(startDate, "Start date cannot be null");
+    validateNotNull(endDate, "End date cannot be null");
     if (startDate.isAfter(endDate)) {
-      throw new BusinessRuleException(
-          "La fecha de inicio no puede ser posterior a la fecha de fin");
+      throw new BusinessRuleException("Start date cannot be after end date");
     }
     if (endDate.isAfter(LocalDate.now())) {
-      throw new BusinessRuleException("La fecha de fin no puede ser en el futuro");
+      throw new BusinessRuleException("End date cannot be in the future");
     }
     if (startDate.plusYears(2).isBefore(endDate)) {
-      throw new BusinessRuleException("El rango de fechas no puede superar los 2 años");
+      throw new BusinessRuleException("Date range cannot exceed 2 years");
     }
   }
 }

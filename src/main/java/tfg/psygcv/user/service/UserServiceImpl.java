@@ -85,7 +85,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     userValidator.validateForCreation(user);
     if (userRepository.findByEmailAndActiveTrue(user.getEmail()).isPresent()) {
       log.warn("Duplicate email registration attempt [email={}]", user.getEmail());
-      throw new DuplicateEmailException("Ya existe un usuario con este email: " + user.getEmail());
+      throw new DuplicateEmailException(
+          "A user with this email already exists: " + user.getEmail());
     }
     encodePassword(user);
     return userRepository.save(user);

@@ -106,7 +106,7 @@ public class VisitServiceImpl implements VisitService {
   @Override
   public List<Visit> findByMedicalRecord(Long medicalRecordId) {
     if (medicalRecordId == null || medicalRecordId <= 0) {
-      throw new BusinessRuleException("El identificador de la historia clínica no es válido");
+      throw new BusinessRuleException("Medical record ID must be a positive number");
     }
     List<Visit> visits = visitRepository.findCompleteByMedicalRecordId(medicalRecordId);
     if (!visits.isEmpty()) {
@@ -126,7 +126,7 @@ public class VisitServiceImpl implements VisitService {
   @Override
   public Page<Visit> findByMedicalRecord(Long medicalRecordId, Pageable pageable) {
     if (medicalRecordId == null || medicalRecordId <= 0) {
-      throw new BusinessRuleException("El identificador de la historia clínica no es válido");
+      throw new BusinessRuleException("Medical record ID must be a positive number");
     }
     return visitRepository.findByMedicalRecordIdAndActiveOrderByDateDesc(medicalRecordId, pageable);
   }
@@ -135,14 +135,13 @@ public class VisitServiceImpl implements VisitService {
   public List<Visit> findByMedicalRecordAndDateRange(
       Long medicalRecordId, LocalDate startDate, LocalDate endDate) {
     if (medicalRecordId == null || medicalRecordId <= 0) {
-      throw new BusinessRuleException("El identificador de la historia clínica no es válido");
+      throw new BusinessRuleException("Medical record ID must be a positive number");
     }
     if (startDate == null || endDate == null) {
-      throw new BusinessRuleException("Las fechas de inicio y fin son obligatorias");
+      throw new BusinessRuleException("Start date and end date cannot be null");
     }
     if (startDate.isAfter(endDate)) {
-      throw new BusinessRuleException(
-          "La fecha de inicio no puede ser posterior a la fecha de fin");
+      throw new BusinessRuleException("Start date cannot be after end date");
     }
     return visitRepository.findByMedicalRecordIdAndDateRange(medicalRecordId, startDate, endDate);
   }
@@ -150,7 +149,7 @@ public class VisitServiceImpl implements VisitService {
   @Override
   public Visit findLatestVisit(Long medicalRecordId) {
     if (medicalRecordId == null || medicalRecordId <= 0) {
-      throw new BusinessRuleException("El identificador de la historia clínica no es válido");
+      throw new BusinessRuleException("Medical record ID must be a positive number");
     }
     return visitRepository.findLatestByMedicalRecordId(medicalRecordId).orElse(null);
   }
