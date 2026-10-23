@@ -8,6 +8,7 @@ updates:
       prefix: "chore(deps)"
     groups:
       maven-minor-patch:
+        patterns: [ "*" ]
         update-types: [ "minor", "patch" ]
     open-pull-requests-limit: 5
 
