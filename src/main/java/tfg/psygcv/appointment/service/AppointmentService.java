@@ -25,6 +25,7 @@ public interface AppointmentService {
 
   String findVeterinarianName(Appointment appointment);
 
+  @PreAuthorize("hasRole('CUSTOMER')")
   void createClientAppointment(
       LocalDate date, Long petId, Long serviceId, Long clinicId, Long clientId);
 

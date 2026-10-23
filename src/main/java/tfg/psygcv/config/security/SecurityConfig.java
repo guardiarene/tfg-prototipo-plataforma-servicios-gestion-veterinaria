@@ -59,6 +59,8 @@ public class SecurityConfig {
                         "/appointments/*/reschedule",
                         "/appointments/*/update-status")
                     .hasRole("RECEPTIONIST")
+                    .requestMatchers("/appointments/new")
+                    .hasRole("CUSTOMER")
                     .requestMatchers("/appointments/**")
                     .hasAnyRole("CUSTOMER", "RECEPTIONIST")
                     .requestMatchers("/receptionist/**")
