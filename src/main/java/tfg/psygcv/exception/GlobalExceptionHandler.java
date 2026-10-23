@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import tfg.psygcv.exception.domain.DuplicateEmailException;
-import tfg.psygcv.exception.domain.InvalidAppointmentStateException;
+import tfg.psygcv.exception.domain.BusinessRuleException;
 import tfg.psygcv.exception.domain.ResourceNotFoundException;
 import tfg.psygcv.exception.domain.UnauthorizedClinicAccessException;
 
@@ -46,26 +45,21 @@ public class GlobalExceptionHandler {
     return "error/access_denied";
   }
 
-  @ExceptionHandler(DuplicateEmailException.class)
-  public String handleDuplicateEmail(
-      DuplicateEmailException ex, HttpServletRequest request, RedirectAttributes ra) {
-    log.warn("Duplicate email attempt [path={}]: {}", request.getRequestURI(), ex.getMessage());
+  @ExceptionHandler(BusinessRuleException.class)
+  public String handleBusinessRule(
+      BusinessRuleException ex,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Model model,
+      RedirectAttributes ra) {
+    log.warn("Business rule violation [path={}]: {}", request.getRequestURI(), ex.getMessage());
     if (isPost(request)) {
       ra.addFlashAttribute("error", ex.getMessage());
       return "redirect:" + referer(request);
     }
-    return "error/500";
-  }
-
-  @ExceptionHandler(InvalidAppointmentStateException.class)
-  public String handleInvalidAppointmentState(
-      InvalidAppointmentStateException ex, HttpServletRequest request, RedirectAttributes ra) {
-    log.warn("Invalid appointment state [path={}]: {}", request.getRequestURI(), ex.getMessage());
-    if (isPost(request)) {
-      ra.addFlashAttribute("error", ex.getMessage());
-      return "redirect:" + referer(request);
-    }
-    return "error/404";
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+    model.addAttribute("errorMessage", ex.getMessage());
+    return "error/400";
   }
 
   @ExceptionHandler({NoResourceFoundException.class, MethodArgumentTypeMismatchException.class})
