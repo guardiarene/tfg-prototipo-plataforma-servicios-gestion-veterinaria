@@ -83,7 +83,7 @@ service      →   Toda la lógica de negocio y gestión de transacciones
 repository   →   Acceso a datos mediante interfaces de Spring Data JPA
 entity       →   Modelo de dominio y entidades JPA
 config       →   Seguridad, auditoría y configuración de la aplicación
-dto / mapper →   (En proceso) Desacoplamiento entre la API y el modelo interno
+dto / mapper →   Desacoplamiento entre la API y el modelo interno
 ```
 
 Los perfiles de entorno (`dev`, `test`, `prod`) permiten aislar la configuración de base de datos y logging sin
@@ -139,8 +139,8 @@ La aplicación estará disponible en [http://localhost:8080](http://localhost:80
 
 ### Arquitectura y calidad
 
-- [ ] Capa de DTOs y mappers para desacoplar la API del modelo interno.
-- [ ] Manejo global de excepciones con `@ControllerAdvice`.
+- [x] Capa de DTOs y mappers para desacoplar la API del modelo interno.
+- [x] Manejo global de excepciones con `@ControllerAdvice`.
 - [ ] Cobertura de tests: unitarios de servicio, integración y controladores.
 
 ### Infraestructura y despliegue
