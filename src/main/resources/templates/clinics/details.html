@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -81,7 +81,7 @@
                                     <a class="btn btn-secondary px-4" th:href="@{/customer/dashboard}">
                                         <i aria-hidden="true" class="bi bi-arrow-left-circle me-2"></i>Volver
                                     </a>
-                                    <a class="btn btn-primary px-4"
+                                    <a class="btn btn-primary px-4" sec:authorize="hasRole('CUSTOMER')"
                                        th:href="@{/appointments/new(clinicId=${clinic.id})}">
                                         <i aria-hidden="true" class="bi bi-calendar-plus me-2"></i>Solicitar Turno
                                     </a>
