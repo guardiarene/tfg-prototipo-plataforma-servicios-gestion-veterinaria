@@ -58,3 +58,26 @@ jobs:
       - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           fail-on-severity: high
+
+  commit-lint:
+    name: Commit Messages
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate conventional commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          pattern='^(feat|fix|refactor|perf|docs|test|build|ci|chore|style|revert)(\([a-z0-9-]+\))?!?: .+'
+          invalid=$(git log --format=%s "$BASE_SHA..$HEAD_SHA" | grep -vE "$pattern" || true)
+          if [ -n "$invalid" ]; then
+            echo "::error::Commits que no siguen Conventional Commits:"
+            echo "$invalid"
+            exit 1
+          fi
