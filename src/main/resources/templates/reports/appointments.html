@@ -12,6 +12,8 @@
         <div class="card shadow">
             <div th:replace="~{fragments/card-header :: cardHeader('bi-graph-up-arrow', 'Reporte de Solicitudes y Servicios', null)}"></div>
             <div class="card-body p-4">
+                <div th:if="${error}"
+                     th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                 <form class="mb-4" method="POST" th:action="@{/reports/appointments}">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-4">

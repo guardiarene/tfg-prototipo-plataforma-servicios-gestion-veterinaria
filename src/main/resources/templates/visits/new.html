@@ -15,6 +15,8 @@
                   th:action="@{/visits/new}"
                   th:object="${visit}">
                 <input th:field="*{medicalRecordId}" type="hidden">
+                <div th:if="${error}"
+                     th:insert="~{fragments/alert :: errorAlert(${error})}"></div>
                 <div th:if="${#fields.hasErrors('*')}"
                      th:insert="~{fragments/alert :: errorAlert('Corrige los errores del formulario.')}"></div>
                 <div class="mb-4">
