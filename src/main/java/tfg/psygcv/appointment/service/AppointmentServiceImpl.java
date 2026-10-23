@@ -145,7 +145,8 @@ public class AppointmentServiceImpl implements AppointmentService {
   public void reschedule(Long appointmentId, RescheduleAppointmentCommand command) {
     appointmentValidator.validateReschedule(appointmentId, command);
     Appointment existingAppointment = findWithDetails(appointmentId);
-    MedicalService service = medicalServiceService.findById(command.getMedicalServiceId());
+    MedicalService service = medicalServiceService.findByIdAndValidateClinic(
+        command.getMedicalServiceId(), existingAppointment.getClinic().getId());
     existingAppointment.setDate(command.getDate());
     existingAppointment.setTime(command.getTime());
     existingAppointment.setMedicalService(service);
