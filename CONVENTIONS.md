@@ -576,6 +576,8 @@ MedicalService update(Long serviceId, UpdateMedicalServiceCommand command, Long 
 - For pets, medical records and visits, **any appointment at the veterinarian's clinic grants the
   veterinarian access — including a cancelled one. This is intentional**, not an oversight: a
   veterinarian who has ever had the pet booked at their clinic keeps clinical read access.
+- Invariants between related entities (pet/customer, medical service/clinic) are verified in the
+  service, never only in the DTO: any ID that arrives in a form can be tampered with.
 
 ### Authentication
 
