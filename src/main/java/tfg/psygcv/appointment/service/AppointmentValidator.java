@@ -39,7 +39,7 @@ public class AppointmentValidator extends BaseValidator {
       throw new BusinessRuleException("Appointment date cannot be in the past");
     }
     validateNotNull(command.getTime(), "Appointment time is required");
-    validateNotNull(command.getPetId(), "Pet is required for appointment");
+    validateId(command.getPetId());
     validateId(command.getCustomerId());
     validateId(command.getServiceId());
     validateId(receptionistId);
