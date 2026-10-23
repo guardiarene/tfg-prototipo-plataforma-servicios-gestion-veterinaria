@@ -72,13 +72,13 @@ public class ResourceAuthorizationService {
     return clinicId != null && medicalRecordRepository.existsByIdAndClinicId(recordId, clinicId);
   }
 
-  public boolean canAccessMedicalService(Authentication auth, Long serviceId) {
+  public boolean canManageMedicalService(Authentication auth, Long serviceId) {
     AuthenticatedUser user = principal(auth);
     if (isAdmin(user)) {
       return true;
     }
-    if (user.getRole() == Role.CUSTOMER) {
-      return true;
+    if (user.getRole() != Role.VETERINARIAN) {
+      return false;
     }
     Long clinicId = resolveClinicId(user);
     return clinicId != null && medicalServiceRepository.existsByIdAndClinic_Id(serviceId, clinicId);
