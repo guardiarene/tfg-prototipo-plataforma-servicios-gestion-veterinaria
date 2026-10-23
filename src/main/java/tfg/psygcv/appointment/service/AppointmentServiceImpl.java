@@ -94,7 +94,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         date, petId, serviceId, clinicId, clientId);
     User customer = userService.findById(clientId);
     Pet pet = petService.findById(petId);
-    MedicalService service = medicalServiceService.findById(serviceId);
+    MedicalService service = medicalServiceService.findByIdAndValidateClinic(serviceId, clinicId);
     VeterinaryClinic clinic = veterinaryClinicService.findById(clinicId);
     Appointment appointment = buildClientAppointment(date, pet, service, clinic, customer);
     appointmentRepository.save(appointment);
@@ -108,11 +108,14 @@ public class AppointmentServiceImpl implements AppointmentService {
       ScheduleAppointmentCommand command, Long receptionistId) {
     appointmentValidator.validateReceptionistAppointmentCreation(command, receptionistId);
     User customer = userService.findById(command.getCustomerId());
+    appointmentValidator.validateCustomerRole(customer);
     Pet pet = petRepository
         .findByIdAndActive(command.getPetId())
         .orElseThrow(() -> new ResourceNotFoundException("Pet not found", command.getPetId()));
+    appointmentValidator.validatePetOwnership(pet, customer);
     VeterinaryClinic clinic = veterinaryClinicService.findByReceptionistId(receptionistId);
-    MedicalService service = medicalServiceService.findById(command.getServiceId());
+    MedicalService service =
+        medicalServiceService.findByIdAndValidateClinic(command.getServiceId(), clinic.getId());
     Appointment appointment = new Appointment();
     appointment.setDate(command.getDate());
     appointment.setTime(command.getTime());

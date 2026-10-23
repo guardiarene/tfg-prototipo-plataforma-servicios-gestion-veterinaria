@@ -2,6 +2,7 @@ package tfg.psygcv.appointment.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import tfg.psygcv.appointment.command.RescheduleAppointmentCommand;
 import tfg.psygcv.appointment.command.ScheduleAppointmentCommand;
@@ -9,8 +10,12 @@ import tfg.psygcv.appointment.entity.Appointment;
 import tfg.psygcv.appointment.entity.AppointmentStatus;
 import tfg.psygcv.clinic.entity.VeterinaryClinic;
 import tfg.psygcv.exception.domain.BusinessRuleException;
+import tfg.psygcv.pet.entity.Pet;
 import tfg.psygcv.shared.validation.BaseValidator;
+import tfg.psygcv.user.entity.Role;
+import tfg.psygcv.user.entity.User;
 
+@Slf4j
 @Component
 public class AppointmentValidator extends BaseValidator {
 
@@ -30,10 +35,33 @@ public class AppointmentValidator extends BaseValidator {
       ScheduleAppointmentCommand command, Long receptionistId) {
     validateNotNull(command, "Schedule command cannot be null");
     validateNotNull(command.getDate(), "Appointment date is required");
+    if (command.getDate().isBefore(LocalDate.now())) {
+      throw new BusinessRuleException("Appointment date cannot be in the past");
+    }
     validateNotNull(command.getTime(), "Appointment time is required");
     validateNotNull(command.getPetId(), "Pet is required for appointment");
+    validateId(command.getCustomerId());
     validateId(command.getServiceId());
     validateId(receptionistId);
+  }
+
+  public void validateCustomerRole(User user) {
+    validateNotNull(user, "User cannot be null");
+    if (user.getRole() != Role.CUSTOMER) {
+      log.warn("Appointment assigned to a non-customer user [userId={}, role={}]",
+          user.getId(), user.getRole());
+      throw new BusinessRuleException("Appointment can only be assigned to a customer");
+    }
+  }
+
+  public void validatePetOwnership(Pet pet, User customer) {
+    validateNotNull(pet, "Pet cannot be null");
+    validateNotNull(customer, "Customer cannot be null");
+    if (!pet.getOwner().getId().equals(customer.getId())) {
+      log.warn("Pet does not belong to customer [petId={}, customerId={}]",
+          pet.getId(), customer.getId());
+      throw new BusinessRuleException("Pet does not belong to the specified customer");
+    }
   }
 
   public void validateReschedule(Long appointmentId, RescheduleAppointmentCommand command) {
