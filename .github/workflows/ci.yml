@@ -75,7 +75,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           pattern='^(feat|fix|refactor|perf|docs|test|build|ci|chore|style|revert)(\([a-z0-9-]+\))?!?: .+'
-          invalid=$(git log --format=%s "$BASE_SHA..$HEAD_SHA" | grep -vE "$pattern" || true)
+          invalid=$(git log --no-merges --format=%s "$BASE_SHA..$HEAD_SHA" | grep -vE "$pattern" || true)
           if [ -n "$invalid" ]; then
             echo "::error::Commits que no siguen Conventional Commits:"
             echo "$invalid"
