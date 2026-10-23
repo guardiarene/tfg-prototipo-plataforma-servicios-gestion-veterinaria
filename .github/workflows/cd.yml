@@ -1,8 +1,7 @@
 name: Java CD with Maven (Production)
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   deploy:
