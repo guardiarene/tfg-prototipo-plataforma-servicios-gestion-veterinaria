@@ -1,10 +1,10 @@
-name: Java CI with Maven (Develop)
+name: CI
 
 on:
   push:
-    branches: [ "develop", "main" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "develop", "main" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -23,27 +23,15 @@ jobs:
           cache: 'maven'
 
       - name: Build with Maven
-        run: mvn clean compile
-
-      - name: Run Checkstyle
-        run: mvn checkstyle:check
-        continue-on-error: false
-
-      - name: Run Tests
         env:
           SPRING_PROFILES_ACTIVE: test
-        run: mvn verify
+        run: mvn -B clean verify
 
-      - name: Upload Test Reports
+      - name: Upload Build Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
-          path: target/surefire-reports/
-
-      - name: Upload Checkstyle Reports
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: checkstyle-reports
-          path: target/checkstyle-result.xml
+          name: build-reports
+          path: |
+            target/surefire-reports/
+            target/checkstyle-result.xml
