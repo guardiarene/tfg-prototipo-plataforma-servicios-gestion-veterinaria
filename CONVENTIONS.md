@@ -42,7 +42,7 @@ Each domain owns all its layers. Cross-cutting infrastructure lives in `shared/`
 
 ```
 tfg.psygcv
-├── config/                        # Configuration (unchanged — cross-cutting infra)
+├── config/                        # Configuration (cross-cutting infra)
 │   ├── audit/                     #   JpaAuditConfig
 │   ├── security/                  #   SecurityConfig, AuthenticatedUser, SuccessHandler
 │   └── util/                      #   JsonUtil and other infrastructure utilities
@@ -345,16 +345,29 @@ public record PetResponse(
 }
 ```
 
-**Request record with validation:**
+**Request DTO with validation (Lombok class, bindable by Thymeleaf):**
 
 ```java
-public record CreatePetRequest(
-        @NotBlank String name,
-        @NotNull Species species,
-        @NotNull Sex sex,
-        String breed,
-        @NotNull @PastOrPresent LocalDate birthDate
-) {
+@Getter
+@Setter
+@NoArgsConstructor
+public class CreatePetRequest {
+
+    @NotBlank
+    private String name;
+
+    @NotNull
+    private Species species;
+
+    @NotNull
+    private Sex sex;
+
+    @NotNull
+    private Breed breed;
+
+    @NotNull
+    @PastOrPresent
+    private LocalDate birthDate;
 }
 ```
 
@@ -416,7 +429,7 @@ direction.
 |------------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------|
 | Simple CRUD                                                      | `Entity` (mapped from DTO by controller via mapper)             | Controller                              |
 | Few independent params (≤ 3)                                     | Explicit primitives: `Long id`, `LocalDate date`, `String name` | Controller                              |
-| Complex operation (> 3 params, or params span multiple entities) | `XCommand` (defined in `service/<domain>/`)                     | Controller maps `XRequest` → `XCommand` |
+| Complex operation (> 3 params, or params span multiple entities) | `XCommand` (defined in `<domain>/command/`)                     | Controller maps `XRequest` → `XCommand` |
 
 **Command objects (`XCommand`):**
 
