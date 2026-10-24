@@ -5,12 +5,15 @@ Read `CONVENTIONS.md` before starting any task. It is the single source of truth
 ## Commands
 
 ```bash
-mvn clean verify                                    # Full build (checkstyle + tests) — run before completing any task
-mvn test                                            # Tests only
-mvn test -Dtest=ClassName                           # Single test class
-mvn checkstyle:check                                # Style check only
-mvn spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
+./mvnw clean verify                                    # Full build (checkstyle + tests) — run before completing any task
+./mvnw test                                            # Tests only
+./mvnw test -Dtest=ClassName                           # Single test class
+./mvnw checkstyle:check                                # Style check only
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
 ```
+
+On Windows (PowerShell), use `.\mvnw.cmd` instead of `./mvnw` and quote every `-D` argument: PowerShell
+splits unquoted arguments at the first dot (`.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"`).
 
 ## Workflow
 
@@ -23,9 +26,9 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
 
 ### After Writing Code
 
-1. `mvn checkstyle:check` — fix all violations
-2. `mvn test` — all tests must pass
-3. `mvn clean verify` — must pass before marking any task complete
+1. `./mvnw checkstyle:check` — fix all violations
+2. `./mvnw test` — all tests must pass
+3. `./mvnw clean verify` — must pass before marking any task complete
 
 ## Common Tasks
 
@@ -35,7 +38,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
 2. Read existing code in the same domain to match patterns
 3. Implement bottom-up: entity -> repository -> service -> DTO/mapper -> controller
 4. Write tests for each layer (service tests mandatory, controller tests for new endpoints)
-5. Run `mvn clean verify`
+5. Run `./mvnw clean verify`
 
 ### Adding an Entity
 
@@ -48,8 +51,9 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
 7. Create service interface and implementation in `<domain>/service/`
 8. Create controller in `<domain>/controller/` using DTOs with `@Valid`
 9. Add domain-specific exceptions in `exception/` if needed
-10. Create Flyway migration in `src/main/resources/db/migration/`
-11. Write tests — run `mvn clean verify`
+10. Flyway is planned but not configured yet (the schema is managed by `ddl-auto`): do not create
+    migrations until it is. Once configured, add the migration in `src/main/resources/db/migration/`
+11. Write tests — run `./mvnw clean verify`
 
 ### Fixing a Bug
 
@@ -57,7 +61,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
 2. Write a failing test that reproduces the bug (when possible)
 3. Implement the fix
 4. Verify the test passes
-5. Run `mvn clean verify`
+5. Run `./mvnw clean verify`
 
 ## Critical Rules
 
@@ -66,9 +70,9 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev  # Local dev server
 - **Never** expose JPA entities through controllers — always use DTOs
 - **Never** put business logic in controllers
 - **Never** catch exceptions in controllers — `@ControllerAdvice` handles them
-- **Never** modify `application-prod.yml` unless explicitly instructed
+- **Never** modify `application-prod.yaml` unless explicitly instructed
 - **Never** use `BeanUtils.copyProperties()` — map fields explicitly
-- **Always** run `mvn clean verify` before considering a task complete
+- **Always** run `./mvnw clean verify` before considering a task complete
 - **Always** follow existing patterns over inventing new ones
 
 ## When Uncertain
