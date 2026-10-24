@@ -353,21 +353,22 @@ public record PetResponse(
 @NoArgsConstructor
 public class CreatePetRequest {
 
-    @NotBlank
-    private String name;
+  @NotBlank
+  private String name;
 
-    @NotNull
-    private Species species;
+  @NotNull
+  private Species species;
 
-    @NotNull
-    private Sex sex;
+  @NotNull
+  private Sex sex;
 
-    @NotNull
-    private Breed breed;
+  @NotNull
+  private Breed breed;
 
-    @NotNull
-    @PastOrPresent
-    private LocalDate birthDate;
+  @NotNull
+  @PastOrPresent
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  private LocalDate birthDate;
 }
 ```
 
@@ -375,6 +376,8 @@ public class CreatePetRequest {
 
 - Jakarta Validation annotations (`@NotBlank`, `@Email`, `@FutureOrPresent`, etc.) on DTO fields
 - `@Valid` on controller method parameters
+- `LocalDate` fields bound from forms carry `@DateTimeFormat(iso = ISO.DATE)`, so the value is
+  rendered and parsed as `yyyy-MM-dd`: the only format an HTML5 `<input type="date">` loads
 - Entities carry only persistence constraints, not business validation
 
 ### Mapping
