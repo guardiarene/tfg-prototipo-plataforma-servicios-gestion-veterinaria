@@ -1,4 +1,5 @@
 spring:
+  # Local credentials: unversioned file at the project root (see README)
   config:
     import: optional:file:./application-local.yaml
 
