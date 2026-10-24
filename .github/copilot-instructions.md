@@ -4,7 +4,8 @@ Full standards in `CONVENTIONS.md` (project root). This file is a compact refere
 
 ## Stack
 
-Java 25, Spring Boot 4.x, Spring Data JPA, Spring Security 6, Thymeleaf, MySQL/H2, Flyway.
+Java 25, Spring Boot 4.x, Spring Data JPA, Spring Security 7, Thymeleaf, MySQL/H2.
+Flyway is planned but not configured yet (schema managed by `ddl-auto`): do not create migrations.
 
 ## Architecture
 
@@ -15,7 +16,8 @@ Controller (thin, no logic) -> Service (all business logic, `@Transactional`) ->
 - Input: `CreateXRequest`, `UpdateXRequest` with `jakarta.validation` annotations
 - Output: `XResponse`, `XSummaryResponse`
 - Controllers use `@Valid` on all request DTOs
-- Mapping: manual mapper classes or static factory methods — no MapStruct, no `BeanUtils.copyProperties()`
+- Mapping: dedicated `XMapper` utility classes (non-instantiable, `public static` methods), called only
+  from controllers — no MapStruct, no `BeanUtils.copyProperties()`
 - Never expose JPA entities in controller signatures
 
 ## Entities
@@ -28,7 +30,13 @@ Controller (thin, no logic) -> Service (all business logic, `@Transactional`) ->
 
 - `@Transactional(readOnly = true)` at class level, `@Transactional` on write methods
 - Return `Optional<T>` for single lookups — never return `null`
-- Verify resource ownership before operating on user-owned data
+- Never import from `dto.*`: services accept entities, primitives (≤ 3 params) or commands, and return
+  entities
+- Commands: `XCommand` in `<domain>/command/` for operations with > 3 params or spanning several
+  entities — plain POJO, no validation or JPA annotations, built by the mapper in the controller
+- Resource authorization: `@PreAuthorize("@authz.canXxx(authentication, #id)")` on service interface
+  methods, backed by `shared/authorization/ResourceAuthorizationService` (`@Component("authz")`).
+  Each check returns a `boolean`; `false` results in a 403
 
 ## Exceptions
 
@@ -38,10 +46,14 @@ Controller (thin, no logic) -> Service (all business logic, `@Transactional`) ->
 ## Naming and Packages
 
 - Interfaces: `XService` (not `XServiceInterface`). Implementations: `XServiceImpl`
-- All layers use domain sub-packages: `user/`, `pet/`, `medical/`, `appointment/`, `clinic/`
-- Service interface + implementation + validator co-located in the same domain package
-- Repository base + query + statistics co-located in the same domain package
-- `controller/dashboard/` for role-based dashboards, `controller/user/` for user operations
+- Domain-first: each domain (`user/`, `pet/`, `clinic/`, `appointment/`, `medical/record/`,
+  `medical/visit/`, `statistics/`) owns its layers as sub-packages: `entity/`, `repository/`,
+  `service/`, `command/`, `dto/request/`, `dto/response/`, `mapper/`, `controller/`. Cross-cutting base
+  classes live in `shared/`
+- Service interface + implementation + validator co-located in `<domain>/service/`
+- Repository base + query + statistics co-located in `<domain>/repository/`
+- Role dashboards live in the `controller/` package of their domain (e.g.
+  `user/controller/AdminDashboardController`)
 
 ## Logging
 
@@ -57,6 +69,7 @@ Service logic with Mockito. Controllers with `@WebMvcTest`. Repositories with `@
 - Put business logic in controllers
 - Expose entities in controller signatures
 - Catch exceptions in controllers
-- Use `ddl-auto: update` outside test profile
+- Use `ddl-auto: update` outside test profile (temporary exception: `dev`, until Flyway is configured;
+  never `prod`)
 - Introduce new architectural patterns
 - Return `null` from service methods
