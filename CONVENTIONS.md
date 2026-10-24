@@ -7,12 +7,14 @@ Referenced by `CLAUDE.md` and `.github/copilot-instructions.md`.
 
 ## Stack
 
-- Java 25, Spring Boot 4.x, Maven
-- Spring Data JPA, Spring Security 6, Thymeleaf
-- MySQL (dev/prod), H2 (test), Flyway migrations
+- Java 25, Spring Boot 4.x, Maven (via the Maven Wrapper)
+- Spring Data JPA, Spring Security 7, Thymeleaf
+- MySQL (dev/prod), H2 (test)
+- Flyway migrations: planned, not configured yet — the schema is managed by `ddl-auto`; do not create
+  migrations until Flyway is configured
 - Lombok (restricted subset), Jakarta Validation
-- JUnit 5, Mockito, AssertJ
-- CI: GitHub Actions (`mvn clean verify`)
+- JUnit 6 (Jupiter), Mockito, AssertJ
+- CI: GitHub Actions (`./mvnw -B -ntp clean verify`)
 
 ---
 
@@ -192,8 +194,14 @@ accumulating multiple reasons to change, split it.
 
 ## Code Style
 
-- Google Java Style, enforced by `checkstyle.xml` in the repository root
-- Max line length: 120 characters
+- Google Java Style, checked by Checkstyle with `config/checkstyle/google_checks.xml` (configured in
+  `pom.xml`)
+- Max line length: 100 characters (`LineLength` rule)
+- Checkstyle runs in the `verify` phase (`./mvnw clean verify`, locally and in CI); `./mvnw test` does
+  not run it
+- Severity: `google_checks.xml` sets `severity="warning"` globally and no rule overrides it, so every
+  rule currently reports a warning and none fails the build. The plugin fails the build only on
+  `error`-severity violations, or if Checkstyle itself cannot run
 - Readability over cleverness
 - No suppressed warnings without a comment explaining why
 
@@ -609,19 +617,25 @@ Services must enforce invariants (e.g., forced roles) regardless of input.
 
 ### Flyway Migrations
 
+> **Planned — not configured yet.** Flyway is not a project dependency yet and the schema is managed by
+> `ddl-auto` (see [Spring Profiles](#spring-profiles)). Do not create migrations or files under
+> `db/migration/` until Flyway is configured. The rules below apply from then on.
+
 - All schema changes managed with Flyway
 - Location: `src/main/resources/db/migration/`
 - Naming: `V1__description.sql`, `V2__description.sql`
 - Never modify an applied migration — create a new one
-- `application-test.yml` may use `ddl-auto: create-drop` for H2
+- `application-test.yaml` may use `ddl-auto: create-drop` for H2
 
 ### Hibernate
 
 - `ddl-auto: validate` or `none` in dev and prod — never `update` or `create`
+- **Temporary exception:** `dev` uses `ddl-auto: update` until Flyway is configured. `prod` never uses
+  `update` or `create`
 - `open-in-view: false` explicitly
 - SQL logging is enabled only by the `debug` profile, through the `org.hibernate.SQL` and
   `org.hibernate.orm.jdbc.bind` loggers
-- `show-sql` is not used in any profile — it duplicates the logger output
+- `show-sql` is not enabled in any profile — it duplicates the logger output
 
 ---
 
@@ -629,15 +643,15 @@ Services must enforce invariants (e.g., forced roles) regardless of input.
 
 | Profile | Database   | DDL           | Flyway     | Notes                                                               |
 |---------|------------|---------------|------------|---------------------------------------------------------------------|
-| `dev`   | MySQL      | `validate`    | Enabled    | Local development                                                   |
-| `test`  | H2         | `create-drop` | Disabled   | Fast, isolated test runs                                            |
-| `prod`  | MySQL      | `validate`    | Enabled    | Production                                                          |
+| `dev`   | MySQL      | `update`      | Planned    | Local development. Temporary `update` until Flyway is configured    |
+| `test`  | H2         | `create-drop` | —          | Fast, isolated test runs                                            |
+| `prod`  | MySQL      | `validate`    | Planned    | Production. Requires an existing schema until Flyway is configured  |
 | `debug` | (inherits) | (inherits)    | (inherits) | SQL and bound-parameter logging. Local only; combine as `dev,debug` |
 
 Local credentials live in `application-local.yaml` at the project root: not versioned, imported by the
 `dev` profile.
 
-No hardcoded credentials in any profile. Never modify `application-prod.yml` unless explicitly instructed.
+No hardcoded credentials in any profile. Never modify `application-prod.yaml` unless explicitly instructed.
 
 ---
 
@@ -683,7 +697,7 @@ void should_rejectAccess_when_userIsNotOwner() { ...}
 - Start with `should_` — it reads as a specification
 - The `when_` clause describes the scenario under test
 - Use camelCase within each segment
-- No `test` prefix — JUnit 5 does not require it
+- No `test` prefix — JUnit Jupiter does not require it
 
 ### Assertions
 
@@ -741,7 +755,8 @@ Conventional Commits format: `feat(user): implement profile page with avatar upl
 - Add dependencies to `pom.xml` without being asked
 - Add Lombok annotations beyond the allowed list
 - Silence warnings or skip checks instead of fixing root causes
-- Use `ddl-auto: update` or `ddl-auto: create` outside the test profile
+- Use `ddl-auto: update` or `ddl-auto: create` outside the test profile (temporary exception: `dev` uses
+  `update` until Flyway is configured; never in `prod`)
 - Expose JPA entities through controller signatures
 - Catch exceptions in controllers (use `@ControllerAdvice`)
 - Return `null` from service methods (use `Optional`)
