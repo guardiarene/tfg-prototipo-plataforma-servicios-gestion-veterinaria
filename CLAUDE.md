@@ -45,7 +45,8 @@ splits unquoted arguments at the first dot (`.\mvnw.cmd spring-boot:run "-Dsprin
 1. Read an existing entity — replicate the `equals`/`hashCode` pattern
 2. Create entity in `<domain>/entity/` with JPA annotations
 3. Create repository in `<domain>/repository/`
-4. Create DTOs in `<domain>/dto/`: `CreateXRequest`, `UpdateXRequest`, `XResponse`
+4. Create DTOs: `CreateXRequest`, `UpdateXRequest` in `<domain>/dto/request/`; `XResponse` (and
+   `XSummaryResponse` if needed) in `<domain>/dto/response/`
 5. Create mapper in `<domain>/mapper/`
 6. Create command objects in `<domain>/command/` if needed
 7. Create service interface and implementation in `<domain>/service/`
