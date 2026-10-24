@@ -1,6 +1,6 @@
 spring:
   application:
-    name: psygcs
+    name: psygcv
 
   jpa:
     open-in-view: false
