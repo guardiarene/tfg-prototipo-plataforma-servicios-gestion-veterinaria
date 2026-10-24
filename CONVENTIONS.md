@@ -619,17 +619,23 @@ Services must enforce invariants (e.g., forced roles) regardless of input.
 
 - `ddl-auto: validate` or `none` in dev and prod — never `update` or `create`
 - `open-in-view: false` explicitly
-- `show-sql: true` only in a dedicated debug profile, never in dev/prod defaults
+- SQL logging is enabled only by the `debug` profile, through the `org.hibernate.SQL` and
+  `org.hibernate.orm.jdbc.bind` loggers
+- `show-sql` is not used in any profile — it duplicates the logger output
 
 ---
 
 ## Spring Profiles
 
-| Profile | Database | DDL           | Flyway   | Notes                    |
-|---------|----------|---------------|----------|--------------------------|
-| `dev`   | MySQL    | `validate`    | Enabled  | Local development        |
-| `test`  | H2       | `create-drop` | Disabled | Fast, isolated test runs |
-| `prod`  | MySQL    | `validate`    | Enabled  | Production               |
+| Profile | Database   | DDL           | Flyway     | Notes                                                               |
+|---------|------------|---------------|------------|---------------------------------------------------------------------|
+| `dev`   | MySQL      | `validate`    | Enabled    | Local development                                                   |
+| `test`  | H2         | `create-drop` | Disabled   | Fast, isolated test runs                                            |
+| `prod`  | MySQL      | `validate`    | Enabled    | Production                                                          |
+| `debug` | (inherits) | (inherits)    | (inherits) | SQL and bound-parameter logging. Local only; combine as `dev,debug` |
+
+Local credentials live in `application-local.yaml` at the project root: not versioned, imported by the
+`dev` profile.
 
 No hardcoded credentials in any profile. Never modify `application-prod.yml` unless explicitly instructed.
 

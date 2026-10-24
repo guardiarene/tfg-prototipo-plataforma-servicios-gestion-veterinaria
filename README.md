@@ -109,17 +109,20 @@ modificar el código fuente.
 
 2. **Crear la base de datos:**
    ```sql
-   CREATE DATABASE psygcs_dev;
+   CREATE DATABASE psygcv_dev;
    ```
 
-3. **Configurar credenciales** en `src/main/resources/application-dev.yaml`:
+3. **Configurar credenciales** en un archivo `application-local.yaml` en la raíz del proyecto (no versionado;
+   lo importa el perfil `dev`):
    ```yaml
    spring:
      datasource:
-       url: jdbc:mysql://localhost:3306/psygcs_dev
+       url: jdbc:mysql://localhost:3306/psygcv_dev
        username: tu_usuario
        password: tu_contraseña
    ```
+   Como alternativa, definir las variables de entorno `DB_URL`, `DB_USERNAME` y `DB_PASSWORD`. Si existe
+   `application-local.yaml`, sus valores tienen prioridad.
 
 4. **Compilar y verificar:**
    ```bash
@@ -129,6 +132,11 @@ modificar el código fuente.
 5. **Ejecutar la aplicación:**
    ```bash
    mvn spring-boot:run -Dspring-boot.run.profiles=dev
+   ```
+   Para ver las consultas SQL y los valores de sus parámetros, sumar el perfil opcional `debug` (solo para
+   uso local):
+   ```bash
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev,debug
    ```
 
 La aplicación estará disponible en [http://localhost:8080](http://localhost:8080).
