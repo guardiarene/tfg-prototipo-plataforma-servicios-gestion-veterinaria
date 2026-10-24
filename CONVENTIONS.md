@@ -734,6 +734,15 @@ void should_rejectAccess_when_userIsNotOwner() { ...}
 
 ---
 
+## Documentation
+
+- The README exists in two languages: `README.md` (English) and `README.es.md` (Spanish)
+- `README.md` is the reference version; `README.es.md` is a faithful translation with the same
+  structure, diagrams and links
+- Both files are updated in the same PR: a change to one without the other is incomplete
+
+---
+
 ## Git Conventions
 
 ### Commit Messages (Conventional Commits)
