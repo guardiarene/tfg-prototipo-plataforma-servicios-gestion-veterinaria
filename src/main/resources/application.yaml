@@ -5,11 +5,5 @@ spring:
   jpa:
     open-in-view: false
 
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: INFO
-
 server:
   port: 8080
