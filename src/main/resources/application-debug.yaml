@@ -1,5 +1,3 @@
-# Solo para uso local: loguea los valores de los parámetros SQL.
-# Se combina con otro perfil: -Dspring-boot.run.profiles=dev,debug
 spring:
   jpa:
     properties:

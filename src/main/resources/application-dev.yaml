@@ -1,5 +1,4 @@
 spring:
-  # Credenciales locales: archivo no versionado en la raíz del proyecto
   config:
     import: optional:file:./application-local.yaml
 
