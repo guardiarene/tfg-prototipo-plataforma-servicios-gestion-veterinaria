@@ -12,10 +12,6 @@
 .env.*
 application-local.yaml
 application-local.yml
-application-*.yaml
-!application.yaml
-application-*.yml
-!application.yml
 
 ### Logs ###
 logs/
